@@ -1,0 +1,12 @@
+<data>
+	<entity BaseHP="7" Boss="0" Champion="1" Group="Blobs" ID="200" Image="resources/Entities/Antibirth/800.0.0 - Dumpling.png" Kind="Enemies" Name="Dumpling" Subtype="0" Variant="2401"/>
+	<entity BaseHP="8" Boss="0" Champion="1" Group="Blobs" ID="200" Image="resources/Entities/Antibirth/800.1.0 - Skinling.png" Kind="Enemies" Name="Skinling" Subtype="0" Variant="2402"/>
+	<entity BaseHP="12" Boss="0" Champion="1" Group="Blobs" ID="200" Image="resources/Entities/Antibirth/800.2.0 - Scab.png" Kind="Enemies" Name="Scab" Subtype="0" Variant="2403"/>
+	<!-- <entity BaseHP="15" Boss="0" Champion="1" Group="Spiders" ID="200" Image="resources/Entities/Antibirth/801.0.0 - Fissure.png" Kind="Enemies" Name="Fracture" Subtype="0" Variant="2407"/> -->
+	<!-- <entity BaseHP="10" Boss="0" Champion="0" Group="Stones" ID="200" Image="resources/Entities/Antibirth/802.0.0 - Stillborn.png" Kind="Enemies" Name="Stillborn" Subtype="0" Variant="2409"/> -->
+	<!-- <entity BaseHP="10" Boss="0" Champion="0" Group="Corpse" ID="200" Image="resources/Entities/Antibirth/802.0.1 - Stillborn (corpse).png" Kind="Enemies" Name="Stillborn (corpse)" Subtype="1" Variant="2409"/> -->
+	<!-- <entity BaseHP="10" Boss="0" Champion="0" Group="Corpse" ID="200" Image="resources/Entities/Antibirth/802.0.2 - Stillborn (corpse 2).png" Kind="Enemies" Name="Stillborn (corpse 2)" Subtype="2" Variant="2409"/> -->
+	<entity BaseHP="20" Boss="0" Champion="0" Group="Corpse" ID="200" Image="resources/Entities/Antibirth/864.0.0 - Coil.png" Kind="Enemies" Name="Coil" Subtype="0" Variant="2406"/>
+	<!-- <entity BaseHP="100" Boss="0" Champion="0" Group="Mausoleum" ID="200" Image="resources/Entities/Antibirth/867.0.0 - Screamer.png" Kind="Enemies" Name="Screamer" Subtype="0" Variant="2408"/> -->
+	<entity Group="Grid" ID="200" Image="resources/Entities/Antibirth/10001.0.0 - Red TNT.png" Kind="Stage" Name="Red TNT" Subtype="0" Variant="3400" IsGrid="1" />
+</data>

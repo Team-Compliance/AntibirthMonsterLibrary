@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>Antibirth Monster Library</name>
+    <directory>antibirth monster library</directory>
+    <id>2614001143</id>
+    <description>This is a Library in which other modders can freely use Antibirth Enemies for their mods. This mod does nothing by itself, it relies on players downloading other mods that are compatible with this one (Check out the collection at the top of the page for mods that incorporate the Library). If you make a mod that uses this, then please tell us in the comments or in our Discord server so that we can add it to the compatibility collection.
+
+[img]https://i.imgur.com/tp9LIOS.png[/img]
+
+[h1]𝐀𝐧𝐭𝐢𝐛𝐢𝐫𝐭𝐡 𝐌𝐨𝐧𝐬𝐭𝐞𝐫 𝐋𝐢𝐛𝐫𝐚𝐫𝐲[/h1]
+
+[img]https://i.imgur.com/3WOC9V0.png[/img] [u]𝐃𝐮𝐦𝐩𝐥𝐢𝐧𝐠[/u]: Round enemies that fly around aimlessly and fart. They fart whenever Isaac gets close, upon taking damage, and upon death. Farts knock Isaac back and propel it forwards. 
+
+[img]https://i.imgur.com/05KJjIh.png[/img] [u]𝐒𝐤𝐢𝐧𝐥𝐢𝐧𝐠[/u]: A pale variant of Dumplings. They behave similarly, but their farts are poisonous and can damage Isaac.
+
+[img]https://i.imgur.com/HLPq5yu.png[/img] [u]𝐒𝐜𝐚𝐛[/u]: A bloody variant of Dumplings that actively chase Isaac. They easily catch up to him by making quick, rapid dashes in his direction. When attacked, they fart, shoot 6 blood shots in all directions, and fly off in a random direction. Upon death they again fart and release 6 blood shots in all directions.
+
+[img]https://i.imgur.com/hvjBv07.png[/img] [u]𝐂𝐨𝐢𝐥[/u]: Indestructible spinal cord enemies found commonly in the Corpse chapter. They are immobile but can zap a constant laser at all enemies in the room (except for other Coils).
+
+[img]https://i.imgur.com/S7RSHI8.png[/img] [u]𝐑𝐞𝐝 𝐓𝐍𝐓[/u]: Red TNT barrels explode when destroyed. Unlike regular TNT barrels, red TNT only needs to be shot once to be detonated. They also detonate if Isaac or an enemy walks into it.
+
+[u]___________________________________[/u]
+
+[u]𝐂𝐨𝐦𝐢𝐧𝐠 𝐒𝐨𝐨𝐧[/u]:
+
+- Barfy 
+- Blind Bat 
+- Echo Bat
+- Corpse Eater 
+- Carrion Rider 
+- Necromancer 
+- Nightwatch 
+- Swapper 
+- Strifer 
+- Vessel 
+- Fissure (Fracture) 
+- Screamer 
+- Stillborn
+- Grave robber
+- Canary
+- Colored Obstacles
+- Corpse Polyps
+
+[img]https://i.imgur.com/0YXOqPH.png[/img]
+[list]
+[*][u]𝐃𝐢𝐫𝐞𝐜𝐭𝐨𝐫 𝐚𝐧𝐝 𝐆𝐫𝐚𝐩𝐡𝐢𝐜 𝐃𝐞𝐬𝐢𝐠𝐧𝐞𝐫[/u] = Sillst
+[*][u]𝐏𝐫𝐨𝐠𝐫𝐚𝐦𝐦𝐞𝐫𝐬[/u] = 24Chrome, kittenchilly, fly_6, Akad
+[*][u]𝐏𝐥𝐚𝐲𝐭𝐞𝐬𝐭𝐞𝐫𝐬[/u] = 24Chrome, kittenchilly, Akad
+[/list]
+
+[img]https://i.imgur.com/3en8OyU.png[/img]
+[code]Aether, Akad, anchikai., Backwardboss, Blind the Bound Demon, Blixy, BrakeDude, cat,,, Ethereal, fly_6, Goncholito, jubbalub, kittenchilly, Luigi_Gamer124, Merlin, Michael¿?, Royal, Sillst, skippy, Skylar, 24Chrome[/code]
+
+[img]https://i.imgur.com/SlXbHql.png[/img] [img]https://i.imgur.com/xd2eafr.png[/img]
+[code][u]_Kilburn[/u] - For the original monster ideas
+[u]All of you[/u] - For checking us out and supporting us :)[/code]
+
+[img]https://i.imgur.com/GKVOZZ8.png[/img]
+
+[img]https://i.imgur.com/xK4Mor0.png[/img] [url=https://discord.gg/GdVnkV4Gwj]TBOI: Compliance Discord Server[/url] [img]https://i.imgur.com/xK4Mor0.png[/img]
+[img]https://i.imgur.com/69jZFo8.png[/img] [url=https://www.reddit.com/r/TBOICompliance/]TBOI: Compliance Subreddit[/url] [img]https://i.imgur.com/69jZFo8.png[/img]
+[img]https://i.imgur.com/GmVPmG0.png[/img] [url=https://www.youtube.com/channel/UCEdAioGltx_hOsyDW57nvSw/featured]TBOI: Compliance YouTube[/url] [img]https://i.imgur.com/GmVPmG0.png[/img]
+[img]https://i.imgur.com/jBFg02x.png[/img] [url=https://twitter.com/ComplianceMods]Compliance Twitter Account[/url] [img]https://i.imgur.com/jBFg02x.png[/img]
+
+[img]https://i.imgur.com/DVq7svp.png[/img]</description>
+    <version>1.1</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Floors"/>
+    <tag id="Enemies"/>
+    <tag id="Hazards"/>
+</metadata>
