@@ -10,7 +10,8 @@ local game = Game()
 
 local monsters = {
     blindBats = include("scripts.blindBats"),
-    vessel = include("scripts.vessel")
+    vessel = include("scripts.vessel"),
+	corpseEaters = include("scripts.corpseEaters")
 }
 
 --[[

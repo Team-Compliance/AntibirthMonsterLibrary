@@ -15,7 +15,7 @@
         <gibs amount="6" blood="1" bone="0" eye="0" gut="1" large="0" />
     </entity>   
     
-    <entity anm2path="coil.anm2" baseHP="20" boss="0" champion="0" collisionDamage="1" collisionMass="100" collisionRadius="13" friction="0" id="200" name="Coil" numGridCollisionPoints="12" shadowSize="0" stageHP="0" variant="2406" portrait="0" gridCollision="none" portrait="6" shutdoors="false" tags="noreroll">
+    <entity anm2path="coil.anm2" baseHP="20" boss="0" champion="0" collisionDamage="1" collisionMass="100" collisionRadius="13" friction="0" id="200" name="Coil" numGridCollisionPoints="12" shadowSize="0" stageHP="0" variant="2406" portrait="6" gridCollision="none" shutdoors="false" tags="noreroll">
 		<bestiary transform="0,0,1" anim="Idle" />
         <gibs amount="4" blood="1" bone="0" eye="0" gut="0" large="0" />
     </entity>
@@ -43,6 +43,16 @@
         <gibs amount="6" blood="1" bone="0" eye="0" gut="1" large="0" />
     </entity>
 	
-	<entity anm2path="grid/grid_redtnt.anm2" baseHP="5"  boss="0" champion="0" collisionDamage="0" collisionMass="20" collisionRadius="20" friction="0" id="200" name="Red TNT" numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="3400" shutdoors="false" portrait="40" gibAmount="4" portrait="7" gibFlags="poop" tags="noreroll" />
+	<entity anm2path="grid/grid_redtnt.anm2" baseHP="5"  boss="0" champion="0" collisionDamage="0" collisionMass="20" collisionRadius="20" friction="0" id="200" name="Red TNT" numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="3400" shutdoors="false" gibAmount="4" portrait="7" gibFlags="poop" tags="noreroll" />
+	
+	<entity anm2path="239.100_corpse eater.anm2" baseHP="48" boss="0" champion="0" collisionDamage="1" collisionMass="14" collisionRadius="13" friction="1" id="239" name="#CORPSE_EATER" numGridCollisionPoints="12" portrait="8" shadowSize="21" stageHP="2.5" variant="100">
+        <bestiary anim="WalkBodyHori" overlay="WalkHeadHori" transform="0,0,1"/>
+		<gibs amount="10" blood="1" bone="0" eye="0" gut="1" large="0"/>
+    </entity>
+	
+    <entity anm2path="239.101_carrion rider.anm2" baseHP="48" boss="0" champion="0" collisionDamage="1" collisionMass="14" collisionRadius="13" friction="1" id="239" name="#CARRION_RIDER" numGridCollisionPoints="12" portrait="9" shadowSize="21" stageHP="2.5" variant="101">
+        <bestiary anim="WalkBodyHori" overlay="WalkHeadHori" transform="0,0,1"/>
+		<gibs amount="10" blood="1" bone="0" eye="0" gut="1" large="0"/>
+    </entity>
 
 </entities>
