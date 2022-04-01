@@ -1,18 +1,17 @@
 --[[ TODO ]]--
 --[[
 	- Make Carrion Riders only shoot when their line of sight isn't blocked by anything (HasPathToPos doesn't ignore pits)
-	- Make Carrion Riders face you when they shoot (would have to be a really dumb system because of how the animations are)
 	- Make Carrion Riders shoot at their enemy target if charmed/friendly
 	- Make charmed (not including friendly) Corpse Eaters leave behind creep the player can walk on (spawning player creep makes them hurt themselves)
 	- Make appear animation work for both head and body
 	- Make friendly Corpse Eaters not do the chomp effects when colliding with other friendly enemies
 	- Bestiary entry for them doesn't work for me even though it should?
 	- Figure out a better way to stop them from getting too long / being headless so you can spawn them next to each other properly
-	- Make them more aggressive?
 ]]--
 
 
 
+if not StandaloneCorpseEaters then
 local this = {}
 local game = Game()
 
@@ -69,7 +68,8 @@ function CorpseEaterBlacklist(target)
 	target.Type == EntityType.ENTITY_SWARM_SPIDER or
 	target.Type == EntityType.ENTITY_CULTIST or -- Mainly for Purple Cultists so they can revive as many things for them as possible
 	target.Type == EntityType.ENTITY_SHADY or
-	target.Type == EntityType.ENTITY_CLICKETY_CLACK
+	target.Type == EntityType.ENTITY_CLICKETY_CLACK or
+	(target.Type == 200 and (target.Variant == 2406 or target.Variant == 2409 or target.Variant == 3400))
 	then
 		return false
 	else
@@ -549,3 +549,4 @@ end
 
 
 return this
+end
