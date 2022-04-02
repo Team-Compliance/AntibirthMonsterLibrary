@@ -9,18 +9,21 @@ local game = Game()
 ]]-- 
 
 local monsters = {
+	dumplings = include("scripts.dumplings"),
     blindBats = include("scripts.blindBats"),
     vessel = include("scripts.vessel"),
-	corpseEaters = include("scripts.corpseEaters")
+	corpseEaters = include("scripts.corpseEaters"),
+	--strifers = include("scripts.strifers"),
+	stillborn = include("scripts.stillborn")
 }
 
 --[[
     Enum for all monster variants
 --]]
 local MonsterVariants = {
-    DUMPLING=2401,
-    SKINLING=2402,
-    SCAB=2403,
+    DUMPLING=2401, -- for backwards compatibility
+    SKINLING=2402, -- for backwards compatibility
+    SCAB=2403, -- for backwards compatibility
     COIL=2406,
     FRACTURE=2407,
 	SCREAMER=2408,
@@ -54,23 +57,23 @@ and should be docstring'd with what they're used for.
 
 --[[
     Dumpling/Skinling/Scab fart helper function
---]]
 local function fart(npc)
-    if npc.Variant == MonsterVariants.DUMPLING then -- Dumpling
-        game:ButterBeanFart(npc.Position, 85, npc, true)
-    elseif npc.Variant == MonsterVariants.SKINLING then -- Skinling
-        game:ButterBeanFart(npc.Position, 85, npc, false) -- fart but don't show
-        game:Fart(npc.Position, 0, npc) 
-        if game:GetNearestPlayer(npc.Position).Position:Distance(npc.Position) < 80 then
-            game:GetNearestPlayer(npc.Position):TakeDamage(1, DamageFlag.DAMAGE_POISON_BURN, EntityRef(npc), 0)
-        end
-    elseif npc.Variant == MonsterVariants.SCAB then -- Scab
-        game:ButterBeanFart(npc.Position, 85, npc, true)
-        params = ProjectileParams()
-        params.CircleAngle = 0
-        npc:FireProjectiles(npc.Position, Vector(10, 6), 9, params)
-    end
+	if npc.Variant == MonsterVariants.DUMPLING then -- Dumpling
+		game:ButterBeanFart(npc.Position, 85, npc, true)
+	elseif npc.Variant == MonsterVariants.SKINLING then -- Skinling
+		game:ButterBeanFart(npc.Position, 85, npc, false) -- fart but don't show
+		game:Fart(npc.Position, 0, npc) 
+		if game:GetNearestPlayer(npc.Position).Position:Distance(npc.Position) < 80 then
+			game:GetNearestPlayer(npc.Position):TakeDamage(1, DamageFlag.DAMAGE_POISON_BURN, EntityRef(npc), 0)
+		end
+	elseif npc.Variant == MonsterVariants.SCAB then -- Scab
+		game:ButterBeanFart(npc.Position, 85, npc, true)
+		params = ProjectileParams()
+		params.CircleAngle = 0
+		npc:FireProjectiles(npc.Position, Vector(10, 6), 9, params)
+	end
 end
+]]--
 
 --[[
     Checks if variant matches a dumpling
@@ -81,11 +84,11 @@ end
 
 --[[
     Helper function to apply velocity to and flip an NPC's sprite
---]]
 local function add_velocity_and_flip(npc, velocity)
     npc:AddVelocity(velocity)
     npc:GetSprite().FlipX = (velocity.X < 0)
 end
+]]--
 
 --[[
     Checks if a given npc is coil blacklisted
@@ -113,7 +116,7 @@ local function addLaser(npc_target, coil_source)
         laser_ent_pair.laser:SetColor(Color(0,0,0,1,0.89,0.92,0.81), 0, 1, false, false)
         laser_ent_pair.laser.Mass = 0
         laser_ent_pair.laser.DepthOffset = 200.0
-        Isaac.ConsoleOutput(tostring(laser_ent_pair.laser.DepthOffset))
+        --Isaac.ConsoleOutput(tostring(laser_ent_pair.laser.DepthOffset))
         table.insert(coil_source:GetData()["Lasers"], laser_ent_pair)
         npc_target:GetData()[("CoilTagged"..tostring(coil_source:GetData()["CoilID"]))] = true
     end
@@ -142,12 +145,15 @@ each monster by group or individual.
 --]]
 function mod:NPCUpdate(npc)
     -- Information to use for multiple enemies
+	--[[
     local sprite = npc:GetSprite() -- get entity sprite
     local npc_flags = npc:GetEntityFlags()
     local player_position = game:GetNearestPlayer(npc.Position).Position
     local player_angle = (player_position - npc.Position):GetAngleDegrees()
+	]]--
     
     --[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
+	--[[
     if isDumpling(npc.Variant) then -- Check if entity is dumpling        
         if npc.State == NpcState.STATE_IDLE then -- if idling
         
@@ -197,6 +203,7 @@ function mod:NPCUpdate(npc)
             npc.State = NpcState.STATE_IDLE
         end 
     end
+	]]--
 
     --[[ COIL ]]----------------------------------------------------------------------------------------------------
     if npc.Variant == MonsterVariants.COIL then -- Check if entity is coil
@@ -236,6 +243,12 @@ function mod:NPCInit(npc)
         npc:GetData()["AliveFrames"] = 0
 		npc:AddEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS | EntityFlag.FLAG_NO_PHYSICS_KNOCKBACK | EntityFlag.FLAG_HIDE_HP_BAR | EntityFlag.FLAG_NO_TARGET) -- Same as grimaces
     end
+	
+	--[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
+	if isDumpling(npc.Variant) then
+		npc:Morph(800, npc.Variant - 2401, npc.SubType, npc:GetChampionColorIdx()) -- converts Dumplings in already made rooms to the new one and ones from the other mod to ours
+		Isaac.ConsoleOutput(tostring(npc.Type))
+	end
     
 end
 mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.NPCInit, 200)
@@ -248,10 +261,12 @@ function mod:NPCDamage(entity, amount, dmg_flags)
     local npc = entity:ToNPC()
     
     --[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
+	--[[
     if isDumpling(npc.Variant) then -- Check if entity is dumpling
         npc.State = NpcState.STATE_ATTACK2
         npc:GetSprite():Play("Fart")
     end
+	]]--
     
     --[[ COIL ]]----------------------------------------------------------------------------------------------------
     if npc.Variant == MonsterVariants.COIL then -- coils should not take damage of any kind
@@ -269,17 +284,17 @@ mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.NPCDamage, 200)
 --[[
     NPC Death Function
 --]]
-function mod:NPCDeath(entity)
+--function mod:NPCDeath(entity)
     -- Information to use for multiple enemies
-    local npc = entity:ToNPC()
+    --local npc = entity:ToNPC()
     
     --[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
-    if isDumpling(npc.Variant) then
-        fart(npc)
-    end
+    --if isDumpling(npc.Variant) then
+        --fart(npc)
+    --end
     
-end
-mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.NPCDeath, 200)
+--end
+--mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.NPCDeath, 200)
 
 --[[
     NPC Collision Function
@@ -374,4 +389,3 @@ end
 for _, v in pairs(monsters) do
     v.Init()
 end
-
