@@ -49,7 +49,7 @@ function this:stillbornInit(entity)
 		-- Set sprites
 		if data.altSkin ~= "" then
 			for i = 0, sprite:GetLayerCount() do
-				sprite:ReplaceSpritesheet(i, "gfx/monsters/stillborn" .. data.altSkin .. ".png")
+				sprite:ReplaceSpritesheet(i, "gfx/monsters/repentance/802.000_stillborn" .. data.altSkin .. ".png")
 			end
 			sprite:LoadGraphics()
 		end
