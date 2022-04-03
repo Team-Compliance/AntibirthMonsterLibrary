@@ -2,11 +2,12 @@ AntiMonsterLib = RegisterMod("Antibirth Monster Library", 1)
 local mod = AntiMonsterLib
 local game = Game()
 
---[[
+
+--[[--------------------------------------------------------
 
     External monster files to require
 
-]]-- 
+--]]--------------------------------------------------------
 
 local monsters = {
 	dumplings = include("scripts.dumplings"),
@@ -16,6 +17,7 @@ local monsters = {
 	--strifers = include("scripts.strifers"),
 	stillborn = include("scripts.stillborn")
 }
+
 
 --[[
     Enum for all monster variants
@@ -31,12 +33,14 @@ local MonsterVariants = {
 	REDTNT=3400
 }
 
+
 --[[
     Floor record of rooms containing coils, collects
     room ids and locations, resets on new stage.
 --]]
 local CoilRoomRecord = {}
 local RedTNTRoomRecord = {}
+
 
 --[[
     Blacklist of enemies coils should NOT link to
@@ -47,6 +51,7 @@ local coil_blacklist = {
     "33.0", "33.1", "33.2", "33.3", "33.10", "33.12", "33.13" -- Fireplaces and moveable fires
     }
 
+
 --[[--------------------------------------------------------
 
 Functions below supplement the callback functions,
@@ -56,39 +61,12 @@ and should be docstring'd with what they're used for.
 
 
 --[[
-    Dumpling/Skinling/Scab fart helper function
-local function fart(npc)
-	if npc.Variant == MonsterVariants.DUMPLING then -- Dumpling
-		game:ButterBeanFart(npc.Position, 85, npc, true)
-	elseif npc.Variant == MonsterVariants.SKINLING then -- Skinling
-		game:ButterBeanFart(npc.Position, 85, npc, false) -- fart but don't show
-		game:Fart(npc.Position, 0, npc) 
-		if game:GetNearestPlayer(npc.Position).Position:Distance(npc.Position) < 80 then
-			game:GetNearestPlayer(npc.Position):TakeDamage(1, DamageFlag.DAMAGE_POISON_BURN, EntityRef(npc), 0)
-		end
-	elseif npc.Variant == MonsterVariants.SCAB then -- Scab
-		game:ButterBeanFart(npc.Position, 85, npc, true)
-		params = ProjectileParams()
-		params.CircleAngle = 0
-		npc:FireProjectiles(npc.Position, Vector(10, 6), 9, params)
-	end
-end
-]]--
-
---[[
-    Checks if variant matches a dumpling
+    Checks if variant matches a dumpling for backwards compatibility
 --]]
 local function isDumpling(variant)
     return variant == MonsterVariants.DUMPLING or variant == MonsterVariants.SKINLING or variant == MonsterVariants.SCAB
 end
 
---[[
-    Helper function to apply velocity to and flip an NPC's sprite
-local function add_velocity_and_flip(npc, velocity)
-    npc:AddVelocity(velocity)
-    npc:GetSprite().FlipX = (velocity.X < 0)
-end
-]]--
 
 --[[
     Checks if a given npc is coil blacklisted
@@ -102,6 +80,7 @@ local function isBlacklisted(npc)
     end
     return false
 end
+
 
 --[[
     Helper function to connect a coil and enemy pair with a laser
@@ -122,6 +101,7 @@ local function addLaser(npc_target, coil_source)
     end
 end
 
+
 --[[
     Helper function to adjust lasers to connect properly after an enemy moves
 --]]
@@ -131,6 +111,7 @@ local function adjust_laser(laser_pair, coil_source)
     local _, endPos = Game():GetRoom():CheckLine(laser_source_pos, laser_pair.npc.Position, 3)
     laser_pair.laser:SetMaxDistance(laser_source_pos:Distance(endPos))
 end
+
 
 --[[--------------------------------------------------------
 
@@ -144,67 +125,6 @@ each monster by group or individual.
     NPC Update Function
 --]]
 function mod:NPCUpdate(npc)
-    -- Information to use for multiple enemies
-	--[[
-    local sprite = npc:GetSprite() -- get entity sprite
-    local npc_flags = npc:GetEntityFlags()
-    local player_position = game:GetNearestPlayer(npc.Position).Position
-    local player_angle = (player_position - npc.Position):GetAngleDegrees()
-	]]--
-    
-    --[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
-	--[[
-    if isDumpling(npc.Variant) then -- Check if entity is dumpling        
-        if npc.State == NpcState.STATE_IDLE then -- if idling
-        
-            sprite:Play("Idle")
-            if player_position:Distance(npc.Position) < 100 then -- if player is close
-                npc.State = NpcState.STATE_ATTACK
-                sprite:Play("Fart")
-                
-            elseif (npc_flags & EntityFlag.FLAG_FEAR == EntityFlag.FLAG_FEAR) and math.random(16) == 1 then -- move feared 
-                npc.State = NpcState.STATE_MOVE
-                add_velocity_and_flip(npc, Vector.FromAngle(player_angle + 180) * Vector(math.random(3)+3, math.random(3)+3))
-                sprite:Play("Move")
-                
-            elseif (npc.Variant == MonsterVariants.DUMPLING or npc.Variant == MonsterVariants.SKINLING) and math.random(20) == 1 and not feared then -- move random 
-                npc.State = NpcState.STATE_MOVE
-                add_velocity_and_flip(npc, Vector.FromAngle(player_angle + (math.random(180)-90)) * Vector(math.random(3)+4, math.random(3)+4))
-                sprite:Play("Move")
-                
-            elseif npc.Variant == MonsterVariants.SCAB and math.random(12) == 1 and not (npc_flags & EntityFlag.FLAG_FEAR == EntityFlag.FLAG_FEAR) then -- move towards player
-                npc.State = NpcState.STATE_MOVE
-                add_velocity_and_flip(npc, Vector.FromAngle(player_angle) * Vector(math.random(3)+3, math.random(3)+3))
-                sprite:Play("Move")
-                
-            end
-        elseif npc.State == NpcState.STATE_MOVE then -- if moving
-            if sprite:IsFinished("Move") then
-                npc.State = NpcState.STATE_IDLE
-            end
-            
-        elseif npc.State == NpcState.STATE_ATTACK then -- if farting
-            if sprite:IsEventTriggered("Fart") then
-                fart(npc)
-                add_velocity_and_flip(npc, Vector.FromAngle(player_angle + 180) * Vector(math.random(3)+18, math.random(3)+18))
-            elseif sprite:IsFinished("Fart") then
-                npc.State = NpcState.STATE_IDLE
-            end
-            
-        elseif npc.State == NpcState.STATE_ATTACK2 then -- if farting from taken damage
-            if sprite:IsEventTriggered("Fart") then
-                fart(npc)
-                add_velocity_and_flip(npc, Vector.FromAngle(player_angle + (math.random(90)-45) + 180) * Vector(math.random(3)+18, math.random(3)+18))
-            elseif sprite:IsFinished("Fart") then
-                npc.State = NpcState.STATE_IDLE
-            end
-            
-        elseif npc.State == NpcState.STATE_INIT then -- if newly spawned
-            npc.State = NpcState.STATE_IDLE
-        end 
-    end
-	]]--
-
     --[[ COIL ]]----------------------------------------------------------------------------------------------------
     if npc.Variant == MonsterVariants.COIL then -- Check if entity is coil
         npc.Position = npc:GetData()["StartPos"] -- anchor to position
@@ -230,6 +150,7 @@ function mod:NPCUpdate(npc)
 end
 mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.NPCUpdate, 200)
 
+
 --[[
     NPC Init Function
 --]]
@@ -245,13 +166,14 @@ function mod:NPCInit(npc)
     end
 	
 	--[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
+	-- converts Dumplings with the old ID and ones from the other mod to the new one
 	if isDumpling(npc.Variant) then
-		npc:Morph(800, npc.Variant - 2401, npc.SubType, npc:GetChampionColorIdx()) -- converts Dumplings in already made rooms to the new one and ones from the other mod to ours
-		Isaac.ConsoleOutput(tostring(npc.Type))
+		npc:Morph(800, npc.Variant - 2401, npc.SubType, npc:GetChampionColorIdx())
 	end
     
 end
 mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.NPCInit, 200)
+
 
 --[[
     NPC Damage Function
@@ -260,17 +182,9 @@ function mod:NPCDamage(entity, amount, dmg_flags)
     -- Information to use for multiple enemies
     local npc = entity:ToNPC()
     
-    --[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
-	--[[
-    if isDumpling(npc.Variant) then -- Check if entity is dumpling
-        npc.State = NpcState.STATE_ATTACK2
-        npc:GetSprite():Play("Fart")
-    end
-	]]--
-    
     --[[ COIL ]]----------------------------------------------------------------------------------------------------
     if npc.Variant == MonsterVariants.COIL then -- coils should not take damage of any kind
-        return false
+        return false -- how is this different to just making them have 0 max hitpoints?
     end
 	
 	--[[ RED TNT ]]----------------------------------------------------------------------------------------------------
@@ -281,20 +195,6 @@ function mod:NPCDamage(entity, amount, dmg_flags)
 end
 mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.NPCDamage, 200)
 
---[[
-    NPC Death Function
---]]
---function mod:NPCDeath(entity)
-    -- Information to use for multiple enemies
-    --local npc = entity:ToNPC()
-    
-    --[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
-    --if isDumpling(npc.Variant) then
-        --fart(npc)
-    --end
-    
---end
---mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.NPCDeath, 200)
 
 --[[
     NPC Collision Function
@@ -319,6 +219,7 @@ function mod:NPCCollision(entity, collider, low)
 	
 end
 mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.NPCCollision, 200)
+
 
 --[[
     Called when player enters a new room
@@ -354,6 +255,7 @@ function mod:EnterNewRoom()
 end
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.EnterNewRoom)
 
+
 --[[
    Called when player enters a new stage
 --]]
@@ -363,12 +265,10 @@ function mod:EnterNewLevel()
 end
 mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.EnterNewLevel)
 
+
 --[[
-
     Some util functions
-
 ]]-- 
-
 function AntiMonsterLib:GetPlayers()
 
     local players = {}
@@ -385,7 +285,6 @@ end
 --[[
     Load the external files.
 ]]--
-
 for _, v in pairs(monsters) do
     v.Init()
 end
