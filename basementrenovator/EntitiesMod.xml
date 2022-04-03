@@ -17,6 +17,6 @@
 	
 	<entity Group="Grid" ID="200" Image="resources/Entities/Antibirth/10001.0.0 - Red TNT.png" Kind="Stage" Name="Red TNT" Subtype="0" Variant="3400" IsGrid="1" />
 	
-	<entity BaseHP="48" Group="Worms" ID="239" Image="resources/Entities/239.100.0 - Corpse Eater.png" Kind="Enemies" Name="Corpse Eater" Variant="100" Subtype="0" />
-	<entity BaseHP="48" Group="Worms" ID="239" Image="resources/Entities/239.101.0 - Carrion Rider.png" Kind="Enemies" Name="Carrion Rider" Variant="101" Subtype="0" />
+	<entity BaseHP="48" Group="Worms" ID="239" Image="resources/Entities/Antibirth/239.100.0 - Corpse Eater.png" Kind="Enemies" Name="Corpse Eater" Variant="100" Subtype="0" />
+	<entity BaseHP="48" Group="Worms" ID="239" Image="resources/Entities/Antibirth/239.101.0 - Carrion Rider.png" Kind="Enemies" Name="Carrion Rider" Variant="101" Subtype="0" />
 </data>
