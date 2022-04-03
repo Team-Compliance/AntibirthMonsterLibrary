@@ -1,34 +1,34 @@
 <entities anm2root="gfx/" version="5" deathanm2="gfx/death_enemies.anm2">
 	
-	<entity anm2path="dumpling.anm2" hasFloorAlts="true" reroll="true" baseHP="7" boss="0" champion="1" collisionDamage="1" collisionMass="3" collisionRadius="13" friction="0.95" id="800" name="Dumpling" numGridCollisionPoints="12" shadowSize="12" stageHP="2" variant="0" portrait="0" gridCollision="walls">
+	<entity anm2path="800.000_dumpling.anm2" hasFloorAlts="true" reroll="true" baseHP="7" boss="0" champion="1" collisionDamage="1" collisionMass="3" collisionRadius="13" friction="0.95" id="800" name="Dumpling" numGridCollisionPoints="12" shadowSize="12" stageHP="2" variant="0" portrait="0" gridCollision="walls">
 		<bestiary transform="0,0,1" anim="Idle" />
         <gibs amount="6" blood="1" bone="0" eye="1" gut="1" large="0" />
     </entity>
-    <entity anm2path="skinling.anm2" reroll="true" baseHP="8" boss="0" champion="1" collisionDamage="1" collisionMass="3" collisionRadius="13" friction="0.95" id="800" name="Skinling" numGridCollisionPoints="12" shadowSize="12" stageHP="2" variant="1" portrait="1" gridCollision="walls">
+    <entity anm2path="800.001_skinling.anm2" reroll="true" baseHP="8" boss="0" champion="1" collisionDamage="1" collisionMass="3" collisionRadius="13" friction="0.95" id="800" name="Skinling" numGridCollisionPoints="12" shadowSize="12" stageHP="2" variant="1" portrait="1" gridCollision="walls">
 		<bestiary transform="0,0,1" anim="Idle" />
         <gibs amount="6" blood="1" bone="0" eye="0" gut="1" large="0" />
     </entity>
-    <entity anm2path="scab.anm2" reroll="true" baseHP="12" boss="0" champion="1" collisionDamage="1" collisionMass="3" collisionRadius="13" friction="0.95" id="800" name="Scab" numGridCollisionPoints="12" shadowSize="12" stageHP="2" variant="2" portrait="2" gridCollision="walls">
+    <entity anm2path="800.002_scab.anm2" reroll="true" baseHP="12" boss="0" champion="1" collisionDamage="1" collisionMass="3" collisionRadius="13" friction="0.95" id="800" name="Scab" numGridCollisionPoints="12" shadowSize="12" stageHP="2" variant="2" portrait="2" gridCollision="walls">
 		<bestiary transform="0,0,1" anim="Idle" />
         <gibs amount="6" blood="1" bone="0" eye="0" gut="1" large="0" />
     </entity>
     
-    <entity anm2path="coil.anm2" baseHP="20" boss="0" champion="0" collisionDamage="1" collisionMass="100" collisionRadius="13" friction="0" id="200" name="Coil" numGridCollisionPoints="12" shadowSize="0" stageHP="0" variant="2406" portrait="6" gridCollision="none" shutdoors="false" tags="noreroll">
+    <entity anm2path="864.000_coil.anm2" baseHP="20" boss="0" champion="0" collisionDamage="1" collisionMass="100" collisionRadius="13" friction="0" id="200" name="Coil" numGridCollisionPoints="12" shadowSize="0" stageHP="0" variant="2406" portrait="6" gridCollision="none" shutdoors="false" tags="noreroll">
 		<bestiary transform="0,0,1" anim="Idle" />
         <gibs amount="4" blood="1" bone="0" eye="0" gut="0" large="0" />
     </entity>
 	
-	<entity anm2path="fracture.anm2" baseHP="15" boss="0" champion="1" collisionDamage="1" collisionMass="10" collisionRadius="13" friction="1" id="200" name="Fracture" numGridCollisionPoints="0" shadowSize="28" stageHP="0" variant="2407" portrait="3">
+	<entity anm2path="801.000_fracture.anm2" baseHP="15" boss="0" champion="1" collisionDamage="1" collisionMass="10" collisionRadius="13" friction="1" id="200" name="Fracture" numGridCollisionPoints="0" shadowSize="28" stageHP="0" variant="2407" portrait="3">
     	<bestiary transform="0,0,1" anim="Hop" />
         <gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0" />
     </entity>
 	
-	<entity anm2path="screamer.anm2" baseHP="100" boss="0" champion="0" collisionDamage="2" collisionMass="950" collisionRadius="13" friction="1" id="200" name="Screamer" numGridCollisionPoints="12" shadowSize="18" stageHP="0" variant="2408" portrait="5">
+	<entity anm2path="867.000_screamer.anm2" baseHP="100" boss="0" champion="0" collisionDamage="2" collisionMass="950" collisionRadius="13" friction="1" id="200" name="Screamer" numGridCollisionPoints="12" shadowSize="18" stageHP="0" variant="2408" portrait="5">
     	<bestiary transform="0,0,1" anim="WalkDown" />
         <gibs amount="12" blood="1" bone="1" eye="0" gut="0" large="1" colorblood="1" />
     </entity>
 	
-	<entity anm2path="stillborn.anm2" baseHP="10" boss="0" champion="0" collisionDamage="1" collisionMass="30" collisionRadius="13" friction="1" id="200" name="Stillborn" numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="2409" shutdoors="false" portrait="4" gridCollision="walls">
+	<entity anm2path="802.000_stillborn.anm2" baseHP="10" boss="0" champion="0" collisionDamage="1" collisionMass="30" collisionRadius="13" friction="1" id="200" name="Stillborn" numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="2409" shutdoors="false" portrait="4" gridCollision="walls">
 		<bestiary transform="0,0,1" anim="Appear" />
         <gibs amount="6" blood="1" bone="0" eye="0" gut="1" large="0" />
     </entity>
