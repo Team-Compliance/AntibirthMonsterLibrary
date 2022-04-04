@@ -343,16 +343,12 @@ function this:CorpseEaterCollision(entity, target, cum)
 					-- Projectiles
 					if CorpseEaterGetEffect(target) == "bone" or CorpseEaterGetEffect(target) == "poop" or CorpseEaterGetEffect(target) == "stone" then
 						local params = ProjectileParams()
-						params.ChangeVelocity = 2
 						params.Variant = data.ProjectileType
 
 						local countRNG = RNG()
 						countRNG:SetSeed(Random(), 239)
-						local ProjectileCount = countRNG:RandomInt(4) + 5
-
-						for i = 1, ProjectileCount do						
-							entity:FireBossProjectiles(1, target.Position, 2.5, params)
-						end
+					
+						entity:FireBossProjectiles(countRNG:RandomInt(3) + 6, Vector(0,0), 2, params)
 					
 					-- Small enemies and ghosts
 					else
@@ -381,33 +377,23 @@ function this:CorpseEaterCollision(entity, target, cum)
 					
 					
 					-- Projectiles
-					local params = ProjectileParams()
-					params.ChangeVelocity = 2
-
 					local countRNG = RNG()
 					countRNG:SetSeed(Random(), 239)
-					local ProjectileCount = countRNG:RandomInt(6) + 7
 
-					for i = 1, ProjectileCount do
+					for i = 1, countRNG:RandomInt(5) + 8 do
+						local params = ProjectileParams()
+
 						local projRNG = RNG()
 						projRNG:SetSeed(Random(), 239)
 						local IsBone = projRNG:RandomInt(6)
-						
-						if IsBone <= 1 then
-							direction = target.Position
-						elseif IsBone > 1 and IsBone < 4 then
-							direction = game:GetNearestPlayer(entity.Position).Position
-						else
-							direction = entity.Position
-						end
 						
 						if IsBone == 3 then
 							params.Variant = ProjectileVariant.PROJECTILE_BONE
 						else
 							params.Variant = ProjectileVariant.PROJECTILE_NORMAL
 						end
-						
-						entity:FireBossProjectiles(1, direction, 2.5, params)
+
+						entity:FireBossProjectiles(1, Vector(0,0), 2, params)
 					end
 				end
 			end
