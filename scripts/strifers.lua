@@ -52,7 +52,7 @@ function this:StriferInit(entity)
 
 	data.currSpeed = Strifer.SPEED
 	data.shot = 0
-	entity.Mass = 50
+	entity:AddEntityFlags(EntityFlag.FLAG_NO_PHYSICS_KNOCKBACK)
 
 	data.altSkin = ""
 	if (stage == LevelStage.STAGE3_1 or stage == LevelStage.STAGE3_2) and level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
