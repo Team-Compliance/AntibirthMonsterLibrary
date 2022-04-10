@@ -168,7 +168,13 @@ function mod:NPCInit(npc)
 	--[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
 	-- converts Dumplings with the old ID and ones from the other mod to the new one
 	if isDumpling(npc.Variant) then
-		npc:Morph(800, npc.Variant - 2401, npc.SubType, npc:GetChampionColorIdx())
+		newdump = Isaac.Spawn(800, npc.Variant - 2401, npc.SubType, npc.Position, npc.Velocity, nil)
+		
+		if npc:IsChampion() then
+			newdump:MakeChampion(0, npc:GetChampionColorIdx(), true)
+		end
+		
+		npc:Remove()
 	end
     
 end

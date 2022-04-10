@@ -2,7 +2,7 @@ local this = {}
 
 local Settings = {
 	NumFollowerBats = 3, -- How many follower bats should spawn alongside the leader bat
-	ActivationRange = 60, -- Range that players or monsters must be to trigger the bat
+	ActivationRange = 104, -- Range that players or monsters must be to trigger the bat
 	AttackTime = {60, 120}, -- The amount of frames between each bat charge
 	AttackRange = 80, -- Range players must be in to trigger the bat charging
 	ChaseSpeed = 4, -- Velocity of bat following its target
@@ -97,7 +97,6 @@ function this:blindBatUpdate(bat)
 	local batData = bat:GetData().BlindBatData
 	local batPos = bat.Position
 	local target = bat:GetPlayerTarget()
-	local entityRef = EntityRef(bat)
 	
    
 	if batData.State == States.Hiding then 
@@ -223,7 +222,7 @@ function this:onUpdate()
   
 	local offset = Game().ScreenShakeOffset
   
-	if offset.X ~= 0 or offset.Y ~= 0 then
+	if (offset.X ~= 0 or offset.Y ~= 0) or (SFXManager():IsPlaying(SoundEffect.SOUND_BOSS1_EXPLOSIONS) or SFXManager():IsPlaying(SoundEffect.SOUND_EXPLOSION_STRONG)) then
 		awakenBats()
 	end
   
