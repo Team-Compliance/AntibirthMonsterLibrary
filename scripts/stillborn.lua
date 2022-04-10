@@ -84,16 +84,16 @@ function this:stillbornUpdate(entity)
 					sprite:PlayOverlay("IdleOverlay", true)
 				end
 				
-				entity.ProjectileCooldown = entity.ProjectileCooldown - 1 -- I have to type them out in full otherwise it doesn't work??
+				entity.ProjectileCooldown = entity.ProjectileCooldown - 1
 			
 			else
-				if entity.Position:Distance(target.Position) <= Settings.Range then
+				if entity.Position:Distance(target.Position) <= Settings.Range and room:CheckLine(entity.Position, target.Position, 3, 0, false, false) then
 					if not sprite:IsOverlayPlaying("ShootOverlay") then
 						sprite:PlayOverlay("ShootOverlay", true)
 					end
 				end
 				
-				if sprite:GetOverlayFrame() == 23 then -- why do events in overlay animations not work?????????
+				if sprite:GetOverlayFrame() == 23 then
 					entity:FireProjectiles(entity.Position, (target.Position - entity.Position):Normalized() * Settings.ShotSpeed, 0, ProjectileParams())
 					entity:PlaySound(SoundEffect.SOUND_STONESHOOT, 1, 0, false, 1)
 					entity.ProjectileCooldown = Settings.Cooldown

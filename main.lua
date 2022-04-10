@@ -14,7 +14,7 @@ local monsters = {
     blindBats = include("scripts.blindBats"),
     vessel = include("scripts.vessel"),
 	corpseEaters = include("scripts.corpseEaters"),
-	--strifers = include("scripts.strifers"),
+	strifers = include("scripts.strifers"),
 	stillborn = include("scripts.stillborn")
 }
 

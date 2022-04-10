@@ -1,16 +1,3 @@
---[[ TODO ]]--
---[[
-	- Make Carrion Riders only shoot when their line of sight isn't blocked by anything (HasPathToPos doesn't ignore pits)
-	- Make Carrion Riders shoot at their enemy target if charmed/friendly
-	- Make charmed (not including friendly) Corpse Eaters leave behind creep the player can walk on (spawning player creep makes them hurt themselves)
-	- Make appear animation work for both head and body
-	- Make friendly Corpse Eaters not do the chomp effects when colliding with other friendly enemies
-	- Bestiary entry for them doesn't work for me even though it should?
-	- Figure out a better way to stop them from getting too long / being headless so you can spawn them next to each other properly
-]]--
-
-
-
 if not StandaloneCorpseEaters then
 local this = {}
 local game = Game()
@@ -207,7 +194,7 @@ function this:CorpseEaterUpdate(entity)
 		elseif entity.Parent ~= nil and entity.Child == nil then
 			entity.DepthOffset = entity.Parent.DepthOffset - 10
 			
-			if entity.Parent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then -- Friendly Ball bullshit again, they don't get the visuals until they take damage but otherwise they work
+			if entity.Parent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then -- For Friendly Ball, they don't get the visuals until they take damage but otherwise they work
 				entity:AddCharmed(EntityRef(entity.Parent), -1)
 			end
 		end
@@ -232,8 +219,9 @@ function this:CorpseEaterUpdate(entity)
 					end
 				end
 				
-				if entity.Position:Distance(player.Position) <= CorpseEater.BONY_RANGE and entity.ProjectileCooldown <= 0 -- TODO: make them only shoot if they have direct line of sight
-				and not (entity:HasEntityFlags(EntityFlag.FLAG_CHARM) or entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) then -- Charmed ones don't get a target so I don't know how to make them shoot at other enemies
+				if entity.Position:Distance(player.Position) <= CorpseEater.BONY_RANGE and entity.ProjectileCooldown <= 0
+				and game:GetRoom():CheckLine(entity.Position, player.Position, 3, 0, false, false)
+				and not (entity:HasEntityFlags(EntityFlag.FLAG_CHARM) or entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) then
 					-- Projectile
 					local params = ProjectileParams()
 					params.Variant = ProjectileVariant.PROJECTILE_BONE
@@ -282,7 +270,7 @@ end
 function this:CorpseEaterCollision(entity, target, cum)
 	if entity.Variant == 100 or entity.Variant == 101 then
 		local data = entity:GetData()
-		local sprite = entity:GetSprite()		
+		local sprite = entity:GetSprite()
 	
 
 		if target.Type == EntityType.ENTITY_PLAYER then
@@ -437,7 +425,8 @@ function CorpseEaterIsFriendly(entity, target)
 		else
 			return false
 		end
-	else
+
+	elseif not (entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) and target:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) then
 		return true
 	end
 end
