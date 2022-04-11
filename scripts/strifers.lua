@@ -37,7 +37,6 @@ end
 
 function this:StriferInit(entity)
 	local data = entity:GetData()
-	local sprite = entity:GetSprite()
 	local level = game:GetLevel()
 	local stage = level:GetStage()
 	
@@ -57,15 +56,6 @@ function this:StriferInit(entity)
 	data.altSkin = ""
 	if (stage == LevelStage.STAGE3_1 or stage == LevelStage.STAGE3_2) and level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
 		data.altSkin = "_gehenna"
-	end
-	
-
-	-- Set spritesheets
-	if data.altSkin ~= "" then
-		for i = 0, sprite:GetLayerCount() - 1 do
-			sprite:ReplaceSpritesheet(i, "gfx/monsters/repentance/839.000_strifer" .. data.altSkin .. ".png")
-		end
-		sprite:LoadGraphics()
 	end
 end
 
@@ -100,30 +90,43 @@ function this:StriferUpdate(entity)
 
 	-- Set variant if direction is not set
 	if data.facing == nil or data.movetype == nil then
-		local champid = entity:GetChampionColorIdx()
 		local enterd = game:GetLevel().EnterDoor
 			
 		-- Left / Right
 		if entity.Variant == 4 or (entity.Variant == 6 and enterd % 2 == 0) then -- All left and right doors have an even numbered ID
 			if target.Position.X <= entity.Position.X then
-				entity:Morph(839, 0, 0, champid)
+				entity.Variant = 0
 
 			else -- >=
-				entity:Morph(839, 2, 0, champid)
+				entity.Variant = 2
 			end
 
 		-- Up / Down
 		elseif entity.Variant == 5 or (entity.Variant == 6 and enterd % 2 ~= 0) then
 			if target.Position.Y <= entity.Position.Y then
-				entity:Morph(839, 1, 0, champid)
+				entity.Variant = 1
 
 			else -- >=
-				entity:Morph(839, 3, 0, champid)
+				entity.Variant = 3
 			end
 		end
 		
 		setmovement()
 		setfacing()
+		
+		
+		-- Set spritesheets
+		if data.altSkin ~= "" then
+			local ischamp = ""
+			if entity:IsChampion() == true then
+				ischamp = "_champion"
+			end
+
+			for i = 0, sprite:GetLayerCount() - 1 do
+				sprite:ReplaceSpritesheet(i, "gfx/monsters/repentance/839.000_strifer" .. data.altSkin .. ischamp .. ".png")
+			end
+			sprite:LoadGraphics()
+		end
 	end
 
 
