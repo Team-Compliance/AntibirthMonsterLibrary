@@ -23,6 +23,17 @@
 		<bestiary transform="0,0,1" anim="Appear" />
         <gibs amount="6" blood="1" bone="0" eye="0" gut="1" large="0" />
     </entity>
+	
+	<entity anm2path="835.000_swapper.anm2" baseHP="25" boss="0" champion="1" collisionDamage="1" collisionMass="10" collisionRadius="13" friction="1" gridCollision="walls" id="38" name="Swapper" numGridCollisionPoints="8" portrait="8" reroll="true" shadowSize="16" stageHP="0" variant="835">
+        <bestiary anim="Move" transform="0,3,1"/>
+        <gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0" sound_baby="1"/>
+    </entity>
+	
+	<!--
+	<entity anm2path="842.000_nightwatch.anm2" baseHP="25" boss="0" champion="0" collisionDamage="1" collisionMass="100" collisionRadius="13" friction="1" gridCollision="floor" id="842" name="#NIGHTWATCH" numGridCollisionPoints="12" portrait="264" shadowSize="20" shutdoors="false" stageHP="5" tags="ghost" variant="0">
+        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0"/>
+    </entity>
+	-->
     
     <entity anm2path="864.000_coil.anm2" baseHP="20" boss="0" champion="0" collisionDamage="1" collisionMass="100" collisionRadius="13" friction="0" id="200" name="Coil" numGridCollisionPoints="12" shadowSize="0" stageHP="0" variant="2406" portrait="6" gridCollision="none" shutdoors="false" tags="noreroll">
 		<bestiary transform="0,0,1" anim="Idle" />

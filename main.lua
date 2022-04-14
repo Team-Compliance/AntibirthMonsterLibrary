@@ -15,6 +15,8 @@ local monsters = {
     vessel = include("scripts.vessel"),
 	corpseEaters = include("scripts.corpseEaters"),
 	strifers = include("scripts.strifers"),
+	swappers = include("scripts.swappers"),
+	--nightwatch = include("scripts.nightwatch"),
 	stillborn = include("scripts.stillborn")
 }
 
