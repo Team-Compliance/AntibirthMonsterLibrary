@@ -1,4 +1,4 @@
-<?xml version="1.8" encoding="UTF-8"?>
+<?xml version="1.9" encoding="UTF-8"?>
 <metadata>
     <name>Antibirth Monster Library</name>
     <directory>antibirth monster library</directory>
@@ -13,6 +13,7 @@
 [img]https://i.imgur.com/05KJjIh.png[/img] [u]𝐒𝐤𝐢𝐧𝐥𝐢𝐧𝐠[/u]: A pale variant of Dumplings. They behave similarly, but their farts are poisonous and can damage Isaac.
 [img]https://i.imgur.com/HLPq5yu.png[/img] [u]𝐒𝐜𝐚𝐛[/u]: A bloody variant of Dumplings that actively chase Isaac. They easily catch up to him by making quick, rapid dashes in his direction. When attacked, they fart, shoot 6 blood shots in all directions, and fly off in a random direction. Upon death they again fart and release 6 blood shots in all directions.
 [img]https://i.imgur.com/KbKez9o.png[/img] [u]𝐁𝐥𝐢𝐧𝐝 𝐁𝐚𝐭[/u]: Starts out asleep. When Isaac gets close, it wakes up and chases Isaac, followed by a group of three more Blind Bats.
+[img]https://i.imgur.com/L723hrn.png[/img] [u]𝐒𝐭𝐫𝐢𝐟𝐞𝐫[/u]: Walks horizontally or vertically, attempting to line up with Isaac. Frequently fires lines of four tears forwards.
 [img]https://i.imgur.com/YqCCbCl.png[/img] [u]𝐕𝐞𝐬𝐬𝐞𝐥[/u]: Walks around the room and explodes into Small Maggots upon death.
 [img]https://i.imgur.com/hvjBv07.png[/img] [u]𝐂𝐨𝐢𝐥[/u]: Indestructible spinal cord enemies found commonly in the Corpse chapter. They are immobile but can zap a constant laser at all enemies in the room (except for other Coils).
 [img]https://i.imgur.com/XlIVi2I.png[/img] [u]𝐂𝐨𝐫𝐩𝐬𝐞 𝐄𝐚𝐭𝐞𝐫[/u]: Rapidly moves around the room erratically and charges at Isaac if he comes within its line of sight.
@@ -29,7 +30,6 @@
 - Necromancer 
 - Nightwatch 
 - Swapper 
-- Strifer 
 - Fissure (Fracture) 
 - Screamer 
 - Grave robber
@@ -45,7 +45,7 @@
 [/list]
 
 [img]https://i.imgur.com/3en8OyU.png[/img]
-[code]Aether, Akad, ALADAR, anchikai., Blind the Bound Demon, Blixy, BrakeDude, cat,,, Firework, fly_6, Goncholito, jubbalub, KitsuneMedia, kittenchilly, Kotry, Kruntical, Luigi124, Merlin, Michael¿?, PixelPlz, poody_blue, Royal, Sillst, siraxtas, skippy, Soaring__Sky, The Demisemihemidemisemiquaver[/code]
+[code]Aether, Akad, ALADAR, anchikai., Blind the Bound Demon, Blixy, BrakeDude, cat,,, Firework, fly_6, Goncholito, Kars, KitsuneMedia, kittenchilly, Kotry, Kruntical, Luigi124, Merlin, Michael¿?, PixelPlz, poody_blue, Royal, Sillst, Soaring__Sky, The Demisemihemidemisemiquaver[/code]
 
 [img]https://i.imgur.com/SlXbHql.png[/img] [img]https://i.imgur.com/xd2eafr.png[/img]
 [code][u]_Kilburn[/u] - For the original monster ideas
@@ -59,7 +59,7 @@
 [img]https://i.imgur.com/jBFg02x.png[/img] [url=https://twitter.com/ComplianceMods]Compliance Twitter Account[/url] [img]https://i.imgur.com/jBFg02x.png[/img]
 
 [img]https://i.imgur.com/DVq7svp.png[/img]</description>
-    <version>1.8</version>
+    <version>1.9</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Floors"/>
