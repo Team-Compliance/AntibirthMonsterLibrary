@@ -33,7 +33,8 @@
 	
 	
 	<entity anm2path="831.000_necromancer.anm2" hasFloorAlts="true" baseHP="25" boss="0" champion="1" collisionDamage="1" collisionMass="10" collisionRadius="13" friction="1" id="200" name="Necromancer" numGridCollisionPoints="12" portrait="9" shadowSize="14" stageHP="0" tags="homing_soul" variant="2410">
-        <gibs amount="6" blood="0" bone="1" eye="0" gut="1" large="0" worm="1"/>
+        <bestiary transform="0,0,1" anim="WalkVert" overlay="Head" />
+		<gibs amount="6" blood="0" bone="1" eye="0" gut="1" large="0" worm="1"/>
     </entity>
 
 
