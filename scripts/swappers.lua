@@ -11,11 +11,16 @@ function swapperShoot(source, targetpos)
 	laser_ent_pair.laser:SetMaxDistance(laser_source_pos:Distance(endPos))
 
 	-- Extra parameters
-	laser_ent_pair.laser:SetColor(Color(1,1,1, 1, 0.2,0.1,0.8), 0, 1, false, false)
 	laser_ent_pair.laser.Mass = 0
 	laser_ent_pair.laser.DepthOffset = 200
 	laser_ent_pair.laser.DisableFollowParent = true
 	laser_ent_pair.laser.OneHit = true
+	
+	if source.SubType == 1 then -- Gehenna color
+		laser_ent_pair.laser:SetColor(Color(1,1,1, 1, 0.8,0.1,0.3), 0, 1, false, false)
+	else
+		laser_ent_pair.laser:SetColor(Color(1,1,1, 1, 0.2,0.1,0.8), 0, 1, false, false)
+	end
 end
 
 
@@ -34,15 +39,17 @@ function this:swapperHit(target, damageAmount, damageFlags, damageSource, damage
 
 
 		-- Visuals + sound
-		target:ToPlayer():AnimateTeleport(false)
-		target:GetSprite():SetFrame(12)
+		if not (damageSource.Entity:HasEntityFlags(EntityFlag.FLAG_CHARM) or damageSource.Entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) then
+			target:ToPlayer():AnimateTeleport(false)
+			target:GetSprite():SetFrame(12)
 		
-		damageSource.Entity:GetSprite():Play("TeleportDown", true)
-		SFXManager():Play(SoundEffect.SOUND_HELL_PORTAL2, 1, 0, false, 1, 0)
+			damageSource.Entity:GetSprite():Play("TeleportDown", true)
+			SFXManager():Play(SoundEffect.SOUND_HELL_PORTAL2, 1, 0, false, 1, 0)
 
 
-		target.Position = swapToPos
-		damageSource.Entity.Position = swapFromPos
+			target.Position = swapToPos
+			damageSource.Entity.Position = swapFromPos
+		end
 		damageSource.Entity:GetData().canTP = false
 
 		return false
@@ -56,6 +63,17 @@ function this:swapperUpdate(entity)
 		local sprite = entity:GetSprite()
 		local target = entity:GetPlayerTarget()
 		local data = entity:GetData()
+		local level = game:GetLevel()
+		local stage = level:GetStage()
+
+		
+		if entity:GetChampionColorIdx() == ChampionColor.GREEN or entity:GetChampionColorIdx() == ChampionColor.RAINBOW or entity:GetChampionColorIdx() == ChampionColor.BROWN then
+			entity:MakeChampion(1, -1, true)
+		end
+
+		if (stage == LevelStage.STAGE3_1 or stage == LevelStage.STAGE3_2) and level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
+			entity:Morph(entity.Type, entity.Variant, 1, entity:GetChampionColorIdx())
+		end
 
 		
 		if sprite:IsEventTriggered("GetPos") then

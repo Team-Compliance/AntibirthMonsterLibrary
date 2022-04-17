@@ -10,14 +10,17 @@ local game = Game()
 --]]--------------------------------------------------------
 
 local monsters = {
-	dumplings = include("scripts.dumplings"),
-    blindBats = include("scripts.blindBats"),
-    vessel = include("scripts.vessel"),
 	corpseEaters = include("scripts.corpseEaters"),
-	strifers = include("scripts.strifers"),
+	dumplings = include("scripts.dumplings"),
+	--fracture = include("scripts.fracture"),
+	stillborn = include("scripts.stillborn"),
+    blindBats = include("scripts.blindBats"),
+	necromancer = include("scripts.necromancer"),
 	swappers = include("scripts.swappers"),
+	strifers = include("scripts.strifers"),
 	--nightwatch = include("scripts.nightwatch"),
-	stillborn = include("scripts.stillborn")
+    vessel = include("scripts.vessel")
+	--screamer = include("scripts.screamer")
 }
 
 
@@ -29,9 +32,10 @@ local MonsterVariants = {
     SKINLING=2402, -- for backwards compatibility
     SCAB=2403, -- for backwards compatibility
     COIL=2406,
-    FRACTURE=2407,
-	SCREAMER=2408,
+    --FRACTURE=2407,
+	--SCREAMER=2408,
 	STILLBORN=2409,
+	NECROMANCER=2410,
 	REDTNT=3400
 }
 
@@ -50,6 +54,7 @@ local RedTNTRoomRecord = {}
 local coil_blacklist = {
     "865.10", -- Evis guts
     "200.2406", -- Coils themselves
+	"200.3400", -- Red TNT
     "33.0", "33.1", "33.2", "33.3", "33.10", "33.12", "33.13" -- Fireplaces and moveable fires
     }
 
@@ -218,9 +223,11 @@ function mod:NPCCollision(entity, collider, low)
 		npc.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 		npc:GetSprite():Play("Blown")
 		
-		for i,v in pairs(RedTNTRoomRecord[room_index]) do 
-			if v == npc.Position then
-				table.remove(RedTNTRoomRecord[room_index], i)
+		if RedTNTRoomRecord[room_index] ~= nil then
+			for i,v in pairs(RedTNTRoomRecord[room_index]) do 
+				if v == npc.Position then
+					table.remove(RedTNTRoomRecord[room_index], i)
+				end
 			end
 		end
     end

@@ -1,7 +1,8 @@
-<data> <!-- This sorting method fucking sucks -->
+<data>
 	<group Name="TNT">
 		<entity ID="200" Image="resources/Entities/Antibirth/10001.0.0 - Red TNT.png" Name="Red TNT" Subtype="0" Variant="3400" IsGrid="1" />
 	</group>
+
 
 
 	<group Name="Chapter 1 (Main Path) Enemies">
@@ -14,25 +15,27 @@
 		<entity Name="Dumpling (old)" />
 		<entity Name="Dumpling (AML)" />
 	</group>
-	
-	
+
+
+
 	<group Name="Chapter 2 (Main Path) Enemies">
 		<entity Name="Dumpling (old)" />
 		<entity Name="Dumpling (AML)" />
 		<entity BaseHP="8" Boss="0" Champion="1" ID="200" Image="resources/Entities/Antibirth/800.1.0 - Skinling.png" Name="Skinling (old)" Subtype="0" Variant="2402"/>
 		<entity BaseHP="8" Boss="0" Champion="1" ID="800" Image="resources/Entities/Antibirth/800.1.0 - Skinling.png" Name="Skinling (AML)" Subtype="0" Variant="1"/>
 	</group>
-	
+
 	<group Name="Chapter 2 (Alt Path) Enemies">
 		<entity Name="Skinling (old)" />
 		<entity Name="Skinling (AML)" />
 	</group>
-	
+
 	<group Name="Mines Enemies">
 		<entity Name="Blind Bat" />
 	</group>
-	
-	
+
+
+
 	<group Name="Chapter 3 (Main Path) Enemies">
 		<entity Name="Dumpling (old)" />
 		<entity Name="Dumpling (AML)" />
@@ -41,12 +44,13 @@
 		<entity BaseHP="12" Boss="0" Champion="1" ID="200" Image="resources/Entities/Antibirth/800.2.0 - Scab.png" Name="Scab (old)" Subtype="0" Variant="2403"/>
 		<entity BaseHP="12" Boss="0" Champion="1" ID="800" Image="resources/Entities/Antibirth/800.2.0 - Scab.png" Name="Scab (AML)" Subtype="0" Variant="2"/>
 	</group>
-	
+
 	<group Name="Chapter 3 (Alt Path) Enemies">
 		<entity BaseHP="48" ID="239" Image="resources/Entities/Antibirth/239.100.0 - Corpse Eater.png" Name="Corpse Eater" Variant="100" Subtype="0" />
 		<entity BaseHP="48" ID="239" Image="resources/Entities/Antibirth/239.101.0 - Carrion Rider.png" Name="Carrion Rider" Variant="101" Subtype="0" />
 		<entity Name="Scab (old)" />
 		<entity Name="Scab (AML)" />
+		<entity BaseHP="25" Boss="0" Champion="1" ID="200" Image="resources/Entities/Antibirth/831.0.0 - Necromancer.png" Name="Necromancer" Subtype="0" Variant="2410" />
 		<entity BaseHP="25" Boss="0" Champion="1" ID="839" Image="resources/Entities/Antibirth/839.0.0 - Strifer (left).png" Name="Strifer (left)" Subtype="0" Variant="0"/>
 		<entity BaseHP="25" Boss="0" Champion="1" ID="839" Image="resources/Entities/Antibirth/839.1.0 - Strifer (up).png" Name="Strifer (up)" Subtype="0" Variant="1"/>
 		<entity BaseHP="25" Boss="0" Champion="1" ID="839" Image="resources/Entities/Antibirth/839.2.0 - Strifer (right).png" Name="Strifer (right)" Subtype="0" Variant="2"/>
@@ -60,15 +64,16 @@
 		<entity BaseHP="25" Boss="0" Champion="1" ID="38" Image="resources/Entities/Antibirth/835.0.0 - Swapper.png" Name="Swapper" Subtype="0" Variant="835"/>
 		<!-- <entity BaseHP="100" Boss="0" Champion="0" ID="200" Image="resources/Entities/Antibirth/867.0.0 - Screamer.png" Name="Screamer" Subtype="0" Variant="2408"/> -->
 	</group>
-	
-	
+
+
+
 	<group Name="Chapter 4 (Main Path) Enemies">
 		<entity Name="Dumpling (old)" />
 		<entity Name="Dumpling (AML)" />
 		<!--<entity Name="Fracture" />-->
 		<entity BaseHP="10" Boss="0" Champion="0" ID="200" Image="resources/Entities/Antibirth/802.0.0 - Stillborn.png" Name="Stillborn" Subtype="0" Variant="2409"/>
 	</group>
-	
+
 	<group Name="Corpse Obstacles">
 		<entity BaseHP="20" Boss="0" Champion="0" ID="200" Image="resources/Entities/Antibirth/864.0.0 - Coil.png" Name="Coil" Subtype="0" Variant="2406"/>
 	</group>
@@ -80,17 +85,19 @@
 		<entity Name="Stillborn" />
 		<entity Name="Vessel" />
 	</group>
-	
-	
+
+
+
 	<group Name="Chapter 5 (Main Path) Enemies">
 		<entity Name="Scab (old)" />
 		<entity Name="Scab (AML)" />
 	</group>
 
-	
-	<!-- Trying to use the dumb group system with Nightwatches just crashes BR on startup...
-	<entity Group="Events" ID="969" Image="resources/Entities/Antibirth/969.8.0 - Event (Nightwatch Alarm).png" Kind="Nightwatch" Name="Event (Nightwatch Alarm)" Subtype="0" Variant="8" />
-	
+
+
+	<!-- Trying to use the group system with Nightwatches crashes BR on startup for some reason?
+	<entity Group="Events" ID="999" Image="resources/Entities/Antibirth/969.8.0 - Event (Nightwatch Alarm).png" Kind="Nightwatch" Name="Event (Nightwatch Alarm)" Subtype="0" Variant="842" />
+
 	<entity BaseHP="25" Boss="0" Champion="0" Group="Nightwatch" ID="842" Image="resources/Entities/Antibirth/842.0.0 - Nightwatch (Bounce Left).png" Kind="Nightwatch" Name="Nightwatch (Bounce Left)" Subtype="0" Variant="0"/>
 	<entity BaseHP="25" Boss="0" Champion="0" Group="Nightwatch" ID="842" Image="resources/Entities/Antibirth/842.0.1 - Nightwatch (Bounce Up).png" Kind="Nightwatch" Name="Nightwatch (Bounce Up)" Subtype="1" Variant="0"/>
 	<entity BaseHP="25" Boss="0" Champion="0" Group="Nightwatch" ID="842" Image="resources/Entities/Antibirth/842.0.2 - Nightwatch (Bounce Right).png" Kind="Nightwatch" Name="Nightwatch (Bounce Right)" Subtype="2" Variant="0"/>
@@ -111,5 +118,10 @@
 	<entity BaseHP="25" Boss="0" Champion="0" Group="Nightwatch" ID="842" Image="resources/Entities/Antibirth/842.0.41 - Nightwatch (Rotate CounterClockwise Up).png" Kind="Nightwatch" Name="Nightwatch (Rotate CounterClockwise Up)" Subtype="41" Variant="0"/>
 	<entity BaseHP="25" Boss="0" Champion="0" Group="Nightwatch" ID="842" Image="resources/Entities/Antibirth/842.0.42 - Nightwatch (Rotate CounterClockwise Right).png" Kind="Nightwatch" Name="Nightwatch (Rotate CounterClockwise Right)" Subtype="42" Variant="0"/>
 	<entity BaseHP="25" Boss="0" Champion="0" Group="Nightwatch" ID="842" Image="resources/Entities/Antibirth/842.0.43 - Nightwatch (Rotate CounterClockwise Down).png" Kind="Nightwatch" Name="Nightwatch (Rotate CounterClockwise Down)" Subtype="43" Variant="0"/>
+	
+	<entity BaseHP="25" Boss="0" Champion="0" Group="Nightwatch" ID="842" Image="resources/Entities/Antibirth/842.0.50 - Nightwatch (Stationary Left).png" Kind="Nightwatch" Name="Nightwatch (Stationary Left)" Subtype="50" Variant="0"/>
+	<entity BaseHP="25" Boss="0" Champion="0" Group="Nightwatch" ID="842" Image="resources/Entities/Antibirth/842.0.51 - Nightwatch (Stationary Up).png" Kind="Nightwatch" Name="Nightwatch (Stationary Up)" Subtype="51" Variant="0"/>
+	<entity BaseHP="25" Boss="0" Champion="0" Group="Nightwatch" ID="842" Image="resources/Entities/Antibirth/842.0.52 - Nightwatch (Stationary Right).png" Kind="Nightwatch" Name="Nightwatch (Stationary Right)" Subtype="52" Variant="0"/>
+	<entity BaseHP="25" Boss="0" Champion="0" Group="Nightwatch" ID="842" Image="resources/Entities/Antibirth/842.0.53 - Nightwatch (Stationary Down).png" Kind="Nightwatch" Name="Nightwatch (Stationary Down)" Subtype="53" Variant="0"/>
 	-->
 </data>
