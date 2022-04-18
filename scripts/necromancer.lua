@@ -29,11 +29,13 @@ function this:necromancerInit(entity)
 		
 		entity:ToNPC()
 		entity:AddEntityFlags(EntityFlag.FLAG_APPEAR)
-		
 		data.state = States.Appear
-		data.bonyCooldown = Settings.SpawnCooldown / 2
 		data.reviveCooldown = Settings.ReviveCooldown
 		data.place = Isaac:GetRandomPosition()
+		
+		local myRNG = RNG()
+		myRNG:SetSeed(Random(), 831)
+		data.bonyCooldown = (myRNG:RandomInt(Settings.SpawnCooldown / 2) + 1) + 15
 		
 		-- Remove any existing callback and add a new one so they don't execute code in it multiple times (it's here as well so Necromancers that aren't spawned as part of the room layout will still work)
 		AntiMonsterLib:RemoveCallback(ModCallbacks.MC_POST_NPC_DEATH, this.necromancerInRoom)
