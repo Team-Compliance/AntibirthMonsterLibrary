@@ -84,9 +84,9 @@ function this:blindBatInit(bat)
 		for i = 1, Settings.NumFollowerBats do
 			Isaac.Spawn(803, 0, 1, bat.Position + RandomVector():Resized(math.random(1, 50)), bat.Velocity, bat)
 		end
+		
 	elseif bat.SubType == 1 then
-		sprite:Play("IdleInvisible", true)
-		sprite.Color = Color(1,1,1,0)
+		bat:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 	end
 
 end
@@ -98,8 +98,8 @@ function this:blindBatUpdate(bat)
 	local batPos = bat.Position
 	local target = bat:GetPlayerTarget()
 	
-   
-	if batData.State == States.Hiding then 
+
+	if batData.State == States.Hiding then
 
 		if bat.SubType == 0	 then
 
@@ -111,30 +111,26 @@ function this:blindBatUpdate(bat)
 				end
 			end
 
-		elseif bat.SubType == 1 and #Isaac.FindByType(803, 0 , 0, undefined, false) <= 0 then
-			bat:PlaySound(SoundEffect.SOUND_SHAKEY_KID_ROAR, 1, 0, false, 1.2)
-			sprite.Color = Color(1,1,1,1)
-			sprite:Play("FlyDown", true)
-			batData.State = States.Spotted
+		elseif bat.SubType == 1 then
+			sprite:Play("IdleInvisible", true)
+		
+			if #Isaac.FindByType(803, 0 , 0, undefined, false) <= 0 then
+				bat:PlaySound(SoundEffect.SOUND_SHAKEY_KID_ROAR, 1, 0, false, 1.2)
+				sprite:Play("FlyDown", true)
+				batData.State = States.Spotted
+			end
 		end
 
 	elseif batData.State == States.Spotted then
-
-		if bat.SubType == 0 then
-			if sprite:IsEventTriggered("Scream") then
-				bat:PlaySound(SoundEffect.SOUND_SHAKEY_KID_ROAR, 1, 0, false, 1.2)
-				alarmBats()
-			elseif sprite:IsEventTriggered("Land") then
-				bat.EntityCollisionClass = EntityCollisionClass.ENTCOLL_ALL
-				sprite:Play("Fly", true)
-				batData.State = States.Chasing
-			end
-		elseif bat.SubType == 1 then
-			if sprite:WasEventTriggered("Land") then
-				bat.EntityCollisionClass = EntityCollisionClass.ENTCOLL_ALL
-				sprite:Play("Fly", true)
-				batData.State = States.Chasing
-			end
+	
+		if sprite:IsEventTriggered("Scream") then
+			bat:PlaySound(SoundEffect.SOUND_SHAKEY_KID_ROAR, 1, 0, false, 1.2)
+			alarmBats()
+		elseif sprite:IsEventTriggered("Land") then
+			bat.EntityCollisionClass = EntityCollisionClass.ENTCOLL_ALL
+			sprite:Play("Fly", true)
+			batData.State = States.Chasing
+			sprite.Offset = Vector(0,-14)
 		end
 
 	elseif batData.State == States.Chasing then
@@ -208,7 +204,6 @@ function this:onUpdate()
 
 			if batData ~= nil and batData.State == States.Hiding then
 				bat:ToNPC():PlaySound(SoundEffect.SOUND_SHAKEY_KID_ROAR, 1, 0, false, 1.2)
-				bat:GetSprite().Color = Color(1,1,1,1)
 				bat:GetSprite():Play("FlyDown", true)
 				batData.State = States.Spotted
 			end
@@ -224,7 +219,8 @@ function this:onUpdate()
 	local sfx = SFXManager()
   
 	if (offset.X ~= 0 or offset.Y ~= 0)
-	or (sfx:IsPlaying(SoundEffect.SOUND_BOSS1_EXPLOSIONS) or sfx:IsPlaying(SoundEffect.SOUND_EXPLOSION_STRONG) or sfx:IsPlaying(SoundEffect.SOUND_ROCKET_EXPLOSION)) then
+	or (sfx:IsPlaying(SoundEffect.SOUND_BOSS1_EXPLOSIONS) or sfx:IsPlaying(SoundEffect.SOUND_EXPLOSION_STRONG)
+	or sfx:IsPlaying(SoundEffect.SOUND_ROCKET_EXPLOSION) or sfx:IsPlaying(Isaac.GetSoundIdByName("Nightwatch Alert"))) then
 		awakenBats()
 	end
   
