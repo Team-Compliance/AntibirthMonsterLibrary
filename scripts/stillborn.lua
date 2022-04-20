@@ -97,6 +97,13 @@ function this:stillbornUpdate(entity)
 					entity:FireProjectiles(entity.Position, (target.Position - entity.Position):Normalized() * Settings.ShotSpeed, 0, ProjectileParams())
 					entity:PlaySound(SoundEffect.SOUND_STONESHOOT, 1, 0, false, 1)
 					entity.ProjectileCooldown = Settings.Cooldown
+					
+					local effect = Isaac.Spawn(1000, EffectVariant.BLOOD_EXPLOSION, 5, entity.Position, Vector.Zero, entity):ToEffect()
+					effect:FollowParent(entity)
+					effect:GetSprite().Offset = Vector(0, -15)
+					effect:GetSprite().PlaybackSpeed = 1.5
+					effect:GetSprite().Color = Color(1,1,1, 0.75)
+					effect.DepthOffset = entity.DepthOffset + 1
 				end
 			end
 			
