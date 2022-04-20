@@ -1,4 +1,3 @@
-if not StandaloneCorpseEaters then
 local this = {}
 local game = Game()
 
@@ -18,45 +17,46 @@ local CorpseEater = {
 	BONY_SHOTSPEED = 11
 }
 
-
-
 -- Don't target these entities
 function CorpseEaterBlacklist(target)
+	local t = target.Type
+	local v = target.Variant
+
 	if
-	target.Type == EntityType.ENTITY_FLY or
-	target.Type == EntityType.ENTITY_ATTACKFLY or
-	(target.Type == EntityType.ENTITY_SUCKER and target.Variant > 3) or -- Bulbs, Blood fly (can't collide, also it's evil)
-	target.Type == EntityType.ENTITY_SPIDER or
-	target.Type == EntityType.ENTITY_DIP or
-	target.Type == EntityType.ENTITY_WIZOOB or
-	target.Type == EntityType.ENTITY_RING_OF_FLIES or
-	target.Type == EntityType.ENTITY_BONY or
-	target.Type == EntityType.ENTITY_DART_FLY or
-	target.Type == EntityType.ENTITY_BLACK_BONY or
-	target.Type == EntityType.ENTITY_SWARM or
-	target.Type == EntityType.ENTITY_RED_GHOST or
-	target.Type == EntityType.ENTITY_MOMS_DEAD_HAND or
-	target.Type == EntityType.ENTITY_CORN_MINE or
-	target.Type == EntityType.ENTITY_HUSH_FLY or
-	(target.Type == EntityType.ENTITY_LITTLE_HORN and target.Variant == 1) or -- Dark Ball, can't collide
-	target.Type == EntityType.ENTITY_PORTAL or -- can't collide with them
-	target.Type == EntityType.ENTITY_BISHOP or
-	target.Type == EntityType.ENTITY_WILLO or -- can't collide
-	target.Type == EntityType.ENTITY_STRIDER or
-	target.Type == EntityType.ENTITY_POLTY or
-	target.Type == EntityType.ENTITY_FLY_BOMB or
-	target.Type == EntityType.ENTITY_BIG_BONY or
-	target.Type == EntityType.ENTITY_WILLO_L2 or -- can't collide
-	target.Type == EntityType.ENTITY_REVENANT or
-	target.Type == EntityType.ENTITY_ARMYFLY or
-	target.Type == EntityType.ENTITY_DRIP or
-	target.Type == EntityType.ENTITY_NEEDLE and target.Variant == 1 or -- Pasty
-	target.Type == EntityType.ENTITY_DUST or
-	target.Type == EntityType.ENTITY_SWARM_SPIDER or
-	target.Type == EntityType.ENTITY_CULTIST or -- Mainly for Purple Cultists so they can revive as many things for them as possible
-	target.Type == EntityType.ENTITY_SHADY or
-	target.Type == EntityType.ENTITY_CLICKETY_CLACK or
-	(target.Type == 200 and (target.Variant == 2406 or target.Variant == 2409 or target.Variant == 3400))
+	t == EntityType.ENTITY_FLY or
+	t == EntityType.ENTITY_ATTACKFLY or
+	(t == EntityType.ENTITY_SUCKER and v > 3) or -- Bulbs, Blood fly (can't collide, also it's evil)
+	t == EntityType.ENTITY_SPIDER or
+	t == EntityType.ENTITY_DIP or
+	t == EntityType.ENTITY_WIZOOB or
+	t == EntityType.ENTITY_RING_OF_FLIES or
+	t == EntityType.ENTITY_BONY or
+	t == EntityType.ENTITY_DART_FLY or
+	t == EntityType.ENTITY_BLACK_BONY or
+	t == EntityType.ENTITY_SWARM or
+	t == EntityType.ENTITY_RED_GHOST or
+	t == EntityType.ENTITY_MOMS_DEAD_HAND or
+	t == EntityType.ENTITY_CORN_MINE or
+	t == EntityType.ENTITY_HUSH_FLY or
+	(t == EntityType.ENTITY_LITTLE_HORN and v == 1) or -- Dark Ball, can't collide
+	t == EntityType.ENTITY_PORTAL or -- can't collide with them
+	t == EntityType.ENTITY_BISHOP or
+	t == EntityType.ENTITY_WILLO or -- can't collide
+	t == EntityType.ENTITY_STRIDER or
+	t == EntityType.ENTITY_POLTY or
+	t == EntityType.ENTITY_FLY_BOMB or
+	t == EntityType.ENTITY_BIG_BONY or
+	t == EntityType.ENTITY_WILLO_L2 or -- can't collide
+	t == EntityType.ENTITY_REVENANT or
+	t == EntityType.ENTITY_ARMYFLY or
+	t == EntityType.ENTITY_DRIP or
+	t == EntityType.ENTITY_NEEDLE and v == 1 or -- Pasty
+	t == EntityType.ENTITY_DUST or
+	t == EntityType.ENTITY_SWARM_SPIDER or
+	t == EntityType.ENTITY_CULTIST or -- Mainly for Purple Cultists so they can revive as many things for them as possible
+	t == EntityType.ENTITY_SHADY or
+	t == EntityType.ENTITY_CLICKETY_CLACK or
+	(t == 200 and (v == 2406 or v == 2409 or v == 2410 or v == 3400))
 	then
 		return false
 	else
@@ -284,37 +284,30 @@ function this:CorpseEaterCollision(entity, target, cum)
 			
 			
 			-- Effects
-			local lessFullfilling = false
+			local fullfilling = false
 
 			if CorpseEaterGetEffect(target) == "small" then -- Make this better?
 				entity:PlaySound(SoundEffect.SOUND_MEAT_IMPACTS, 1, 0, false, 1)
 				Isaac.Spawn(1000, 2, 0, target.Position, Vector(0,0), nil)
-				lessFullfilling = true
 				
 			elseif CorpseEaterGetEffect(target) == "poop" then
 				Isaac.Spawn(1000, 43, 0, target.Position, Vector(0,0), nil)
 				entity:PlaySound(SoundEffect.SOUND_PLOP, 0.75, 0, false, 1)
 				data.ProjectileType = ProjectileVariant.PROJECTILE_PUKE
-				lessFullfilling = true
 				
 			elseif CorpseEaterGetEffect(target) == "bone" then
 				entity:PlaySound(SoundEffect.SOUND_BONE_HEART, 0.75, 0, false, 1.1)
 				data.ProjectileType = ProjectileVariant.PROJECTILE_BONE
-				lessFullfilling = true
-			
-			elseif CorpseEaterGetEffect(target) == "ghost" then
-				entity:PlaySound(SoundEffect.SOUND_SKIN_PULL, 0.9, 0, false, 1.1)
-				lessFullfilling = true
+
 			
 			elseif CorpseEaterGetEffect(target) == "stone" then
 				entity:PlaySound(SoundEffect.SOUND_STONE_IMPACT, 1, 0, false, 1)
 				data.ProjectileType = ProjectileVariant.PROJECTILE_ROCK
-				lessFullfilling = true
 				
 			else
 				Isaac.Spawn(1000, 16, 4, target.Position, Vector(0,0), nil)
 				entity:PlaySound(SoundEffect.SOUND_MEATY_DEATHS, 0.75, 0, false, 1)
-				lessFullfilling = false
+				fullfilling = true
 			end
 			
 
@@ -324,9 +317,8 @@ function this:CorpseEaterCollision(entity, target, cum)
 
 
 				-- Less fullfilling ones
-				if lessFullfilling == true then
+				if fullfilling == false then
 					entity:PlaySound(SoundEffect.SOUND_SMB_LARGE_CHEWS_4, 1, 0, false, 1)
-					
 					
 					-- Projectiles
 					if CorpseEaterGetEffect(target) == "bone" or CorpseEaterGetEffect(target) == "poop" or CorpseEaterGetEffect(target) == "stone" then
@@ -338,7 +330,7 @@ function this:CorpseEaterCollision(entity, target, cum)
 					
 						entity:FireBossProjectiles(countRNG:RandomInt(3) + 6, Vector(0,0), 2, params)
 					
-					-- Small enemies and ghosts
+					-- Healing
 					else
 						entity.MaxHitPoints = entity.MaxHitPoints + math.ceil(target.MaxHitPoints / 3)
 						entity.HitPoints = entity.HitPoints + math.ceil(target.MaxHitPoints / 3)
@@ -357,7 +349,6 @@ function this:CorpseEaterCollision(entity, target, cum)
 					-- Effects
 					Isaac.Spawn(1000, 16, 3, target.Position, Vector(0,0), nil)
 					entity:PlaySound(SoundEffect.SOUND_SMB_LARGE_CHEWS_4, 1.5, 0, false, 1)
-					--Isaac.Spawn(1000, 49, 0, Vector(entity.Position.X, entity.Position.Y - 40), Vector(0,0), nil) -- HP up indicator
 					
 					-- Set skin to bloody one
 					sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/239.100_corpse_eater_2" .. data.altSkin .. ".png")
@@ -394,7 +385,7 @@ end
 function this:CorpseEaterDeath(entity)
 	if entity.Variant == 100 or entity.Variant == 101 then
 		-- Bony from Carrion Rider
-		if entity.Variant == 101 then
+		if entity.Variant == 101 and entity.Parent == nil then
 			Isaac.Spawn(227, 0, 0, entity.Position, Vector(0,0), nil)
 		end
 
@@ -431,82 +422,72 @@ function CorpseEaterIsFriendly(entity, target)
 	end
 end
 
-
-
 -- Determine which effects to use for chomping
 function CorpseEaterGetEffect(target)
+	local t = target.Type
+	local v = target.Variant
+	
 	if
-	target.Type == EntityType.ENTITY_FLY or
-	target.Type == EntityType.ENTITY_POOTER or
-	target.Type == EntityType.ENTITY_ATTACKFLY or
-	(target.Type == EntityType.ENTITY_SUCKER and (target.Variant < 2 or target.Variant == 3)) or -- Sucker, Spit, Ink
-	target.Type == EntityType.ENTITY_EMBRYO or
-	target.Type == EntityType.ENTITY_MOTER or
-	target.Type == EntityType.ENTITY_SPIDER or
-	target.Type == EntityType.ENTITY_BIGSPIDER or
-	target.Type == EntityType.ENTITY_RING_OF_FLIES or
-	target.Type == EntityType.ENTITY_DART_FLY or
-	target.Type == EntityType.ENTITY_SWARM or
-	target.Type == EntityType.ENTITY_HUSH_FLY or
-	target.Type == EntityType.ENTITY_SMALL_LEECH or
-	target.Type == EntityType.ENTITY_STRIDER or
-	target.Type == EntityType.ENTITY_FLY_BOMB or
-	target.Type == EntityType.ENTITY_SMALL_MAGGOT or
-	target.Type == EntityType.ENTITY_ARMYFLY or
-	target.Type == EntityType.ENTITY_SWARM_SPIDER or
-	target.Type == EntityType.ENTITY_POOFER
+	t == EntityType.ENTITY_FLY or
+	t == EntityType.ENTITY_POOTER or
+	t == EntityType.ENTITY_ATTACKFLY or
+	(t == EntityType.ENTITY_SUCKER and (v < 2 or v == 3)) or -- Sucker, Spit, Ink
+	t == EntityType.ENTITY_EMBRYO or
+	t == EntityType.ENTITY_MOTER or
+	t == EntityType.ENTITY_SPIDER or
+	t == EntityType.ENTITY_BIGSPIDER or
+	t == EntityType.ENTITY_RING_OF_FLIES or
+	t == EntityType.ENTITY_DART_FLY or
+	t == EntityType.ENTITY_SWARM or
+	t == EntityType.ENTITY_HUSH_FLY or
+	t == EntityType.ENTITY_SMALL_LEECH or
+	t == EntityType.ENTITY_STRIDER or
+	t == EntityType.ENTITY_FLY_BOMB or
+	t == EntityType.ENTITY_SMALL_MAGGOT or
+	t == EntityType.ENTITY_ARMYFLY or
+	t == EntityType.ENTITY_SWARM_SPIDER or
+	t == EntityType.ENTITY_POOFER
 	then
 		return "small"
 		
 	elseif
-	(target.Type == EntityType.ENTITY_BOOMFLY and target.Variant == 4) or -- Bone Fly
-	(target.Type == EntityType.ENTITY_DEATHS_HEAD and target.Variant ~= 1) or -- for RedSkulls
-	target.Type == EntityType.ENTITY_BONY or
-	target.Type == EntityType.ENTITY_BLACK_BONY or
-	target.Type == EntityType.ENTITY_MOMS_DEAD_HAND or
-	target.Type == EntityType.ENTITY_NECRO or
-	target.Type == EntityType.ENTITY_BIG_BONY or
-	target.Type == EntityType.ENTITY_REVENANT or
-	(target.Type == EntityType.ENTITY_NEEDLE and target.Variant == 1) or -- Pasty
-	target.Type == EntityType.ENTITY_CLICKETY_CLACK or
-	target.Type == EntityType.ENTITY_MAZE_ROAMER
+	(t == EntityType.ENTITY_BOOMFLY and v == 4) or -- Bone Fly
+	(t == EntityType.ENTITY_DEATHS_HEAD and v ~= 1) or -- for RedSkulls
+	t == EntityType.ENTITY_BONY or
+	t == EntityType.ENTITY_BLACK_BONY or
+	t == EntityType.ENTITY_MOMS_DEAD_HAND or
+	t == EntityType.ENTITY_NECRO or
+	t == EntityType.ENTITY_BIG_BONY or
+	t == EntityType.ENTITY_REVENANT or
+	(t == EntityType.ENTITY_NEEDLE and v == 1) or -- Pasty
+	t == EntityType.ENTITY_CLICKETY_CLACK or
+	t == EntityType.ENTITY_MAZE_ROAMER
 	then
 		return "bone"
 		
 	elseif
-	target.Type == EntityType.ENTITY_DIP or
-	target.Type == EntityType.ENTITY_SQUIRT or
-	target.Type == EntityType.ENTITY_DINGA or
-	target.Type == EntityType.ENTITY_DINGLE or
-	target.Type == EntityType.ENTITY_CORN_MINE or
-	target.Type == EntityType.ENTITY_BROWNIE or
-	target.Type == EntityType.ENTITY_HENRY or
-	target.Type == EntityType.ENTITY_DRIP or
-	target.Type == EntityType.ENTITY_SPLURT or
-	target.Type == EntityType.ENTITY_CLOGGY or
-	target.Type == EntityType.ENTITY_DUMP
+	t == EntityType.ENTITY_DIP or
+	t == EntityType.ENTITY_SQUIRT or
+	t == EntityType.ENTITY_DINGA or
+	t == EntityType.ENTITY_DINGLE or
+	t == EntityType.ENTITY_CORN_MINE or
+	t == EntityType.ENTITY_BROWNIE or
+	t == EntityType.ENTITY_HENRY or
+	t == EntityType.ENTITY_DRIP or
+	t == EntityType.ENTITY_SPLURT or
+	t == EntityType.ENTITY_CLOGGY or
+	t == EntityType.ENTITY_DUMP
 	then
 		return "poop"
 		
 	elseif
-	target.Type == EntityType.ENTITY_WIZOOB or
-	target.Type == EntityType.ENTITY_THE_HAUNT or
-	target.Type == EntityType.ENTITY_RED_GHOST or
-	target.Type == EntityType.ENTITY_POLTY or
-	(target.Type == EntityType.ENTITY_PREY and target.Variant == 1) or -- Mullighoul
-	target.Type == EntityType.ENTITY_CANDLER or
-	target.Type == EntityType.ENTITY_DUST
-	then
-		return "ghost"
-		
-	elseif
-	(target.Type == EntityType.ENTITY_HOST and target.Variant == 3) or -- Hard Host
-	target.Type == EntityType.ENTITY_BISHOP or
-	target.Type == EntityType.ENTITY_ROCK_SPIDER or
-	(target.Type == EntityType.ENTITY_DANNY and target.Variant == 1) or -- Coal Boy
-	target.Type == EntityType.ENTITY_BLASTER or
-	target.Type == EntityType.ENTITY_QUAKEY or
-	target.Type == EntityType.ENTITY_HARDY
+	(t == EntityType.ENTITY_HOST and v == 3) or -- Hard Host
+	t == EntityType.ENTITY_BISHOP or
+	t == EntityType.ENTITY_ROCK_SPIDER or
+	(t == EntityType.ENTITY_DANNY and v == 1) or -- Coal Boy
+	t == EntityType.ENTITY_BLASTER or
+	t == EntityType.ENTITY_QUAKEY or
+	t == EntityType.ENTITY_HARDY
 	then
 		return "stone"
 	end
@@ -524,4 +505,3 @@ end
 
 
 return this
-end

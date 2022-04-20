@@ -1,4 +1,3 @@
-if not StandaloneStrifers then
 local this = {}
 local game = Game()
 
@@ -197,7 +196,7 @@ function this:StriferUpdate(entity)
 
 	if not data.delay then
 		-- Move towards target if it's close enough
-		if StriferInRange(Strifer.MAX_TARGET_RANGE) == true and entity.Position:Distance(moveto) > 12 and not entity:HasEntityFlags(EntityFlag.FLAG_CONFUSION) then
+		if StriferInRange(Strifer.MAX_TARGET_RANGE) == true and entity.Position:Distance(moveto) > 10 and not entity:HasEntityFlags(EntityFlag.FLAG_CONFUSION) then
 			if entity:HasEntityFlags(EntityFlag.FLAG_FEAR) or entity:HasEntityFlags(EntityFlag.FLAG_SHRINK) then
 				data.vector = (moveto - entity.Position):Normalized() * -data.currSpeed
 
@@ -300,4 +299,3 @@ end
 
 
 return this
-end
