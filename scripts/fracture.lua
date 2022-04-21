@@ -17,7 +17,7 @@ function this:fractureUpdate(entity)
 		local data = entity:GetData()
 		local myRNG = RNG()
 
-
+		-- 50% chance to do spit attack after jumping
 		if sprite:IsPlaying("Hop") and sprite:GetFrame() == 25 then
 			myRNG:SetSeed(Random(), 801)
 			
@@ -35,6 +35,10 @@ function this:fractureUpdate(entity)
 				data.state = States.JumpSpit
 			else
 				data.state = States.StandSpit
+				
+				-- Blood effect
+				local effect = Isaac.Spawn(1000, EffectVariant.BLOOD_EXPLOSION, 3, entity.Position, Vector.Zero, entity):GetSprite()
+				effect.Offset = Vector(0, -10)
 			end
 			
 		elseif sprite:IsEventTriggered("SpitEnd") then
@@ -42,6 +46,7 @@ function this:fractureUpdate(entity)
 		end
 
 
+		-- Projectiles
 		if data.state ~= nil then
 			local params = ProjectileParams()
 			params.FallingSpeedModifier = 2
