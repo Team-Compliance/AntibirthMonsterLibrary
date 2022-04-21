@@ -12,7 +12,7 @@ local game = Game()
 local monsters = {
 	corpseEaters = include("scripts.corpseEaters"),
 	dumplings = include("scripts.dumplings"),
-	--fracture = include("scripts.fracture"),
+	fracture = include("scripts.fracture"),
 	stillborn = include("scripts.stillborn"),
     blindBats = include("scripts.blindBats"),
 	necromancer = include("scripts.necromancer"),
@@ -175,7 +175,7 @@ function mod:NPCInit(npc)
 	--[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
 	-- converts Dumplings with the old ID and ones from the other mod to the new one
 	if isDumpling(npc.Variant) then
-		newdump = Isaac.Spawn(800, npc.Variant - 2401, npc.SubType, npc.Position, npc.Velocity, nil)
+		local newdump = Isaac.Spawn(800, npc.Variant - 2401, npc.SubType, npc.Position, npc.Velocity, nil)
 		
 		if npc:IsChampion() then
 			newdump:MakeChampion(0, npc:GetChampionColorIdx(), true)
@@ -186,6 +186,19 @@ function mod:NPCInit(npc)
     
 end
 mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.NPCInit, 200)
+
+function mod:FractureInit(npc)
+	--[[ FRACTURE ]]------------------------------------------------------------------------------------------------
+	local fracture = Isaac.Spawn(29, 801, npc.SubType, npc.Position, npc.Velocity, nil)
+	
+	if npc:IsChampion() then
+		fracture:MakeChampion(0, npc:GetChampionColorIdx(), true)
+	end
+	
+	npc:Remove()
+	
+end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.FractureInit, 801)
 
 
 --[[

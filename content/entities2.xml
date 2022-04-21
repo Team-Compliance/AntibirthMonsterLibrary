@@ -1,5 +1,5 @@
 <entities anm2root="gfx/" version="5" deathanm2="gfx/death_enemies.anm2">
-	<entity anm2path="nightwatch_projectile.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="10" friction="1" subtype="0" id="9" name="Nightwatch Projectile" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="842">
+	<entity anm2path="009.106_lantern projectile.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="8" collisionRadius="5" friction="1" subtype="0" id="9" name="Lantern Projectile" numGridCollisionPoints="60" shadowSize="10" stageHP="0" variant="106">
 		<gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
 	</entity>
 
@@ -8,22 +8,20 @@
 		<bestiary transform="0,0,1" anim="Idle" />
         <gibs amount="6" blood="1" bone="0" eye="1" gut="1" large="0" />
     </entity>
-    <entity anm2path="800.001_skinling.anm2" reroll="true" baseHP="8" boss="0" champion="1" collisionDamage="1" collisionMass="3" collisionRadius="13" friction="0.95" id="800" name="Skinling" numGridCollisionPoints="12" shadowSize="12" stageHP="2" variant="1" portrait="1" gridCollision="walls">
+    <entity anm2path="800.001_skinling.anm2" hasFloorAlts="true" reroll="true" baseHP="8" boss="0" champion="1" collisionDamage="1" collisionMass="3" collisionRadius="13" friction="0.95" id="800" name="Skinling" numGridCollisionPoints="12" shadowSize="12" stageHP="2" variant="1" portrait="1" gridCollision="walls">
 		<bestiary transform="0,0,1" anim="Idle" />
         <gibs amount="6" blood="1" bone="0" eye="0" gut="1" large="0" />
     </entity>
-    <entity anm2path="800.002_scab.anm2" reroll="true" baseHP="12" boss="0" champion="1" collisionDamage="1" collisionMass="3" collisionRadius="13" friction="0.95" id="800" name="Scab" numGridCollisionPoints="12" shadowSize="12" stageHP="2" variant="2" portrait="2" gridCollision="walls">
+    <entity anm2path="800.002_scab.anm2" hasFloorAlts="true" reroll="true" baseHP="12" boss="0" champion="1" collisionDamage="1" collisionMass="3" collisionRadius="13" friction="0.95" id="800" name="Scab" numGridCollisionPoints="12" shadowSize="12" stageHP="2" variant="2" portrait="2" gridCollision="walls">
 		<bestiary transform="0,0,1" anim="Idle" />
         <gibs amount="6" blood="1" bone="0" eye="0" gut="1" large="0" />
     </entity>
 
 
-	<!--
-	<entity anm2path="801.000_fracture.anm2" baseHP="15" boss="0" champion="1" collisionDamage="1" collisionMass="10" collisionRadius="13" friction="1" id="200" name="Fracture" numGridCollisionPoints="0" shadowSize="28" stageHP="0" variant="2407" portrait="3">
+	<entity anm2path="801.000_fracture.anm2" hasFloorAlts="true" baseHP="15" boss="0" champion="1" collisionDamage="1" collisionMass="10" collisionRadius="13" friction="1" id="29" name="Fracture" numGridCollisionPoints="0" shadowSize="28" stageHP="0" tags="spider" variant="801" portrait="3">
     	<bestiary transform="0,0,1" anim="Hop" />
         <gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0" />
     </entity>
-	-->
 
 
 	<entity anm2path="802.000_stillborn.anm2" baseHP="10" boss="0" champion="0" collisionDamage="1" collisionMass="30" collisionRadius="13" friction="1" id="200" name="Stillborn" numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="2409" shutdoors="false" portrait="4" gridCollision="walls">
@@ -62,4 +60,9 @@
 
 
 	<entity anm2path="grid/grid_redtnt.anm2" baseHP="5"  boss="0" champion="0" collisionDamage="0" collisionMass="20" collisionRadius="20" friction="0" id="200" name="Red TNT" numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="3400" shutdoors="false" gibAmount="4" portrait="7" gibFlags="poop" tags="noreroll" />
+
+
+	<entity anm2path="nightwatch_spotlight.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="0" friction="1" subtype="0" id="1000" name="Nightwatch Spotlight" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="842">
+		<gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
+	</entity>
 </entities>
