@@ -80,4 +80,72 @@
 	<group Name="Chapter 5 (Main Path) Enemies">
 		<entity Name="Scab (AML)" />
 	</group>
+
+
+
+	<group Name="Global Enemies">
+		<group Name="Nightwatches" Label="Nightwatches">
+			<group Name="Nightwatch Events" Label="- Events -">
+				<entity ID="969" Image="resources/Entities/Antibirth/969.8.0 - Event (Nightwatch Alarm).png" Name="Event (Nightwatch Alarm)" Subtype="0" Variant="8" Metadata="1"/>
+				<entity ID="969" Image="resources/Entities/Antibirth/969.10.0 - Remove (Nightwatch Alarm).png" Name="Remove (Nightwatch Alarm)" Subtype="0" Variant="7" Metadata="1"/>
+			</group>
+
+			<group Name="Nightwatches (Regular)" Label="- Regular -">
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.0 - Nightwatch (Bounce Left).png" Name="Nightwatch (Bounce Left)" Subtype="0" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.1 - Nightwatch (Bounce Up).png" Name="Nightwatch (Bounce Up)" Subtype="1" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.2 - Nightwatch (Bounce Right).png" Name="Nightwatch (Bounce Right)" Subtype="2" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.3 - Nightwatch (Bounce Down).png" Name="Nightwatch (Bounce Down)" Subtype="3" Variant="0" Metadata="1"/>
+				
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.30 - Nightwatch (Rotate Clockwise Left).png" Name="Nightwatch (Rotate Clockwise Left)" Subtype="30" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.31 - Nightwatch (Rotate Clockwise Up).png" Name="Nightwatch (Rotate Clockwise Up)" Subtype="31" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.32 - Nightwatch (Rotate Clockwise Right).png" Name="Nightwatch (Rotate Clockwise Right)" Subtype="32" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.33 - Nightwatch (Rotate Clockwise Down).png" Name="Nightwatch (Rotate Clockwise Down)" Subtype="33" Variant="0" Metadata="1"/>
+
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.40 - Nightwatch (Rotate CounterClockwise Left).png" Name="Nightwatch (Rotate CounterClockwise Left)" Subtype="40" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.41 - Nightwatch (Rotate CounterClockwise Up).png" Name="Nightwatch (Rotate CounterClockwise Up)" Subtype="41" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.42 - Nightwatch (Rotate CounterClockwise Right).png" Name="Nightwatch (Rotate CounterClockwise Right)" Subtype="42" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.43 - Nightwatch (Rotate CounterClockwise Down).png" Name="Nightwatch (Rotate CounterClockwise Down)" Subtype="43" Variant="0" Metadata="1"/>
+				
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.50 - Nightwatch (Stationary Left).png" Name="Nightwatch (Stationary Left)" Subtype="50" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.51 - Nightwatch (Stationary Up).png" Name="Nightwatch (Stationary Up)" Subtype="51" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.52 - Nightwatch (Stationary Right).png" Name="Nightwatch (Stationary Right)" Subtype="52" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.53 - Nightwatch (Stationary Down).png" Name="Nightwatch (Stationary Down)" Subtype="53" Variant="0" Metadata="1"/>
+				
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.70 - Nightwatch (Flip Left).png" Name="Nightwatch (Flip Left)" Subtype="70" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.71 - Nightwatch (Flip Up).png" Name="Nightwatch (Flip Up)" Subtype="71" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.72 - Nightwatch (Flip Right).png" Name="Nightwatch (Flip Right)" Subtype="72" Variant="0" Metadata="1"/>
+				<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.73 - Nightwatch (Flip Down).png" Name="Nightwatch (Flip Down)" Subtype="73" Variant="0" Metadata="1"/>
+			</group>
+			
+			<group Name="Nightwatch Paths" Label="- Custom Paths -">
+				<group Label="(Middle-click to edit group)">
+					<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.60 - Nightwatch (Path Left).png" Name="Nightwatch (Path Left)" Subtype="60" Variant="0" Metadata="1">
+						<bitfield Key="Variant"> <spinner Name="Group ID" Length="4"/> </bitfield> </entity>
+					<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.61 - Nightwatch (Path Up).png" Name="Nightwatch (Path Up)" Subtype="61" Variant="0" Metadata="1">
+						<bitfield Key="Variant"> <spinner Name="Group ID" Length="4"/> </bitfield> </entity>
+					<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.62 - Nightwatch (Path Right).png" Name="Nightwatch (Path Right)" Subtype="62" Variant="0" Metadata="1">
+						<bitfield Key="Variant"> <spinner Name="Group ID" Length="4"/> </bitfield> </entity>
+					<entity BaseHP="25" Boss="0" Champion="0" ID="842" Image="resources/Entities/Antibirth/842.0.63 - Nightwatch (Path Down).png" Name="Nightwatch (Path Down)" Subtype="63" Variant="0" Metadata="1">
+						<bitfield Key="Variant"> <spinner Name="Group ID" Length="4"/> </bitfield> </entity>
+					
+					<group Label="(Paths with different groups will">
+						<group Label="all spawn if on top of each other)">
+							<entity ID="970" Image="resources/Entities/Antibirth/970.690.0 - Nightwatch Path - Left.png" Name="Nightwatch Path - Left" Subtype="0" Variant="690" Metadata="1">
+								<bitfield Key="Subtype"> <spinner Name="Group ID" Length="4"/> </bitfield> </entity>
+							<entity ID="970" Image="resources/Entities/Antibirth/970.691.0 - Nightwatch Path - Up.png" Name="Nightwatch Path - Up" Subtype="0" Variant="691" Metadata="1">
+								<bitfield Key="Subtype"> <spinner Name="Group ID" Length="4"/> </bitfield> </entity>
+							<entity ID="970" Image="resources/Entities/Antibirth/970.692.0 - Nightwatch Path - Right.png" Name="Nightwatch Path - Right" Subtype="0" Variant="692" Metadata="1">
+								<bitfield Key="Subtype"> <spinner Name="Group ID" Length="4"/> </bitfield> </entity>
+							<entity ID="970" Image="resources/Entities/Antibirth/970.693.0 - Nightwatch Path - Down.png" Name="Nightwatch Path - Down" Subtype="0" Variant="693" Metadata="1">
+								<bitfield Key="Subtype"> <spinner Name="Group ID" Length="4"/> </bitfield> </entity>
+							<entity ID="970" Image="resources/Entities/Antibirth/970.694.0 - Nightwatch Path - Stop.png" Name="Nightwatch Path - Stop" Subtype="0" Variant="694" Metadata="1">
+								<bitfield Key="Subtype"> <spinner Name="Group ID" Length="4"/> </bitfield> </entity>
+							<entity ID="970" Image="resources/Entities/Antibirth/970.695.0 - Nightwatch Path - Change Group.png" Name="Nightwatch Path - Change Group" Subtype="0" Variant="695" Metadata="1">
+								<bitfield Key="Subtype"> <spinner Name="From" Length="4"/> <spinner Name="To" Length="4"/> </bitfield> </entity>
+						</group>
+					</group>
+				</group>
+			</group>
+		</group>
+	</group>
 </data>

@@ -16,6 +16,7 @@ function this:fractureUpdate(entity)
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
 		local myRNG = RNG()
+		local level = game:GetLevel()
 
 		-- 50% chance to do spit attack after jumping
 		if sprite:IsPlaying("Hop") and sprite:GetFrame() == 25 then
@@ -39,6 +40,14 @@ function this:fractureUpdate(entity)
 				-- Blood effect
 				local effect = Isaac.Spawn(1000, EffectVariant.BLOOD_EXPLOSION, 3, entity.Position, Vector.Zero, entity):GetSprite()
 				effect.Offset = Vector(0, -10)
+
+				if level:GetStage() == LevelStage.STAGE1_1 or level:GetStage() == LevelStage.STAGE1_2 then
+					if level:GetStageType() == StageType.STAGETYPE_REPENTANCE then
+						effect.Color = Color(0.2, 0.8, 0.9, 1, 0.4,0.8,1.6)
+					elseif level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
+						effect.Color = Color(0.4, 1.2, 0.8, 1, 0.15,0.2,0.15)
+					end
+				end
 			end
 			
 		elseif sprite:IsEventTriggered("SpitEnd") then
@@ -50,6 +59,14 @@ function this:fractureUpdate(entity)
 		if data.state ~= nil then
 			local params = ProjectileParams()
 			params.FallingSpeedModifier = 2
+			-- Different projectile colors for Downpour and Dross
+			if level:GetStage() == LevelStage.STAGE1_1 or level:GetStage() == LevelStage.STAGE1_2 then
+				if level:GetStageType() == StageType.STAGETYPE_REPENTANCE then
+					params.Variant = ProjectileVariant.PROJECTILE_TEAR
+				elseif level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
+					params.Variant = ProjectileVariant.PROJECTILE_PUKE
+				end
+			end
 
 			if data.state == States.JumpSpit then
 				myRNG:SetSeed(Random(), 801)

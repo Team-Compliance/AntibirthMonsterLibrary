@@ -1,0 +1,5 @@
+<sounds root="sfx/">
+	<sound name="Nightwatch Alert">
+        <sample weight="1" path="nightwatch_alert.wav" />
+    </sound>
+</sounds>

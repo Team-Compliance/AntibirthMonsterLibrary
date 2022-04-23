@@ -18,7 +18,7 @@ local monsters = {
 	necromancer = include("scripts.necromancer"),
 	swappers = include("scripts.swappers"),
 	strifers = include("scripts.strifers"),
-	--nightwatch = include("scripts.nightwatch"),
+	nightwatch = include("scripts.nightwatch"),
     vessel = include("scripts.vessel")
 	--screamer = include("scripts.screamer")
 }
@@ -32,7 +32,6 @@ local MonsterVariants = {
     SKINLING=2402, -- for backwards compatibility
     SCAB=2403, -- for backwards compatibility
     COIL=2406,
-    --FRACTURE=2407,
 	--SCREAMER=2408,
 	STILLBORN=2409,
 	NECROMANCER=2410,
@@ -171,34 +170,9 @@ function mod:NPCInit(npc)
         npc:GetData()["AliveFrames"] = 0
 		npc:AddEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS | EntityFlag.FLAG_NO_PHYSICS_KNOCKBACK | EntityFlag.FLAG_HIDE_HP_BAR | EntityFlag.FLAG_NO_TARGET) -- Same as grimaces
     end
-	
-	--[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
-	-- converts Dumplings with the old ID and ones from the other mod to the new one
-	if isDumpling(npc.Variant) then
-		local newdump = Isaac.Spawn(800, npc.Variant - 2401, npc.SubType, npc.Position, npc.Velocity, nil)
-		
-		if npc:IsChampion() then
-			newdump:MakeChampion(0, npc:GetChampionColorIdx(), true)
-		end
-		
-		npc:Remove()
-	end
     
 end
 mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.NPCInit, 200)
-
-function mod:FractureInit(npc)
-	--[[ FRACTURE ]]------------------------------------------------------------------------------------------------
-	local fracture = Isaac.Spawn(29, 801, npc.SubType, npc.Position, npc.Velocity, nil)
-	
-	if npc:IsChampion() then
-		fracture:MakeChampion(0, npc:GetChampionColorIdx(), true)
-	end
-	
-	npc:Remove()
-	
-end
-mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.FractureInit, 801)
 
 
 --[[
@@ -316,3 +290,19 @@ end
 for _, v in pairs(monsters) do
     v.Init()
 end
+
+
+--[[
+    Replace entities that use an old ID or a different one in Basement Renovator
+]]-- 
+function mod:replaceID(Type, Variant, SubType, GridIndex, Seed)
+	--[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
+	if Type == 200 and isDumpling(Variant) then
+		return {800, Variant - 2401, SubType}
+
+	--[[ FRACTURE ]]------------------------------------------------------------------------------------------------
+	elseif Type == 801 then
+		return {29, 801, SubType}
+	end
+end
+mod:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, mod.replaceID)

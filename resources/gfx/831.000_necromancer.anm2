@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="trtv" CreatedOn="2022-04-16 13:23:49" Version="5" Fps="30"/>
+	<Info CreatedBy="trtv" CreatedOn="2022-04-17 15:38:01" Version="9" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="Monsters/repentance/832.000_exorcist_body.png" Id="0"/>
