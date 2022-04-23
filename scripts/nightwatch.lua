@@ -282,7 +282,7 @@ function this:nightwatchUpdate(entity)
 
 	-- Spotlight detection range
 	function inSpotlight()
-		if not (target:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_DARK_ARTS) or target:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_CAMO_UNDIES)) then
+		if room:CheckLine(entity.Position, target.Position, 3, 0, false, false) and not (target:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_DARK_ARTS) or target:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_CAMO_UNDIES)) then
 			if data.facing == "Left" or data.facing == "Right" then
 				if entity.Position.Y <= target.Position.Y + Settings.SideRange and entity.Position.Y >= target.Position.Y - Settings.SideRange then
 					if data.facing == "Left" and target.Position.X > (entity.Position.X - Settings.FrontRange) and target.Position.X < entity.Position.X
