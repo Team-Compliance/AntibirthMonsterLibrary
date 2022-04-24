@@ -298,7 +298,9 @@ end
 function mod:replaceID(Type, Variant, SubType, GridIndex, Seed)
 	--[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
 	if Type == 200 and isDumpling(Variant) then
-		return {800, Variant - 2401, SubType}
+		if not DumplingsMod then
+			return {800, Variant - 2401, SubType}
+		end
 
 	--[[ FRACTURE ]]------------------------------------------------------------------------------------------------
 	elseif Type == 801 then

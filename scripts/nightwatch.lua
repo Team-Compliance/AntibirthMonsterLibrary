@@ -266,6 +266,10 @@ function this:nightwatchUpdate(entity)
 	if data.movetype == nil then
 		if entity.SubType - (entity.SubType % 10) == 0 then
 			data.movetype = "Bounce"
+		--elseif entity.SubType - (entity.SubType % 10) == 10 then
+			--data.movetype = "CircleDown"
+		--elseif entity.SubType - (entity.SubType % 10) == 20 then
+			--data.movetype = "CircleUp"
 		elseif entity.SubType - (entity.SubType % 10) == 30 then
 			data.movetype = "Rotate Clockwise"
 		elseif entity.SubType - (entity.SubType % 10) == 40 then
@@ -282,7 +286,8 @@ function this:nightwatchUpdate(entity)
 
 	-- Spotlight detection range
 	function inSpotlight()
-		if game:GetRoom():CheckLine(entity.Position, target.Position, 3, 0, false, false) and not (target:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_DARK_ARTS) or target:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_CAMO_UNDIES)) then
+		if game:GetRoom():CheckLine(entity.Position, target.Position, 3, 0, false, false)
+		and not (target:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_DARK_ARTS) or target:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_CAMO_UNDIES)) then
 			if data.facing == "Left" or data.facing == "Right" then
 				if entity.Position.Y <= target.Position.Y + Settings.SideRange and entity.Position.Y >= target.Position.Y - Settings.SideRange then
 					if data.facing == "Left" and target.Position.X > (entity.Position.X - Settings.FrontRange) and target.Position.X < entity.Position.X
@@ -520,7 +525,9 @@ function this:nightwatchUpdate(entity)
 	end
 
 	if sprite:GetFrame() == 36 then
-		entity.Child:GetSprite():Play("FadeOut", true)
+		if entity.Child ~= nil then
+			entity.Child:GetSprite():Play("FadeOut", true)
+		end
 	elseif sprite:GetFrame() == 40 then -- IsFinished doesn't seem to work?
 		Isaac.Spawn(1000, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, entity)
 		entity:Remove()
@@ -576,6 +583,10 @@ function this:removeEventSpawns(entity)
 		table.insert(nightwatchRemoveEvent[room_index], Vector(entity.Position.X, entity.Position.Y))
 
 		entity:Die()
+		if entity.SubType == EntityType.ENTITY_SHOPKEEPER or entity.SubType == EntityType.ENTITY_FIREPLACE then
+			Isaac.Spawn(1000, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, entity)
+		end
+		SFXManager():Stop(SoundEffect.SOUND_SUMMONSOUND)
 	end
 end
 

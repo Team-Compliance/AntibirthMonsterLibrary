@@ -7,7 +7,7 @@ local Settings = {
 	MoveSpeed = 5.1,
 	MoveSpeedIdle = 0.75,
 	SpawnCooldown = 90,
-	ReviveCooldown = 16,
+	ReviveCooldown = 90,
 	MaxRange = 400
 }
 
