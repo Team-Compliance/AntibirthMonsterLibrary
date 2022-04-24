@@ -573,6 +573,7 @@ function this:lanternCollide(lantern, cunt, cum)
 	SFXManager():Play(SoundEffect.SOUND_GLASS_BREAK, 1, 0, false, 1, 0)
 	SFXManager():Play(SoundEffect.SOUND_FIREDEATH_HISS, 1, 0, false, 1, 0)
 	Isaac.Spawn(EntityType.ENTITY_FIREPLACE, 10, 0, lantern.Position, Vector.Zero, nil)
+	lantern:Kill()
 end
 
 
