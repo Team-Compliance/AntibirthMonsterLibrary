@@ -286,7 +286,12 @@ function this:nightwatchUpdate(entity)
 
 	-- Spotlight detection range
 	function inSpotlight()
-		if game:GetRoom():CheckLine(entity.Position, target.Position, 3, 0, false, false)
+		local checkmode = 3
+		if game:GetRoom():GetType() == RoomType.ROOM_DUNGEON then -- Fix for crawlspaces
+			checkmode = 2
+		end
+		
+		if game:GetRoom():CheckLine(entity.Position, target.Position, checkmode, 0, false, false)
 		and not (target:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_DARK_ARTS) or target:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_CAMO_UNDIES)) then
 			if data.facing == "Left" or data.facing == "Right" then
 				if entity.Position.Y <= target.Position.Y + Settings.SideRange and entity.Position.Y >= target.Position.Y - Settings.SideRange then
@@ -346,7 +351,7 @@ function this:nightwatchUpdate(entity)
 		if entity.Child == nil then
 			entity.Child = Isaac.Spawn(1000, 842, 0, entity.Position, Vector.Zero, entity)
 			entity.Child.Parent = entity
-			
+
 			entity.Child:GetSprite():Play("FadeIn", true)
 			entity.Child:GetData().targetRotation = 0
 		end
