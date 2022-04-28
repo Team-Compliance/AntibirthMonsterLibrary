@@ -73,8 +73,9 @@ function this:blindBatInit(bat)
 		State = States.Hiding,
 		ChargeDirection = Vector.Zero,
 		AngleCountdown = math.random(Settings.DirectionChangeTimes[1], Settings.DirectionChangeTimes[2]),
-		AngleOffset = math.random(Settings.AlertTime[1], Settings.AlertTime[2]),
+		AngleOffset = math.random(Settings.AngleOffset[1], Settings.AngleOffset[2]),
 		AngleDirection = "up",
+		MoveVector = Vector.Zero
 	}
 
 	bat.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
@@ -135,16 +136,15 @@ function this:blindBatUpdate(bat)
 
 	elseif batData.State == States.Chasing then
 		
-		local targetVelocity = ((target.Position - batPos):Normalized() * Settings.ChaseSpeed):Rotated(batData.AngleOffset)
-  
+		batData.MoveVector = ((target.Position - batPos):Normalized() * Settings.ChaseSpeed):Rotated(batData.AngleOffset)
 		if bat:HasEntityFlags(EntityFlag.FLAG_FEAR) then
-			targetVelocity = Vector(-targetVelocity.X, -targetVelocity.Y)
+			batData.MoveVector = Vector(-batData.MoveVector.X, -batData.MoveVector.Y)
 		end
 	
 		if bat:HasEntityFlags(EntityFlag.FLAG_CONFUSION) then
-			bat.Pathfinder:MoveRandomly(true)
+			bat.Pathfinder:MoveRandomly(false)
 		else
-			bat.Velocity = targetVelocity
+			bat.Velocity = (bat.Velocity + (batData.MoveVector - bat.Velocity) * 0.25)
 		end
 	
 		batData.AttackCountdown = batData.AttackCountdown - 1
@@ -220,7 +220,8 @@ function this:onUpdate()
   
 	if (offset.X ~= 0 or offset.Y ~= 0)
 	or (sfx:IsPlaying(SoundEffect.SOUND_BOSS1_EXPLOSIONS) or sfx:IsPlaying(SoundEffect.SOUND_EXPLOSION_STRONG)
-	or sfx:IsPlaying(SoundEffect.SOUND_ROCKET_EXPLOSION) or sfx:IsPlaying(Isaac.GetSoundIdByName("Nightwatch Alert"))) then
+	or sfx:IsPlaying(SoundEffect.SOUND_ROCKET_EXPLOSION) or sfx:IsPlaying(Isaac.GetSoundIdByName("Nightwatch Alert"))
+	or sfx:IsPlaying(Isaac.GetSoundIdByName("Screamer Scream"))) then
 		awakenBats()
 	end
   

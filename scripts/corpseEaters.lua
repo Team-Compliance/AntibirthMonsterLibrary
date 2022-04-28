@@ -70,7 +70,7 @@ function this:CorpseEaterInit(entity)
 	if entity.Variant == 100 or entity.Variant == 101 then
 		local data = entity:GetData()
 		local sprite = entity:GetSprite()
-		local level = Game():GetLevel()
+		local level = game:GetLevel()
 		local stage = level:GetStage()
 
 		entity.Position = entity.Position + Vector(15,0) -- Makes them spawn more centered on the tile
@@ -95,12 +95,17 @@ function this:CorpseEaterInit(entity)
 		elseif (stage == LevelStage.STAGE4_1 or stage == LevelStage.STAGE4_2) and level:GetStageType() == StageType.STAGETYPE_REPENTANCE then
 			data.altSkin = "_corpse"
 		end
+		
+		data.champSuffix = ""
+		if entity:IsChampion() then
+			data.champSuffix = "_champion"
+		end
 
 
 		-- Set spritesheet
 		if data.altSkin ~= "" then
-			sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/239.100_corpse_eater" .. data.altSkin .. ".png")
-			sprite:ReplaceSpritesheet(1, "gfx/monsters/repentance/239.100_corpse_eater_body" .. data.altSkin .. ".png")
+			sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/239.100_corpse_eater" .. data.altSkin .. data.champSuffix .. ".png")
+			sprite:ReplaceSpritesheet(1, "gfx/monsters/repentance/239.100_corpse_eater_body" .. data.altSkin .. data.champSuffix .. ".png")
 			sprite:ReplaceSpritesheet(2, "gfx/monsters/repentance/239.100_corpse_eater_rider" .. data.altSkin .. ".png")
 			sprite:ReplaceSpritesheet(3, "gfx/monsters/repentance/239.100_corpse_eater_rider" .. data.altSkin .. ".png")
 			sprite:LoadGraphics()
@@ -115,7 +120,7 @@ function this:CorpseEaterUpdate(entity)
 		local data = entity:GetData()
 		local target = entity.Target
 		local sprite = entity:GetSprite()
-		local level = Game():GetLevel()
+		local level = game:GetLevel()
 
 
 		-- New target
@@ -151,9 +156,26 @@ function this:CorpseEaterUpdate(entity)
 			data.ChompCooldown = data.ChompCooldown - 1
 		end
 		
-		-- Creep Length
+		-- Creep + extra projectiles
 		if data.Creepy > 0 then
-			data.Creepy = data.Creepy - 1
+			if data.Creepy > ((CorpseEater.CREEP_LENGTH / 4) * 3) and data.Creepy < CorpseEater.CREEP_LENGTH and sprite:IsEventTriggered("Chomp") then
+				-- Projectiles
+				for i = 1, 4 do
+					local params = ProjectileParams()
+
+					local scatterRNG = RNG()
+					scatterRNG:SetSeed(Random(), 239)
+					local IsBone = scatterRNG:RandomInt(6)
+					
+					if IsBone == 3 then
+						params.Variant = ProjectileVariant.PROJECTILE_BONE
+					else
+						params.Variant = ProjectileVariant.PROJECTILE_NORMAL
+					end
+
+					entity:FireBossProjectiles(1, Vector(0,0), 0.75, params)
+				end
+			end
 			
 			if entity:IsFrame(4, 0) then
 				local creepType = EffectVariant.CREEP_RED
@@ -165,12 +187,14 @@ function this:CorpseEaterUpdate(entity)
 				creep.Scale = 1.1
 				creep:SetTimeout(45)
 			end
+			
+			data.Creepy = data.Creepy - 1
 		end
 		
 		
 		-- Stats
 		-- Increased speed
-		entity.Velocity = entity.Velocity * 1.03
+		entity.Velocity = entity.Velocity * 1.02
 
 		-- Make sure they don't get too tanky
 		if entity.MaxHitPoints > data.MaxHp then
@@ -351,7 +375,7 @@ function this:CorpseEaterCollision(entity, target, cum)
 					entity:PlaySound(SoundEffect.SOUND_SMB_LARGE_CHEWS_4, 1.5, 0, false, 1)
 					
 					-- Set skin to bloody one
-					sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/239.100_corpse_eater_2" .. data.altSkin .. ".png")
+					sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/239.100_corpse_eater_2" .. data.altSkin .. data.champSuffix .. ".png")
 					sprite:LoadGraphics()
 					
 					
@@ -386,7 +410,13 @@ function this:CorpseEaterDeath(entity)
 	if entity.Variant == 100 or entity.Variant == 101 then
 		-- Bony from Carrion Rider
 		if entity.Variant == 101 and entity.Parent == nil then
-			Isaac.Spawn(227, 0, 0, entity.Position, Vector(0,0), nil)
+			local bony = Isaac.Spawn(227, 0, 0, entity.Position, Vector(0,0), nil)
+			
+			if (game:GetLevel():GetStage() == LevelStage.STAGE4_1 or game:GetLevel():GetStage() == LevelStage.STAGE4_2) and game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE then
+				bony:GetSprite():ReplaceSpritesheet(0, "gfx/monsters/rebirth/monster_227_boney body_corpse.png")
+				bony:GetSprite():ReplaceSpritesheet(1, "gfx/monsters/rebirth/monster_227_boney head_corpse.png")
+				bony:GetSprite():LoadGraphics()
+			end
 		end
 
 		-- Remove the maggots that are spawned on death

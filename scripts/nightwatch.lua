@@ -45,7 +45,7 @@ function getPaths(room_index)
 		if spawnList:Get(i) ~= nil then
 			local roomConfigSpawn = spawnList:Get(i)
 
-			for j = 0, 1, 0.1 do -- TODO: if a path is in a stack with non-path entities then overwrite the path with one of the other entities but still place them in the table
+			for j = 0, 1, 0.1 do
 				if roomConfigSpawn:PickEntry(j) ~= nil then
 					local roomConfigEntry = roomConfigSpawn:PickEntry(j)
 					
@@ -90,7 +90,7 @@ function this:nightwatchGetPositions(Type, Variant, SubType, GridIndex, Seed)
 		getPaths(room_index)
 	end
 
-	if Type == 969 and Variant == 8 then
+	if nightwatchEventPositions[room_index] ~= nil and Type == 969 and Variant == 8 then
 		table.insert(nightwatchEventPositions[room_index], GridIndex)
 	end
 end
@@ -232,8 +232,7 @@ end
 
 function this:nightwatchInit(entity)
 	local data = entity:GetData()
-	
-	entity.MaxHitPoints = 0
+
 	entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYEROBJECTS
 	entity.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_GROUND
 	entity:AddEntityFlags(EntityFlag.FLAG_NO_PHYSICS_KNOCKBACK | EntityFlag.FLAG_NO_KNOCKBACK | EntityFlag.FLAG_NO_STATUS_EFFECTS | EntityFlag.FLAG_APPEAR | EntityFlag.FLAG_NO_TARGET | EntityFlag.FLAG_NO_PLAYER_CONTROL)
@@ -266,10 +265,6 @@ function this:nightwatchUpdate(entity)
 	if data.movetype == nil then
 		if entity.SubType - (entity.SubType % 10) == 0 then
 			data.movetype = "Bounce"
-		--elseif entity.SubType - (entity.SubType % 10) == 10 then
-			--data.movetype = "CircleDown"
-		--elseif entity.SubType - (entity.SubType % 10) == 20 then
-			--data.movetype = "CircleUp"
 		elseif entity.SubType - (entity.SubType % 10) == 30 then
 			data.movetype = "Rotate Clockwise"
 		elseif entity.SubType - (entity.SubType % 10) == 40 then
@@ -539,29 +534,28 @@ function this:nightwatchUpdate(entity)
 	end
 end
 
--- On colliding
+-- Alert the Nightwatch if the player touches it
 function this:nightwatchCollide(entity, target, cock) -- TODO: Boomerang shouldn't be able to move them but ignoring collision here doesn't seem to work
-	local data = entity:GetData()
-
-	if data.state == States.Moving then
-		-- Alert the Nightwatch if the player touches it
-		if target.Type == EntityType.ENTITY_PLAYER then
-			data.state = States.Alert
-		
-		-- Turn transparent when hit
-		elseif target.Type == EntityType.ENTITY_TEAR or target.Type == EntityType.ENTITY_FAMILIAR or target.Type == EntityType.ENTITY_KNIFE then -- Lasers don't seem to work?
-			data.transTimer = Settings.TransparencyTimer
-		end
+	if entity:GetData().state == States.Moving and target.Type == EntityType.ENTITY_PLAYER then
+		entity:GetData().state = States.Alert
 	end
+end
+
+-- Turn transparent when hit
+function this:nightwatchHit(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
+	target:GetData().transTimer = Settings.TransparencyTimer
+	return false
 end
 
 
 
 -- Projectile
-function this:lanternUpdate(lantern)
+function this:lanternInit(lantern)
 	lantern:GetSprite():Play("Move")
 	lantern:AddProjectileFlags(ProjectileFlags.FIRE_SPAWN)
+end
 
+function this:lanternUpdate(lantern)
 	if lantern:IsDead() then
 		SFXManager():Play(SoundEffect.SOUND_GLASS_BREAK, 1, 0, false, 1, 0)
 		Isaac.Spawn(EntityType.ENTITY_FIREPLACE, 10, 0, lantern.Position, Vector.Zero, nil)
@@ -643,7 +637,9 @@ function this:Init()
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.nightwatchInit, 842)
     AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.nightwatchUpdate, 842)
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, this.nightwatchCollide, 842)
-	
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.nightwatchHit, 842)
+
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, this.lanternInit, 106)
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_UPDATE, this.lanternUpdate, 106)
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, this.lanternCollide, 106)
 	

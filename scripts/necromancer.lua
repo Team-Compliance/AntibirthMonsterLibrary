@@ -167,9 +167,9 @@ end
 
 
 function this:necromancerInRoom(entity)
-	if entity.Type < 1000 and entity.Type > 9 and not ((entity.Type == EntityType.ENTITY_BONY and entity.Variant == 0) or (entity.Type == EntityType.ENTITY_LITTLE_HORN and entity.Variant == 1)
-	or (entity.Type == EntityType.ENTITY_RAG_MEGA and entity.Variant == 1) or (entity.Type == EntityType.ENTITY_GRUB and entity.Variant == 100 and entity.Parent ~= nil)
-	or (entity.Type == EntityType.ENTITY_BIG_BONY and entity.Variant == 10)) then -- This is really messy, it should probably have a blacklist like Corpse Eaters do but I'm lazy
+	if entity.Type < 1000 and entity.Type > 9 and not ((entity.Type == EntityType.ENTITY_BONY and entity.Variant == 0 and entity.SpawnerType == 200 and entity.SpawnerVariant == 2410)
+	or (entity.Type == EntityType.ENTITY_LITTLE_HORN and entity.Variant == 1) or (entity.Type == EntityType.ENTITY_RAG_MEGA and entity.Variant == 1)
+	or (entity.Type == EntityType.ENTITY_GRUB and entity.Variant == 100 and entity.Parent ~= nil) or (entity.Type == EntityType.ENTITY_BIG_BONY and entity.Variant == 10)) then
 		local room = game:GetRoom()
 		local getType = entity.Type
 		local getVariant = entity.Variant

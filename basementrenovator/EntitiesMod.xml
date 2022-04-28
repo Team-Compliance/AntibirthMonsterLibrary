@@ -27,6 +27,7 @@
 
 	<group Name="Mines Enemies">
 		<entity Name="Blind Bat" />
+		<entity BaseHP="20" Boss="0" Champion="1" ID="200" Image="resources/Entities/Antibirth/828.0.0 - Echo Bat.png" Name="Echo Bat" Subtype="0" Variant="2407"/>
 	</group>
 
 
@@ -53,7 +54,7 @@
 
 	<group Name="Mausoleum Enemies">
 		<entity BaseHP="25" Boss="0" Champion="1" ID="38" Image="resources/Entities/Antibirth/835.0.0 - Swapper.png" Name="Swapper" Subtype="0" Variant="835"/>
-		<!-- <entity BaseHP="100" Boss="0" Champion="0" ID="200" Image="resources/Entities/Antibirth/867.0.0 - Screamer.png" Name="Screamer" Subtype="0" Variant="2408"/> -->
+		<entity BaseHP="100" Boss="0" Champion="0" ID="200" Image="resources/Entities/Antibirth/867.0.0 - Screamer.png" Name="Screamer" Subtype="0" Variant="2408"/>
 	</group>
 
 
@@ -72,6 +73,7 @@
 		<entity Name="Scab (AML)" />
 		<entity Name="Fracture" />
 		<entity Name="Stillborn" />
+		<entity BaseHP="70" Boss="0" Champion="0" ID="208" Image="resources/Entities/Antibirth/850.0.0 - Barfy.png" Name="Barfy" Subtype="0" Variant="850"/>
 		<entity Name="Vessel" />
 	</group>
 

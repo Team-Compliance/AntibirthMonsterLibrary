@@ -15,12 +15,14 @@ local monsters = {
 	fracture = include("scripts.fracture"),
 	stillborn = include("scripts.stillborn"),
     blindBats = include("scripts.blindBats"),
+	echoBat = include("scripts.echoBat"),
 	necromancer = include("scripts.necromancer"),
 	swappers = include("scripts.swappers"),
+	barfy = include("scripts.barfy"),
 	strifers = include("scripts.strifers"),
 	nightwatch = include("scripts.nightwatch"),
-    vessel = include("scripts.vessel")
-	--screamer = include("scripts.screamer")
+    vessel = include("scripts.vessel"),
+	screamer = include("scripts.screamer")
 }
 
 
@@ -32,7 +34,8 @@ local MonsterVariants = {
     SKINLING=2402, -- for backwards compatibility
     SCAB=2403, -- for backwards compatibility
     COIL=2406,
-	--SCREAMER=2408,
+	ECHOBAT=2407,
+	SCREAMER=2408,
 	STILLBORN=2409,
 	NECROMANCER=2410,
 	REDTNT=3400
@@ -101,7 +104,6 @@ local function addLaser(npc_target, coil_source)
         laser_ent_pair.laser:SetColor(Color(0,0,0,1,0.89,0.92,0.81), 0, 1, false, false)
         laser_ent_pair.laser.Mass = 0
         laser_ent_pair.laser.DepthOffset = 200.0
-        --Isaac.ConsoleOutput(tostring(laser_ent_pair.laser.DepthOffset))
         table.insert(coil_source:GetData()["Lasers"], laser_ent_pair)
         npc_target:GetData()[("CoilTagged"..tostring(coil_source:GetData()["CoilID"]))] = true
     end
@@ -169,6 +171,10 @@ function mod:NPCInit(npc)
         npc:GetData()["Lasers"] = {}
         npc:GetData()["AliveFrames"] = 0
 		npc:AddEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS | EntityFlag.FLAG_NO_PHYSICS_KNOCKBACK | EntityFlag.FLAG_HIDE_HP_BAR | EntityFlag.FLAG_NO_TARGET) -- Same as grimaces
+		
+		if CoilsMod then
+			npc:GetSprite():Load("gfx/coil.anm2", true)
+		end
     end
     
 end
@@ -184,7 +190,7 @@ function mod:NPCDamage(entity, amount, dmg_flags)
     
     --[[ COIL ]]----------------------------------------------------------------------------------------------------
     if npc.Variant == MonsterVariants.COIL then -- coils should not take damage of any kind
-        return false -- how is this different to just making them have 0 max hitpoints?
+        return false
     end
 	
 	--[[ RED TNT ]]----------------------------------------------------------------------------------------------------

@@ -2,4 +2,7 @@
 	<sound name="Nightwatch Alert">
         <sample weight="1" path="nightwatch_alert.wav" />
     </sound>
+	<sound name="Screamer Scream">
+		<sample weight="1" path="screamer scream.wav"/>
+	</sound>
 </sounds>

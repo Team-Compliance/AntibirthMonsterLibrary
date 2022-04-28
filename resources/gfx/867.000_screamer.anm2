@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="03/04/2022 11:35:27" Version="1" Fps="30"/>
+	<Info CreatedBy="Unknown" CreatedOn="2022-04-27 23:55:16" Version="8" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="monsters\repentance\867.000_screamer.png" Id="0"/>
@@ -14,7 +14,9 @@
 		</Nulls>
 		<Events>
 			<Event Name="Explosion" Id="0"/>
-			<Event Name="Shoot" Id="1"/>
+			<Event Name="Scream" Id="1"/>
+			<Event Name="ShutUp" Id="2"/>
+			<Event Name="Effect" Id="3"/>
 		</Events>
 	</Content>
 	<Animations DefaultAnimation="Idle">
@@ -148,7 +150,9 @@
 			</NullAnimations>
 			<Triggers>
 				<Trigger EventId="1" AtFrame="6"/>
-				<Trigger EventId="1" AtFrame="42"/>
+				<Trigger EventId="3" AtFrame="18"/>
+				<Trigger EventId="3" AtFrame="30"/>
+				<Trigger EventId="2" AtFrame="42"/>
 			</Triggers>
 		</Animation>
 		<Animation Name="WalkDown" FrameNum="40" Loop="true">
@@ -501,6 +505,26 @@
 					<Frame XPosition="-5" YPosition="-2" XPivot="24" YPivot="72" XCrop="384" YCrop="48" Width="48" Height="48" XScale="100" YScale="100" Delay="2" Visible="true" RedTint="235" GreenTint="235" BlueTint="235" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="true"/>
 					<Frame XPosition="-5" YPosition="1" XPivot="24" YPivot="72" XCrop="384" YCrop="48" Width="48" Height="48" XScale="105" YScale="95" Delay="1" Visible="true" RedTint="235" GreenTint="235" BlueTint="235" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="true"/>
 					<Frame XPosition="-5" YPosition="0" XPivot="24" YPivot="72" XCrop="384" YCrop="48" Width="48" Height="48" XScale="103" YScale="97" Delay="1" Visible="true" RedTint="235" GreenTint="235" BlueTint="235" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="true"/>
+				</LayerAnimation>
+			</LayerAnimations>
+			<NullAnimations>
+				<NullAnimation NullId="0" Visible="true">
+					<Frame XPosition="0" YPosition="-68" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
+				</NullAnimation>
+				<NullAnimation NullId="1" Visible="true"/>
+			</NullAnimations>
+			<Triggers/>
+		</Animation>
+		<Animation Name="IdleAngry" FrameNum="2" Loop="true">
+			<RootAnimation>
+				<Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="2" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
+			</RootAnimation>
+			<LayerAnimations>
+				<LayerAnimation LayerId="0" Visible="true">
+					<Frame XPosition="0" YPosition="0" XPivot="24" YPivot="57" XCrop="0" YCrop="48" Width="48" Height="80" XScale="100" YScale="100" Delay="2" Visible="true" RedTint="235" GreenTint="235" BlueTint="235" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="true"/>
+				</LayerAnimation>
+				<LayerAnimation LayerId="1" Visible="true">
+					<Frame XPosition="0" YPosition="0" XPivot="24" YPivot="72" XCrop="336" YCrop="0" Width="48" Height="48" XScale="100" YScale="100" Delay="2" Visible="true" RedTint="235" GreenTint="235" BlueTint="235" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="true"/>
 				</LayerAnimation>
 			</LayerAnimations>
 			<NullAnimations>
