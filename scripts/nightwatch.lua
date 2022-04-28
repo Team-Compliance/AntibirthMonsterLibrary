@@ -86,8 +86,8 @@ function this:nightwatchGetPositions(Type, Variant, SubType, GridIndex, Seed)
 	if game:GetRoom():IsFirstVisit() then
 		if nightwatchEventPositions[room_index] == nil then
 			nightwatchEventPositions[room_index] = {}
+			getPaths(room_index)
 		end
-		getPaths(room_index)
 	end
 
 	if nightwatchEventPositions[room_index] ~= nil and Type == 969 and Variant == 8 then
