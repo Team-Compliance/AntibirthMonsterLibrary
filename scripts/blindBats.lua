@@ -11,7 +11,7 @@ local Settings = {
 	DirectionChangeTimes = {10, 30}, -- Amount of frames until the bat changes angle directions
 	AngleOffset = {15, 35}, -- The angle offset the bat flies with.
 	InitialAlertTime = 30, -- The time it takes for the leader bat to alert the follower bats.
-	AlertTime = {0, 20} -- The time in between each follower bat being alerted.
+	AlertTime = {0, 18} -- The time in between each follower bat being alerted.
 }
 
 local States = {
@@ -27,10 +27,16 @@ local batQueue = {}
 math.randomseed(Isaac.GetTime())
 
 function alarmBats()
-	for _, bat in pairs(Isaac.FindByType(803, 0, 1, false, false)) do
+	for _, bat in pairs(Isaac.FindByType(803, 0, -1, false, false)) do
 		local data = bat:GetData().BlindBatData
 		if (data ~= nil and data.State == States.Hiding) then
-			table.insert(batQueue, bat)
+			if bat.SubType == 0 then
+				data.State = States.Spotted
+				bat:GetSprite():Play("Wake", true)
+				
+			elseif bat.SubType == 1 then
+				table.insert(batQueue, bat)
+			end
 		end
 	end
 	nextAlertTime = Settings.InitialAlertTime
@@ -100,7 +106,7 @@ function this:blindBatUpdate(bat)
 	local target = bat:GetPlayerTarget()
 	
 
-	if batData.State == States.Hiding then
+	if batData.State == States.Hiding and bat.FrameCount > 1 then
 
 		if bat.SubType == 0	 then
 

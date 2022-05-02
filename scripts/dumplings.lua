@@ -27,7 +27,9 @@ local function fart(npc)
 		end
 		
 	elseif npc.Variant == DumplingVariants.SCAB then -- Scab
-		game:ButterBeanFart(npc.Position, 85, npc, true)
+		game:ButterBeanFart(npc.Position, 85, npc, false) -- fart but don't show
+		game:Fart(npc.Position, 0, npc, 1, 1) -- red fart
+
 		params = ProjectileParams()
 		params.CircleAngle = 0
 		npc:FireProjectiles(npc.Position, Vector(10, 6), 9, params)
@@ -99,6 +101,9 @@ function this:NPCUpdate(npc)
 		
 	elseif npc.State == NpcState.STATE_INIT then -- if newly spawned
 		npc.State = NpcState.STATE_IDLE
+		if npc.Variant == DumplingVariants.SKINLING then
+			npc.SplatColor = Color(0.6,0.8,0.6, 1, 0,0.1,0)
+		end
 	end 
 end
 

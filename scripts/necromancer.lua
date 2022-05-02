@@ -83,10 +83,10 @@ function this:necromancerUpdate(entity)
 				end
 				
 				
-				if entity.Position:Distance(data.place) < 3 or entity.Velocity:Length() < 1 or not entity.Pathfinder:HasPathToPos(data.place, false) then
+				if entity.Position:Distance(data.place) < 2 or entity.Velocity:Length() < 1 or not entity.Pathfinder:HasPathToPos(data.place, false) then
 					data.place = Isaac:GetRandomPosition()
 				end
-				entity.Pathfinder:FindGridPath(data.place, Settings.MoveSpeedIdle, 500, true)
+				entity.Pathfinder:FindGridPath(data.place, Settings.MoveSpeedIdle, 500, false)
 				entity.Pathfinder:UpdateGridIndex() -- Seems to make them less jittery?
 
 

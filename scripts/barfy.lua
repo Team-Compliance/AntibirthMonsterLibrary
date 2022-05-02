@@ -14,6 +14,7 @@ function this:barfyUpdate(entity)
 	if entity.Variant == 850 then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
+		entity.SplatColor = Color(0.4,0.8,0.4, 1, 0,0.1,0)
 
 
 		if sprite:IsEventTriggered("ShootStart") then
@@ -32,21 +33,26 @@ function this:barfyUpdate(entity)
 		
 
 		-- Dumb bullshit for seperate left and right walking anims
+		local ischamp = ""
+		if entity:IsChampion() == true then
+			ischamp = "_champion"
+		end
+		
 		if sprite.FlipX == true then
 			if sprite:IsPlaying("WalkHori") then
 				sprite:ReplaceSpritesheet(0, "")
-				sprite:ReplaceSpritesheet(2, "gfx/monsters/repentance/850.000_barfy.png")
+				sprite:ReplaceSpritesheet(2, "gfx/monsters/repentance/850.000_barfy" .. ischamp .. ".png")
 				sprite:LoadGraphics()
 			else
 				sprite:ReplaceSpritesheet(2, "")
-				sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/850.000_barfy.png")
+				sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/850.000_barfy" .. ischamp .. ".png")
 				sprite:LoadGraphics()
 			end
 			
 			sprite.FlipX = false
 		else
 			sprite:ReplaceSpritesheet(2, "")
-			sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/850.000_barfy.png")
+			sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/850.000_barfy" .. ischamp .. ".png")
 			sprite:LoadGraphics()
 		end
 

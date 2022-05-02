@@ -26,6 +26,7 @@ function this:screamerInit(entity)
 		entity:ToNPC()
 		entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_ALL
 		entity.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_GROUND
+		entity.SplatColor = Color(0.4,0.4,0.4, 1, 0.1,0.1,0.1)
 
 		data.state = States.Appear
 		data.soundTimer = (math.random(Settings.SoundTimer[1], Settings.SoundTimer[2])) / 2
@@ -154,7 +155,7 @@ function this:screamerUpdate(entity)
 						end
 					end
 					
-					entity:PlaySound(Isaac.GetSoundIdByName("Screamer Scream"), 1.75, 0, false, 1)
+					entity:PlaySound(Isaac.GetSoundIdByName("Screamer Scream"), 2, 0, false, 1)
 					game:ShakeScreen(36)
 					
 					-- Alert Nightwatches (state 2 = Alert, state 3 = AlertNoEffect)
@@ -198,13 +199,15 @@ function this:screamerAuraUpdate(effect)
 
 		effect:FollowParent(effect.Parent)
 
-		if sprite:IsPlaying("FadeIn") and sprite:GetFrame() == 11 then -- am I fuckign dumb or why does IsFinished just never fucking work
+		if sprite:IsPlaying("FadeIn") and sprite:GetFrame() == 11 then
 			sprite:Play("Idle", true)
 		end
-		
-		if effect.Parent:IsDead() then
-			sprite:Play("FadeOut", true)
-			if sprite:IsPlaying("FadeOut") and sprite:GetFrame() == 9 then
+
+		if effect.Parent:HasMortalDamage() then
+			if not sprite:IsPlaying("FadeOut") then
+				sprite:Play("FadeOut", true)
+			end
+			if sprite:GetFrame() == 9 then
 				effect:Remove()
 			end
 		end
