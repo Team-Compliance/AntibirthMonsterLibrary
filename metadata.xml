@@ -3,7 +3,7 @@
     <name>Antibirth Monster Library</name>
     <directory>antibirth monster library</directory>
     <id>2614001143</id>
-    <description>This is a Library in which other modders can freely use Antibirth Enemies for their room pack mods. This mod does nothing by itself, it relies on players downloading other mods that are compatible with this one (Check out the collection at the top of the page for mods that incorporate the Library). If you make a mod that uses this, then please tell us in the comments or in our Discord server so that we can add it to the compatibility collection.
+    <description>This is a Library in which other modders can freely use Antibirth Enemies for their room pack mods. [u][b]This mod does nothing by itself, it relies on players downloading other mods that are compatible with this one (Check out the collection at the top of the page for mods that incorporate the Library)[/b][/u]. If you make a mod that uses this, then please tell us in the comments or in our Discord server so that we can add it to the compatibility collection.
 
 [img]https://i.imgur.com/tp9LIOS.png[/img]
 
@@ -12,29 +12,21 @@
 [img]https://i.imgur.com/3WOC9V0.png[/img] [u]𝐃𝐮𝐦𝐩𝐥𝐢𝐧𝐠[/u]: Round enemies that fly around aimlessly and fart. They fart whenever Isaac gets close, upon taking damage, and upon death. Farts knock Isaac back and propel it forwards. 
 [img]https://i.imgur.com/05KJjIh.png[/img] [u]𝐒𝐤𝐢𝐧𝐥𝐢𝐧𝐠[/u]: A pale variant of Dumplings. They behave similarly, but their farts are poisonous and can damage Isaac.
 [img]https://i.imgur.com/HLPq5yu.png[/img] [u]𝐒𝐜𝐚𝐛[/u]: A bloody variant of Dumplings that actively chase Isaac. They easily catch up to him by making quick, rapid dashes in his direction. When attacked, they fart, shoot 6 blood shots in all directions, and fly off in a random direction. Upon death they again fart and release 6 blood shots in all directions.
+[img]https://i.imgur.com/htd6hSW.png[/img] [u]𝐅𝐫𝐚𝐜𝐭𝐮𝐫𝐞[/u]: Jumps towards Isaac like a Trite. When it jumps, it fires a red shot towards Isaac. Occasionally, it stands still and spews a chaotic burst of red shots.
 [img]https://i.imgur.com/KbKez9o.png[/img] [u]𝐁𝐥𝐢𝐧𝐝 𝐁𝐚𝐭[/u]: Starts out asleep. When Isaac gets close, it wakes up and chases Isaac, followed by a group of three more Blind Bats.
+[img]https://i.imgur.com/1dJq7Bo.png[/img] [u]𝐄𝐜𝐡𝐨 𝐁𝐚𝐭[/u]: Flies towards Isaac and periodically fires three white orbs. If an orb hits Isaac, he becomes confused and his movement is slowed down for a few seconds.
 [img]https://i.imgur.com/L723hrn.png[/img] [u]𝐒𝐭𝐫𝐢𝐟𝐞𝐫[/u]: Walks horizontally or vertically, attempting to line up with Isaac. Frequently fires lines of four tears forwards.
+[img]https://i.imgur.com/E5iyo8F.png[/img] [u]𝐒𝐰𝐚𝐩𝐩𝐞𝐫[/u]: Slowly floats towards Isaac and fires purple lasers. Occasionally teleports and reappears elsewhere. Has a chance to swap positions with Isaac.
+[img]https://i.imgur.com/cqyaFMW.png[/img] [u]𝐒𝐜𝐫𝐞𝐚𝐦𝐞𝐫[/u]: Walks slowly around the room. If Isaac gets too close, it will scream, paralyzing Isaac. It will gain a slowing aura and start charging towards him.
+[img]https://i.imgur.com/xdGAeGd.png[/img] [u]𝐍𝐞𝐜𝐫𝐨𝐦𝐚𝐧𝐜𝐞𝐫[/u]: Summons skeleton enemies such as Bonies and Big Bonies.
+[img]https://i.imgur.com/oqCM55P.png[/img] [u]𝐍𝐢𝐠𝐡𝐭𝐰𝐚𝐭𝐜𝐡[/u]: Invulnerable enemies. Moves in a fixed pattern or rotates in a spot. If Isaac enters its light, it will lock all doors, summon enemies, and vanish.
+[img]https://i.imgur.com/aLRT2nS.png[/img] [u]𝐁𝐚𝐫𝐟𝐲[/u]: Wanders around the room and slowly follows Isaac when he's in its line of sight. Occasionally spews clusters of green shots towards Isaac.
 [img]https://i.imgur.com/YqCCbCl.png[/img] [u]𝐕𝐞𝐬𝐬𝐞𝐥[/u]: Walks around the room and explodes into Small Maggots upon death.
 [img]https://i.imgur.com/hvjBv07.png[/img] [u]𝐂𝐨𝐢𝐥[/u]: Indestructible spinal cord enemies found commonly in the Corpse chapter. They are immobile but can zap a constant laser at all enemies in the room (except for other Coils).
 [img]https://i.imgur.com/XlIVi2I.png[/img] [u]𝐂𝐨𝐫𝐩𝐬𝐞 𝐄𝐚𝐭𝐞𝐫[/u]: Rapidly moves around the room erratically and charges at Isaac if he comes within its line of sight.
 [img]https://i.imgur.com/kqwFpnd.png[/img] [u]𝐂𝐚𝐫𝐫𝐢𝐨𝐧 𝐑𝐢𝐝𝐞𝐫[/u]: Rapidly moves around the room erratically and charges at Isaac if he comes within its line of sight. The Bony on its back shoots at Isaac.
 [img]https://i.imgur.com/NnYF7Yp.png[/img] [u]𝐒𝐭𝐢𝐥𝐥𝐛𝐨𝐫𝐧[/u]: Slowly floats towards Isaac, occasionally firing blood shots. Cannot be killed and dies when the room is cleared.
 [img]https://i.imgur.com/S7RSHI8.png[/img] [u]𝐑𝐞𝐝 𝐓𝐍𝐓[/u]: Red TNT barrels explode when destroyed. Unlike regular TNT barrels, red TNT only needs to be shot once to be detonated. They also detonate if Isaac or an enemy walks into it.
-
-[u]___________________________________[/u]
-
-[u]𝐂𝐨𝐦𝐢𝐧𝐠 𝐒𝐨𝐨𝐧[/u]:
-
-- Barfy 
-- Echo Bat
-- Necromancer 
-- Nightwatch 
-- Swapper 
-- Fissure (Fracture) 
-- Screamer 
-- Grave robber
-- Canary
-- Cells
 
 [img]https://i.imgur.com/0YXOqPH.png[/img]
 [list]
@@ -45,7 +37,7 @@
 [/list]
 
 [img]https://i.imgur.com/3en8OyU.png[/img]
-[code]Aether, Akad, ALADAR, anchikai., Blind the Bound Demon, Blixy, BrakeDude, cat,,, Firework, fly_6, Goncholito, Kars, KitsuneMedia, kittenchilly, Kotry, Kruntical, Luigi124, Merlin, Michael¿?, PixelPlz, poody_blue, Royal, Sillst, Soaring__Sky, The Demisemihemidemisemiquaver[/code]
+[code]Aether, Akad, ALADAR, anchikai., Andre Doruk, Blind the Bound Demon, Blixy, BrakeDude, cat,,, Firework, fly_6, Goncholito, im_tem, Kars, KitsuneMedia, kittenchilly, Kotry, Luigi124, Michael¿?, PixelPlz, poody_blue, Sillst, Soaring__Sky, The Demisemihemidemisemiquaver[/code]
 
 [img]https://i.imgur.com/SlXbHql.png[/img] [img]https://i.imgur.com/xd2eafr.png[/img]
 [code][u]_Kilburn[/u] - For the original monster ideas
@@ -53,6 +45,7 @@
 
 [img]https://i.imgur.com/GKVOZZ8.png[/img]
 
+[img]https://i.imgur.com/OZNWMCq.png[/img] [url=https://github.com/Team-Compliance/AntibirthMonsterLibrary]Antibirth Monster Library Repository[/url] [img]https://i.imgur.com/OZNWMCq.png[/img] 
 [img]https://i.imgur.com/xK4Mor0.png[/img] [url=https://discord.gg/GdVnkV4Gwj]TBOI: Compliance Discord Server[/url] [img]https://i.imgur.com/xK4Mor0.png[/img]
 [img]https://i.imgur.com/69jZFo8.png[/img] [url=https://www.reddit.com/r/TBOICompliance/]TBOI: Compliance Subreddit[/url] [img]https://i.imgur.com/69jZFo8.png[/img]
 [img]https://i.imgur.com/GmVPmG0.png[/img] [url=https://www.youtube.com/channel/UCEdAioGltx_hOsyDW57nvSw/featured]TBOI: Compliance YouTube[/url] [img]https://i.imgur.com/GmVPmG0.png[/img]
