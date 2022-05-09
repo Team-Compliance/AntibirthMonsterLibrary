@@ -55,10 +55,10 @@ EntityType.ENTITY_VESSEL = 858
 
 -- Variants of the AML entity
 AMLVariants = {
-    DUMPLING = 2401, -- for backwards compatibility
-    SKINLING = 2402, -- for backwards compatibility
-    SCAB = 2403, -- for backwards compatibility
-    COIL = 2406,
+	DUMPLING = 2401, -- for backwards compatibility
+	SKINLING = 2402, -- for backwards compatibility
+	SCAB = 2403, -- for backwards compatibility
+	COIL = 2406,
 	ECHO_BAT = 2407,
 	SCREAMER = 2408,
 	STILLBORN = 2409,
@@ -81,14 +81,14 @@ EntityVariant = {
 ProjectileVariant.PROJECTILE_ECHO = 104
 ProjectileVariant.PROJECTILE_LANTERN = 106
 
--- Effect variant
+-- Effect variants
 EffectVariant.NIGHTWATCH_SPOTLIGHT = 842
 EffectVariant.SCREAMER_AURA = 867
 
 
 
 --[[--------------------------------------------------------
-    Blacklists for enemies
+    Blacklists
 --]]--------------------------------------------------------
 
 coil_blacklist = {
@@ -370,23 +370,20 @@ local monsterScripts = {
 	dumplings = include("scripts.dumplings"),
 	fracture = include("scripts.fracture"),
 	stillborn = include("scripts.stillborn"),
-    blindBats = include("scripts.blindBats"),
+	blindBats = include("scripts.blindBats"),
 	echoBat = include("scripts.echoBat"),
 	necromancer = include("scripts.necromancer"),
 	swappers = include("scripts.swappers"),
 	barfy = include("scripts.barfy"),
 	strifers = include("scripts.strifers"),
 	nightwatch = include("scripts.nightwatch"),
-    vessel = include("scripts.vessel"),
+	vessel = include("scripts.vessel"),
 	coils = include("scripts.coils"),
 	screamer = include("scripts.screamer"),
 	redTNT = include("scripts.redTNT")
 }
 
---[[--------------------------------------------------------
-    Load the external files.
---]]--------------------------------------------------------
-
+--Load the external files.
 for _, v in pairs(monsterScripts) do
     v.Init()
 end
