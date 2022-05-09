@@ -1,4 +1,5 @@
 local this = {}
+local game = Game()
 
 local Settings = {
 	NumFollowerBats = 3, -- How many follower bats should spawn alongside the leader bat
@@ -24,10 +25,10 @@ local States = {
 local nextAlertTime = Settings.InitialAlertTime
 local batQueue = {}
 
-math.randomseed(Isaac.GetTime())
+
 
 function alarmBats()
-	for _, bat in pairs(Isaac.FindByType(803, 0, -1, false, false)) do
+	for _, bat in pairs(Isaac.FindByType(EntityType.ENTITY_BLIND_BAT, 0, -1, false, false)) do
 		local data = bat:GetData().BlindBatData
 		if (data ~= nil and data.State == States.Hiding) then
 			if bat.SubType == 0 then
@@ -39,25 +40,12 @@ function alarmBats()
 			end
 		end
 	end
+
 	nextAlertTime = Settings.InitialAlertTime
 end
 
-function getAngleOffset(direction)
-
-	local multiplier = 1
-
-	if (direction == "down") then
-		multiplier = -1
-	end
-
-	return math.random(Settings.AngleOffset[1], Settings.AngleOffset[2]) * multiplier
-
-end
-
 function awakenBats()
-
-	for _, bat in pairs(Isaac.FindByType(803, 0 , 0, false, false)) do
-
+	for _, bat in pairs(Isaac.FindByType(EntityType.ENTITY_BLIND_BAT, 0 , 0, false, false)) do
 		local batNpc = bat:ToNPC()
 		local batSprite = bat:GetSprite()
 		local batData = bat:GetData().BlindBatData
@@ -67,12 +55,24 @@ function awakenBats()
 			batSprite:Play("Wake", true)
 		end
 	end
-
 end
 
-function this:blindBatInit(bat)
 
+
+function getAngleOffset(direction)
+	local multiplier = 1
+	if (direction == "down") then
+		multiplier = -1
+	end
+
+	return math.random(Settings.AngleOffset[1], Settings.AngleOffset[2]) * multiplier
+end
+
+
+
+function this:blindBatInit(bat)
 	local sprite = bat:GetSprite()
+	bat.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 	
 	bat:GetData().BlindBatData = {
 		AttackCountdown = math.random(Settings.AttackTime[1], Settings.AttackTime[2]),
@@ -84,12 +84,11 @@ function this:blindBatInit(bat)
 		MoveVector = Vector.Zero
 	}
 
-	bat.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 
 	if bat.SubType == 0 then
 		sprite:Play("Idle", true)
 		for i = 1, Settings.NumFollowerBats do
-			Isaac.Spawn(803, 0, 1, bat.Position + RandomVector():Resized(math.random(1, 50)), bat.Velocity, bat)
+			Isaac.Spawn(EntityType.ENTITY_BLIND_BAT, 0, 1, bat.Position + RandomVector():Resized(math.random(1, 50)), bat.Velocity, bat)
 		end
 		
 	elseif bat.SubType == 1 then
@@ -99,37 +98,31 @@ function this:blindBatInit(bat)
 end
 
 function this:blindBatUpdate(bat)
-
 	local sprite = bat:GetSprite()
 	local batData = bat:GetData().BlindBatData
 	local batPos = bat.Position
 	local target = bat:GetPlayerTarget()
-	
+
 
 	if batData.State == States.Hiding and bat.FrameCount > 1 then
-
 		if bat.SubType == 0	 then
-
-			for _, player in pairs(AntiMonsterLib:GetPlayers()) do
-				if player.Position:Distance(batPos) <= Settings.ActivationRange then
-					batData.State = States.Spotted
-					sprite:Play("Wake", true)
-					break
-				end
+			if game:GetNearestPlayer(bat.Position).Position:Distance(batPos) <= Settings.ActivationRange then
+				batData.State = States.Spotted
+				sprite:Play("Wake", true)
 			end
 
 		elseif bat.SubType == 1 then
 			sprite:Play("IdleInvisible", true)
 		
-			if #Isaac.FindByType(803, 0 , 0, undefined, false) <= 0 then
+			if #Isaac.FindByType(EntityType.ENTITY_BLIND_BAT, 0 , 0, undefined, false) <= 0 then
 				bat:PlaySound(SoundEffect.SOUND_SHAKEY_KID_ROAR, 1, 0, false, 1.2)
 				sprite:Play("FlyDown", true)
 				batData.State = States.Spotted
 			end
 		end
 
+
 	elseif batData.State == States.Spotted then
-	
 		if sprite:IsEventTriggered("Scream") then
 			bat:PlaySound(SoundEffect.SOUND_SHAKEY_KID_ROAR, 1, 0, false, 1.2)
 			alarmBats()
@@ -139,9 +132,9 @@ function this:blindBatUpdate(bat)
 			batData.State = States.Chasing
 			sprite.Offset = Vector(0,-14)
 		end
+		
 
 	elseif batData.State == States.Chasing then
-		
 		batData.MoveVector = ((target.Position - batPos):Normalized() * Settings.ChaseSpeed):Rotated(batData.AngleOffset)
 		if bat:HasEntityFlags(EntityFlag.FLAG_FEAR) then
 			batData.MoveVector = Vector(-batData.MoveVector.X, -batData.MoveVector.Y)
@@ -174,8 +167,8 @@ function this:blindBatUpdate(bat)
 			batData.AngleCountdown = math.random(Settings.DirectionChangeTimes[1], Settings.DirectionChangeTimes[2])
 		end
 
-	elseif batData.State == States.Charging then
 
+	elseif batData.State == States.Charging then
 		bat.Velocity = batData.ChargeDirection * Settings.ChargeSpeed
 		batData.AttackCountdown = batData.AttackCountdown - 1;
   
@@ -188,23 +181,21 @@ function this:blindBatUpdate(bat)
 end
 
 function this:batRemoval(bat)
-  
 	for i = 1, #batQueue do
 		if GetPtrHash(batQueue[i]) == GetPtrHash(bat) then
 			table.remove(batQueue, i)
 			break
 		end
 	end
-
 end
 
-function this:onUpdate()
 
+
+function this:onUpdate()
 	nextAlertTime = nextAlertTime - 1
-  
+	
 	if nextAlertTime <= 0 then
 		if #batQueue > 0 then
-
 			local bat = batQueue[1]
 			local batData = bat:GetData().BlindBatData
 
@@ -213,15 +204,14 @@ function this:onUpdate()
 				bat:GetSprite():Play("FlyDown", true)
 				batData.State = States.Spotted
 			end
-
 		end
 
 		table.remove(batQueue, 1)
 		nextAlertTime = math.random(Settings.AlertTime[1], Settings.AlertTime[2])
-
 	end
-  
-	local offset = Game().ScreenShakeOffset
+
+
+	local offset = game.ScreenShakeOffset
 	local sfx = SFXManager()
   
 	if (offset.X ~= 0 or offset.Y ~= 0)
@@ -230,15 +220,15 @@ function this:onUpdate()
 	or sfx:IsPlaying(Isaac.GetSoundIdByName("Screamer Scream"))) then
 		awakenBats()
 	end
-  
 end
+
+
 
 function this:Init()
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.blindBatInit, 803)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.blindBatUpdate, 803)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, this.batRemoval, 803)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.blindBatInit, EntityType.ENTITY_BLIND_BAT)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.blindBatUpdate, EntityType.ENTITY_BLIND_BAT)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, this.batRemoval, EntityType.ENTITY_BLIND_BAT)
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_UPDATE, this.onUpdate)
 end
-
 
 return this

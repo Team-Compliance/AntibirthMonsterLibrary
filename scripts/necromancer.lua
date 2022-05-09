@@ -1,8 +1,6 @@
 local this = {}
 local game = Game()
 
-
-
 local Settings = {
 	MoveSpeed = 5.1,
 	MoveSpeedIdle = 0.75,
@@ -24,7 +22,7 @@ local necromancerSpawns = {}
 
 
 function this:necromancerInit(entity)
-	if entity.Variant == 2410 then
+	if entity.Variant == AMLVariants.NECROMANCER then
 		local data = entity:GetData()
 		
 		entity:ToNPC()
@@ -33,6 +31,7 @@ function this:necromancerInit(entity)
 		data.reviveCooldown = Settings.ReviveCooldown
 		data.place = Isaac:GetRandomPosition()
 		
+		-- Bony spawn cooldown (minimum is 15)
 		local myRNG = RNG()
 		myRNG:SetSeed(Random(), 831)
 		data.bonyCooldown = (myRNG:RandomInt(Settings.SpawnCooldown / 2) + 1) + 15
@@ -43,18 +42,10 @@ function this:necromancerInit(entity)
 	end
 end
 
-
-
 function this:necromancerUpdate(entity)
-	if entity.Variant == 2410 then
+	if entity.Variant == AMLVariants.NECROMANCER then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
-		local room = game:GetRoom()
-		
-		
-		function Lerp(first,second,percent)
-			return (first + (second - first) * percent)
-		end
 
 		
 		if data.state == States.Appear or data.state == nil then
@@ -67,6 +58,7 @@ function this:necromancerUpdate(entity)
 				sprite:PlayOverlay("Head", true)
 			end
 			
+			
 			if data.state == States.Moving then
 				-- If there are valid entries in the table then go to revive state
 				if data.reviveCooldown <= 0 then
@@ -77,7 +69,6 @@ function this:necromancerUpdate(entity)
 							data.reviveIdentifier = v[5]
 						end
 					end
-					
 				else
 					data.reviveCooldown = data.reviveCooldown - 1
 				end
@@ -90,8 +81,8 @@ function this:necromancerUpdate(entity)
 				entity.Pathfinder:UpdateGridIndex() -- Seems to make them less jittery?
 
 
+				-- Spawn Bony
 				if entity.Child == nil then
-					-- Spawn Bony
 					if data.bonyCooldown <= 0 then
 						data.state = States.Spawn
 						data.bonyCooldown = Settings.SpawnCooldown
@@ -101,10 +92,11 @@ function this:necromancerUpdate(entity)
 					end
 				end
 
+
 			elseif data.state == States.HasReviveTarget then
 				-- Move where the enemy died
 				if necromancerSpawns[data.reviveIndex] ~= nil and data.reviveIdentifier == necromancerSpawns[data.reviveIndex][5] then
-					if entity.Position:Distance(necromancerSpawns[data.reviveIndex][4]) > 30 then
+					if entity.Position:Distance(necromancerSpawns[data.reviveIndex][4]) > 20 then
 						-- If it doesn't have a direct path
 						if game:GetRoom():CheckLine(entity.Position, necromancerSpawns[data.reviveIndex][4], 0, 0, false, false) == false
 						and entity:GetChampionColorIdx() ~= ChampionColor.TRANSPARENT then -- Ghost champions can go to any of them
@@ -112,9 +104,8 @@ function this:necromancerUpdate(entity)
 							
 						-- This stops them from sometimes not being able to revive enemies even though they're close enough
 						else
-							entity.Velocity = Lerp(entity.Velocity, (necromancerSpawns[data.reviveIndex][4] - entity.Position):Normalized() * Settings.MoveSpeed, 0.5)
+							entity.Velocity = (entity.Velocity + ((necromancerSpawns[data.reviveIndex][4] - entity.Position):Normalized() * Settings.MoveSpeed - entity.Velocity) * 0.5)
 						end
-						
 					else
 						data.state = States.Revive
 					end
@@ -134,13 +125,15 @@ function this:necromancerUpdate(entity)
 				sprite:RemoveOverlay()
 			end
 
+
 			if sprite:IsEventTriggered("Revive") then
+				-- Revive target
 				if data.state == States.Revive then
 					-- If it hasn't been revived yet then revive + remove it from the table
 					if necromancerSpawns[data.reviveIndex] ~= nil and data.reviveIdentifier == necromancerSpawns[data.reviveIndex][5] then
 						SFXManager():Play(SoundEffect.SOUND_SUMMONSOUND, 1, 0, false, 1, 0)
 
-						local revived = Isaac.Spawn(necromancerSpawns[data.reviveIndex][1], necromancerSpawns[data.reviveIndex][2], necromancerSpawns[data.reviveIndex][3], Vector(entity.Position.X, entity.Position.Y + 15), Vector.Zero, entity)
+						local revived = Isaac.Spawn(necromancerSpawns[data.reviveIndex][1], necromancerSpawns[data.reviveIndex][2],necromancerSpawns[data.reviveIndex][3], Vector(entity.Position.X, entity.Position.Y + 15), Vector.Zero, entity)
 						table.remove(necromancerSpawns, data.reviveIndex)
 						data.reviveCooldown = Settings.ReviveCooldown
 						
@@ -157,6 +150,7 @@ function this:necromancerUpdate(entity)
 				end
 			end
 			
+			
 			if sprite:GetFrame() == 19 then -- IsFinished doesn't seem to work?
 				data.state = States.Moving
 			end
@@ -166,17 +160,17 @@ end
 
 
 
+-- Add dead enemies that aren't blacklisted to the revive table
 function this:necromancerInRoom(entity)
-	if entity.Type < 1000 and entity.Type > 9 and not ((entity.Type == EntityType.ENTITY_BONY and entity.Variant == 0 and entity.SpawnerType == 200 and entity.SpawnerVariant == 2410)
-	or (entity.Type == EntityType.ENTITY_LITTLE_HORN and entity.Variant == 1) or (entity.Type == EntityType.ENTITY_RAG_MEGA and entity.Variant == 1)
-	or (entity.Type == EntityType.ENTITY_GRUB and entity.Variant == 100 and entity.Parent ~= nil) or (entity.Type == EntityType.ENTITY_BIG_BONY and entity.Variant == 10)) then
+	if entity.Type < 1000 and entity.Type > 9 and inAMLblacklist("Necromancer", entity.Type, entity.Variant, entity.SubType) == false
+	and not (entity.Type == EntityType.ENTITY_BONY and entity.SpawnerType == EntityType.ENTITY_AML and entity.SpawnerVariant == AMLVariants.NECROMANCER) then
 		local room = game:GetRoom()
 		local getType = entity.Type
 		local getVariant = entity.Variant
 		local getSubType = entity.SubType
 		
 		-- Necromancers and Exorcists turn into Bonys when revived
-		if (entity.Type == 200 and entity.Variant == 2410) or (entity.Type == EntityType.ENTITY_EXORCIST and entity.Variant == 0) then
+		if (entity.Type == EntityType.ENTITY_AML and entity.Variant == AMLVariants.NECROMANCER) or (entity.Type == EntityType.ENTITY_EXORCIST and entity.Variant == 0) then
 			getType = EntityType.ENTITY_BONY
 			getVariant = 0
 			getSubType = 0
@@ -186,20 +180,21 @@ function this:necromancerInRoom(entity)
 			getSubType = 1
 		end
 		
-		local ent_data = {getType, getVariant, getSubType, room:FindFreeTilePosition(entity.Position, 52), entity.Index}
+		local ent_data = {getType, getVariant, getSubType, room:FindFreeTilePosition(entity.Position, 40), entity.Index}
 		table.insert(necromancerSpawns, ent_data)
 	end
 end
 
 
 
+-- Reset revive table and callback on new room, add callback if there are any Necromancers in the room
 function this:necromancerNewRoom()
 	necromancerSpawns = {}
 	AntiMonsterLib:RemoveCallback(ModCallbacks.MC_POST_NPC_DEATH, this.necromancerInRoom)
 	
 	-- Remove any existing callback and add a new one so they don't execute code in it multiple times
 	for _,v in pairs(Isaac.GetRoomEntities()) do
-		if v.Type == 200 and v.Variant == 2410 then
+		if v.Type == EntityType.ENTITY_AML and v.Variant == AMLVariants.NECROMANCER then
 			AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, this.necromancerInRoom)
 			break
 		end
@@ -209,11 +204,10 @@ end
 
 
 function this:Init()
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.necromancerInit, 200)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.necromancerUpdate, 200)
+    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.necromancerInit, EntityType.ENTITY_AML)
+    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.necromancerUpdate, EntityType.ENTITY_AML)
+
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, this.necromancerNewRoom)
 end
-
-
 
 return this

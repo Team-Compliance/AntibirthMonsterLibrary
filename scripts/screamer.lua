@@ -1,8 +1,6 @@
 local this = {}
 local game = Game()
 
-
-
 local Settings = {
 	MoveSpeed = 1,
 	AngrySpeed = 2.25,
@@ -20,7 +18,7 @@ local States = {
 
 
 function this:screamerInit(entity)
-	if entity.Variant == 2408 then
+	if entity.Variant == AMLVariants.SCREAMER then
 		local data = entity:GetData()
 		
 		entity:ToNPC()
@@ -33,10 +31,8 @@ function this:screamerInit(entity)
 	end
 end
 
-
-
 function this:screamerUpdate(entity)
-	if entity.Variant == 2408 then
+	if entity.Variant == AMLVariants.SCREAMER then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
 		local target = entity:GetPlayerTarget()
@@ -160,7 +156,7 @@ function this:screamerUpdate(entity)
 					
 					-- Alert Nightwatches (state 2 = Alert, state 3 = AlertNoEffect)
 					for _,v in pairs(Isaac.GetRoomEntities()) do
-						if v.Type == 842 and v:GetData().state ~= 2 and v:GetData().state ~= 3 then
+						if v.Type == EntityType.ENTITY_NIGHTWATCH and v:GetData().state ~= 2 and v:GetData().state ~= 3 then
 							v:GetData().state = 2
 							break
 						end
@@ -168,7 +164,7 @@ function this:screamerUpdate(entity)
 				end
 				
 				-- Ring effect
-				local effect = Isaac.Spawn(1000, 164, 867, entity.Position, Vector.Zero, entity):ToEffect()
+				local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.SIREN_RING, 867, entity.Position, Vector.Zero, entity):ToEffect()
 				effect:FollowParent(entity)
 				effect:GetSprite().Offset = Vector(0, -44)
 				effect:GetSprite().Scale = Vector(0.75, 0.75)
@@ -178,7 +174,7 @@ function this:screamerUpdate(entity)
 				data.state = States.Angry
 
 				-- Slowing aura
-				local aura = Isaac.Spawn(1000, 867, 0, entity.Position, Vector.Zero, entity):ToEffect()
+				local aura = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.SCREAMER_AURA, 0, entity.Position, Vector.Zero, entity):ToEffect()
 				aura.Parent = entity
 				aura:GetSprite():Play("FadeIn", true)
 				aura.DepthOffset = -1000
@@ -193,6 +189,7 @@ end
 
 
 
+-- Slowing aura
 function this:screamerAuraUpdate(effect)
 	if effect.Parent ~= nil then
 		local sprite = effect:GetSprite()
@@ -217,10 +214,10 @@ end
 
 
 function this:Init()
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.screamerInit, 200)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.screamerUpdate, 200)
+    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.screamerInit, EntityType.ENTITY_AML)
+    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.screamerUpdate, EntityType.ENTITY_AML)
 	
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, this.screamerAuraUpdate, 867)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, this.screamerAuraUpdate, EffectVariant.SCREAMER_AURA)
 end
 
 

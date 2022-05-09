@@ -1,8 +1,6 @@
 local this = {}
 local game = Game()
 
-
-
 local DumplingVariants = {
     DUMPLING = 0,
     SKINLING = 1,
@@ -11,34 +9,35 @@ local DumplingVariants = {
 
 
 
---[[
-    Dumpling/Skinling/Scab fart helper function
---]]
+-- Fart helper function
 local function fart(npc)
-	if npc.Variant == DumplingVariants.DUMPLING then -- Dumpling
-		game:ButterBeanFart(npc.Position, 85, npc, true)
-		
-	elseif npc.Variant == DumplingVariants.SKINLING then -- Skinling
-		game:ButterBeanFart(npc.Position, 85, npc, false) -- fart but don't show
-		game:Fart(npc.Position, 0, npc)
+	local visible = false
+	
+	-- Dumpling
+	if npc.Variant == DumplingVariants.DUMPLING then
+		visible = true
+
+	-- Skinling
+	elseif npc.Variant == DumplingVariants.SKINLING then
+		game:Fart(npc.Position, 0, npc) -- green fart
 		
 		if game:GetNearestPlayer(npc.Position).Position:Distance(npc.Position) < 80 then
 			game:GetNearestPlayer(npc.Position):TakeDamage(1, DamageFlag.DAMAGE_POISON_BURN, EntityRef(npc), 0)
 		end
-		
-	elseif npc.Variant == DumplingVariants.SCAB then -- Scab
-		game:ButterBeanFart(npc.Position, 85, npc, false) -- fart but don't show
+	
+	-- Scab
+	elseif npc.Variant == DumplingVariants.SCAB then
 		game:Fart(npc.Position, 0, npc, 1, 1) -- red fart
 
 		params = ProjectileParams()
 		params.CircleAngle = 0
 		npc:FireProjectiles(npc.Position, Vector(10, 6), 9, params)
 	end
+	
+	game:ButterBeanFart(npc.Position, 85, npc, visible)
 end
 
---[[
-    Helper function to apply velocity to and flip an NPC's sprite
---]]
+-- Helper function to apply velocity to and flip a Dumpling's sprite
 local function add_velocity_and_flip(npc, velocity)
     npc:AddVelocity(velocity)
     npc:GetSprite().FlipX = (velocity.X < 0)
@@ -47,13 +46,14 @@ end
 
 
 function this:NPCUpdate(npc)
-    local sprite = npc:GetSprite() -- get entity sprite
+    local sprite = npc:GetSprite()
     local npc_flags = npc:GetEntityFlags()
     local player_position = game:GetNearestPlayer(npc.Position).Position
     local player_angle = (player_position - npc.Position):GetAngleDegrees()
 	
 	npc.Visible = true -- fixes some of them becoming invisible
-	
+
+
 	if npc.State == NpcState.STATE_IDLE then -- if idling
 		sprite:Play("Idle")
 		if player_position:Distance(npc.Position) < 100 then -- if player is close
@@ -76,11 +76,13 @@ function this:NPCUpdate(npc)
 			sprite:Play("Move")
 		end
 
+
 	elseif npc.State == NpcState.STATE_MOVE then -- if moving
 		if sprite:IsFinished("Move") then
 			npc.State = NpcState.STATE_IDLE
 		end
-		
+
+
 	elseif npc.State == NpcState.STATE_ATTACK then -- if farting
 		if sprite:IsEventTriggered("Fart") then
 			fart(npc)
@@ -89,7 +91,8 @@ function this:NPCUpdate(npc)
 		elseif sprite:IsFinished("Fart") then
 			npc.State = NpcState.STATE_IDLE
 		end
-		
+
+
 	elseif npc.State == NpcState.STATE_ATTACK2 then -- if farting from taken damage
 		if sprite:IsEventTriggered("Fart") then
 			fart(npc)
@@ -98,39 +101,34 @@ function this:NPCUpdate(npc)
 		elseif sprite:IsFinished("Fart") then
 			npc.State = NpcState.STATE_IDLE
 		end
-		
+
+
 	elseif npc.State == NpcState.STATE_INIT then -- if newly spawned
 		npc.State = NpcState.STATE_IDLE
+
 		if npc.Variant == DumplingVariants.SKINLING then
 			npc.SplatColor = Color(0.6,0.8,0.6, 1, 0,0.1,0)
 		end
 	end 
 end
 
-
-
+-- Fart on damage
 function this:NPCDamage(entity, amount, dmg_flags)
-    local npc = entity:ToNPC()
-    
-    npc.State = NpcState.STATE_ATTACK2
-    npc:GetSprite():Play("Fart")
+    entity:ToNPC().State = NpcState.STATE_ATTACK2
+    entity:GetSprite():Play("Fart")
 end
 
-
-
+-- Fart on death
 function this:NPCDeath(entity)
-    local npc = entity:ToNPC()
-    fart(npc)
+    fart(entity)
 end
 
 
 
 function this:Init()
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.NPCUpdate, 800)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.NPCDamage, 800)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, this.NPCDeath, 800)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.NPCUpdate, EntityType.ENTITY_DUMPLING)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.NPCDamage, EntityType.ENTITY_DUMPLING)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, this.NPCDeath, EntityType.ENTITY_DUMPLING)
 end
-
-
 
 return this

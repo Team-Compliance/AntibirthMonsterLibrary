@@ -3,30 +3,66 @@ local game = Game()
 
 
 
-function swapperShoot(source, targetpos)
-	-- Set laser start and end position
-	local laser_source_pos = source.Position
-	local laser_ent_pair = {laser = EntityLaser.ShootAngle(2, laser_source_pos, ((targetpos - laser_source_pos):GetAngleDegrees()), 3, Vector(0, source.SpriteScale.Y * -48), source), source}
-	local _, endPos = game:GetRoom():CheckLine(laser_source_pos, targetpos, 3)
-	laser_ent_pair.laser:SetMaxDistance(laser_source_pos:Distance(endPos))
+function this:swapperUpdate(entity)
+	if entity.Variant == EntityVariant.SWAPPER then
+		local sprite = entity:GetSprite()
+		local target = entity:GetPlayerTarget()
+		local data = entity:GetData()
+		local level = game:GetLevel()
+		local stage = level:GetStage()
 
-	-- Extra parameters
-	laser_ent_pair.laser.Mass = 0
-	laser_ent_pair.laser.DepthOffset = 200
-	laser_ent_pair.laser.DisableFollowParent = true
-	laser_ent_pair.laser.OneHit = true
-	
-	if source.SubType == 1 then -- Gehenna color
-		laser_ent_pair.laser:SetColor(Color(1,1,1, 1, 0.8,0.1,0.3), 0, 1, false, false)
-	else
-		laser_ent_pair.laser:SetColor(Color(1,1,1, 1, 0.2,0.1,0.8), 0, 1, false, false)
+		
+		-- Prevent certain champions
+		if entity:GetChampionColorIdx() == ChampionColor.GREEN or entity:GetChampionColorIdx() == ChampionColor.RAINBOW or entity:GetChampionColorIdx() == ChampionColor.BROWN then
+			entity:MakeChampion(1, -1, true)
+		end
+
+		-- Gehenna alt skin
+		if (stage == LevelStage.STAGE3_1 or stage == LevelStage.STAGE3_2) and level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
+			entity:Morph(entity.Type, entity.Variant, 1, entity:GetChampionColorIdx())
+		end
+
+
+		-- Get laser end point
+		if sprite:IsEventTriggered("GetPos") then
+			data.pos = target.Position
+		
+		
+		-- Shoot laser
+		elseif sprite:IsEventTriggered("Laser") then
+			data.canTP = true
+
+			-- Set laser start and end position
+			local laser_ent_pair = {laser = EntityLaser.ShootAngle(2, entity.Position, ((data.pos - entity.Position):GetAngleDegrees()), 3, Vector(0, entity.SpriteScale.Y * -48), entity), entity}
+			local _, endPos = game:GetRoom():CheckLine(entity.Position, data.pos, 3)
+			laser_ent_pair.laser:SetMaxDistance(entity.Position:Distance(endPos))
+
+			-- Extra parameters
+			laser_ent_pair.laser.Mass = 0
+			laser_ent_pair.laser.DepthOffset = 200
+			laser_ent_pair.laser.DisableFollowParent = true
+			laser_ent_pair.laser.OneHit = true
+			
+			-- Laser color
+			if entity.SubType == 1 then
+				laser_ent_pair.laser:SetColor(Color(1,1,1, 1, 0.8,0.1,0.3), 0, 1, false, false)
+			else
+				laser_ent_pair.laser:SetColor(Color(1,1,1, 1, 0.2,0.1,0.8), 0, 1, false, false)
+			end
+		
+		
+		-- Disable teleporting
+		elseif sprite:IsEventTriggered("NoTp") then
+			data.canTP = false
+		end
 	end
 end
 
 
 
+-- Swap Isaac and Swapper positions on successful hit
 function this:swapperHit(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
-	if damageSource.Type == EntityType.ENTITY_BABY and damageSource.Variant == 835 and damageSource.Entity:GetData().canTP == true then
+	if damageSource.Type == EntityType.ENTITY_BABY and damageSource.Variant == EntityVariant.SWAPPER and damageSource.Entity:GetData().canTP == true then
 		-- Get positions for teleporting
 		local swapToPos = damageSource.Entity.Position
 		local swapFromPos = target.Position
@@ -58,44 +94,10 @@ end
 
 
 
-function this:swapperUpdate(entity)
-	if entity.Variant == 835 then
-		local sprite = entity:GetSprite()
-		local target = entity:GetPlayerTarget()
-		local data = entity:GetData()
-		local level = game:GetLevel()
-		local stage = level:GetStage()
-
-		
-		if entity:GetChampionColorIdx() == ChampionColor.GREEN or entity:GetChampionColorIdx() == ChampionColor.RAINBOW or entity:GetChampionColorIdx() == ChampionColor.BROWN then
-			entity:MakeChampion(1, -1, true)
-		end
-
-		if (stage == LevelStage.STAGE3_1 or stage == LevelStage.STAGE3_2) and level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
-			entity:Morph(entity.Type, entity.Variant, 1, entity:GetChampionColorIdx())
-		end
-
-		
-		if sprite:IsEventTriggered("GetPos") then
-			data.pos = target.Position
-			
-		elseif sprite:IsEventTriggered("Laser") then
-			data.canTP = true
-			swapperShoot(entity,data.pos)
-			
-		elseif sprite:IsEventTriggered("NoTp") then
-			data.canTP = false
-		end
-	end
-end
-
-
-
 function this:Init()
     AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.swapperUpdate, EntityType.ENTITY_BABY)
+
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.swapperHit, EntityType.ENTITY_PLAYER)
 end
-
-
 
 return this

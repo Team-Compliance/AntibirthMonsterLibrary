@@ -1,23 +1,15 @@
 local this = {}
 local game = Game()
 
-
-
-local Strifer = {
-	SPEED = 5.35,
-	ATTACKING_SPEED = 4,
-	COOLDOWN = 60,
-	SHOT_SPEED = 11,
-	ATTACK_SIDE_RANGE = 78,
-	MAX_TARGET_RANGE = 338
+local Settings = {
+	MoveSpeed = 5.35,
+	AttackSpeed = 4,
+	Cooldown = 60,
+	ShotSpeed = 11,
+	SideRange = 80,
+	TargetRange = 340
 }
 
-
-
--- Functions
-function Lerp(first,second,percent)
-	return (first + (second - first) * percent)
-end
 
 
 function StriferTurnAround(entity)
@@ -41,16 +33,13 @@ function this:StriferInit(entity)
 	
 	entity:ToNPC()
 	entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_ALL
+	entity.Mass = 50
+	data.shot = 0
 
-
-	-- Set Variables
+	-- Set random starting cooldown for attack (minimum is 20)
 	local cdRNG = RNG()
 	cdRNG:SetSeed(Random(), 839)
-	entity.ProjectileCooldown = cdRNG:RandomInt(Strifer.COOLDOWN - 20) + 20 -- Set random starting cooldown for attack (minimum is 20)
-
-	data.currSpeed = Strifer.SPEED
-	data.shot = 0
-	entity.Mass = 50
+	entity.ProjectileCooldown = cdRNG:RandomInt(Settings.Cooldown - 20) + 20
 
 	data.altSkin = ""
 	if (stage == LevelStage.STAGE3_1 or stage == LevelStage.STAGE3_2) and level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
@@ -58,39 +47,19 @@ function this:StriferInit(entity)
 	end
 end
 
-
-
 function this:StriferUpdate(entity)
 	local data = entity:GetData()
 	local sprite = entity:GetSprite()
 	local target = entity:GetPlayerTarget()
 	local moveto = entity.TargetPosition
+	local speed = Settings.MoveSpeed
 
 
-	-- Determine movement directions
-	function setmovement()
-		if entity.Variant == 0 or entity.Variant == 2 then
-			data.movetype = "vertical"
-			
-		elseif entity.Variant == 1 or entity.Variant == 3 then
-			data.movetype = "horizontal"
-		end
-	end
-	
-	-- Determine attack direction
-	function setfacing()
-		if     entity.Variant == 0 then data.facing = "Left"
-		elseif entity.Variant == 1 then data.facing = "Up"
-		elseif entity.Variant == 2 then data.facing = "Right"
-		elseif entity.Variant == 3 then data.facing = "Down"
-		end
-	end
-
-
-	-- Set variant if direction is not set
+	-- Set variant if not set yet
 	if data.facing == nil or data.movetype == nil then
 		local enterd = game:GetLevel().EnterDoor
-			
+		
+		-- Multi directional ones
 		-- Left / Right
 		if entity.Variant == 4 or (entity.Variant == 6 and enterd % 2 == 0) then -- All left and right doors have an even numbered ID
 			if target.Position.X <= entity.Position.X then
@@ -110,8 +79,20 @@ function this:StriferUpdate(entity)
 			end
 		end
 		
-		setmovement()
-		setfacing()
+		
+		-- Set movement directions
+		if entity.Variant == 0 or entity.Variant == 2 then
+			data.movetype = "vertical"
+		elseif entity.Variant == 1 or entity.Variant == 3 then
+			data.movetype = "horizontal"
+		end
+		
+		-- Set attack directions
+		if     entity.Variant == 0 then data.facing = "Left"
+		elseif entity.Variant == 1 then data.facing = "Up"
+		elseif entity.Variant == 2 then data.facing = "Right"
+		elseif entity.Variant == 3 then data.facing = "Down"
+		end
 		
 		
 		-- Set spritesheets
@@ -139,21 +120,17 @@ function this:StriferUpdate(entity)
 	end
 
 
-
 	-- Set random starting direction if it doesn't have one
 	if not data.vector then
-		local dirRNG = RNG()
-		dirRNG:SetSeed(Random(), 839)
-		
 		local startDir = 1
-		if dirRNG:RandomInt(2) == 1 then
+		if entity.Index % 2 == 1 then
 			startDir = -1
 		end
 
 		if data.movetype == "vertical" then
-			data.vector = Vector(0, startDir * Strifer.SPEED)
+			data.vector = Vector(0, startDir * Settings.MoveSpeed)
 		elseif data.movetype == "horizontal" then
-			data.vector = Vector(startDir * Strifer.SPEED, 0)
+			data.vector = Vector(startDir * Settings.MoveSpeed, 0)
 		end
 	end
 
@@ -172,53 +149,21 @@ function this:StriferUpdate(entity)
 
 		if data.movetype == "vertical" then
 			if entity.Position.Y <= moveto.Y + side and entity.Position.Y >= moveto.Y - side then
-				if data.facing == "Left" and target.Position.X > (entity.Position.X - Strifer.MAX_TARGET_RANGE) and target.Position.X < entity.Position.X
-				or data.facing == "Right" and target.Position.X < (entity.Position.X + Strifer.MAX_TARGET_RANGE) and target.Position.X > entity.Position.X then
+				if data.facing == "Left" and target.Position.X > (entity.Position.X - Settings.TargetRange) and target.Position.X < entity.Position.X
+				or data.facing == "Right" and target.Position.X < (entity.Position.X + Settings.TargetRange) and target.Position.X > entity.Position.X then
 					return true
 				end
 			end
 			
 		elseif data.movetype == "horizontal" then
 			if entity.Position.X <= moveto.X + side and entity.Position.X >= moveto.X - side then
-				if data.facing == "Up" and target.Position.Y > (entity.Position.Y - Strifer.MAX_TARGET_RANGE) and target.Position.Y < entity.Position.Y
-				or data.facing == "Down" and target.Position.Y < (entity.Position.Y + Strifer.MAX_TARGET_RANGE) and target.Position.Y > entity.Position.Y then
+				if data.facing == "Up" and target.Position.Y > (entity.Position.Y - Settings.TargetRange) and target.Position.Y < entity.Position.Y
+				or data.facing == "Down" and target.Position.Y < (entity.Position.Y + Settings.TargetRange) and target.Position.Y > entity.Position.Y then
 					return true
 				end
 			end
 		end
 	end
-	
-	
-	-- Fix for them getting stuck sometimes
-	if entity:CollidesWithGrid() and not data.delay then
-		StriferTurnAround(entity)
-	end
-
-	if not data.delay then
-		-- Move towards target if it's close enough
-		if StriferInRange(Strifer.MAX_TARGET_RANGE) == true and entity.Position:Distance(moveto) > 10 and not entity:HasEntityFlags(EntityFlag.FLAG_CONFUSION) then
-			if entity:HasEntityFlags(EntityFlag.FLAG_FEAR) or entity:HasEntityFlags(EntityFlag.FLAG_SHRINK) then
-				data.vector = (moveto - entity.Position):Normalized() * -data.currSpeed
-
-			else
-				data.vector = (moveto - entity.Position):Normalized() * data.currSpeed
-			end
-		end
-	
-		-- Turn around when colliding with a grid entity
-		if entity:CollidesWithGrid() then
-			StriferTurnAround(entity)
-		end
-
-	else
-		data.delay = data.delay - 1
-		
-		if data.delay <= 0 then
-			data.delay = nil
-		end
-	end
-
-	entity.Velocity = Lerp(entity.Velocity, data.vector, 0.25)
 	
 
 	-- Attacking
@@ -226,50 +171,75 @@ function this:StriferUpdate(entity)
 		if not sprite:IsOverlayPlaying("Head" .. data.facing) then
 			sprite:PlayOverlay("Head" .. data.facing)
 		end
-		
 		entity.ProjectileCooldown = entity.ProjectileCooldown - 1
 	
 	else
-		if StriferInRange(Strifer.ATTACK_SIDE_RANGE) and game:GetRoom():CheckLine(entity.Position, target.Position, 3, 0, false, false) then
+		if StriferInRange(Settings.SideRange) and game:GetRoom():CheckLine(entity.Position, target.Position, 3, 0, false, false) then
 			if not sprite:IsOverlayPlaying("Attack" .. data.facing) then
 				sprite:PlayOverlay("Attack" .. data.facing)
 			end
 		end
 
-
 		if sprite:GetOverlayFrame() == 7 then
 			entity:PlaySound(SoundEffect.SOUND_SHAKEY_KID_ROAR, 1, 1, false, 1)
-			data.currSpeed = Strifer.ATTACKING_SPEED
+			speed = Settings.AttackSpeed
 			
 		elseif sprite:GetOverlayFrame() == 8 or sprite:GetOverlayFrame() == 12 or sprite:GetOverlayFrame() == 16 or sprite:GetOverlayFrame() == 20 then
 			if data.shot ~= sprite:GetOverlayFrame() then -- stops them from shooting twice when slowed
-				local params = ProjectileParams()
-				params.FallingSpeedModifier = 0.3
-				
 				local shootx = 0
 				local shooty = 0
 				
-				if     data.facing == "Left"  then shootx = -Strifer.SHOT_SPEED
-				elseif data.facing == "Up"    then shooty = -Strifer.SHOT_SPEED
-				elseif data.facing == "Right" then shootx =  Strifer.SHOT_SPEED
-				elseif data.facing == "Down"  then shooty =  Strifer.SHOT_SPEED
+				if     data.facing == "Left"  then shootx = -Settings.ShotSpeed
+				elseif data.facing == "Up"    then shooty = -Settings.ShotSpeed
+				elseif data.facing == "Right" then shootx =  Settings.ShotSpeed
+				elseif data.facing == "Down"  then shooty =  Settings.ShotSpeed
 				end
 				
-				entity:FireProjectiles(entity.Position, Vector(shootx, shooty), 0, params)
+				entity:FireProjectiles(entity.Position, Vector(shootx, shooty), 0, ProjectileParams())
 				data.shot = sprite:GetOverlayFrame()
 			end
 			
 		elseif sprite:GetOverlayFrame() == 24 then
-			data.currSpeed = Strifer.SPEED
+			speed = Settings.MoveSpeed
 		end
 
 		if sprite:IsOverlayFinished("Attack" .. data.facing) then
-			entity.ProjectileCooldown = Strifer.COOLDOWN
+			entity.ProjectileCooldown = Settings.Cooldown
 		end
 	end
+	
+	
+	-- Movement
+	-- Fix for them getting stuck sometimes
+	if entity:CollidesWithGrid() and not data.delay then
+		StriferTurnAround(entity)
+	end
+
+	if not data.delay then
+		-- Move towards target if it's close enough
+		if StriferInRange(Settings.TargetRange) == true and entity.Position:Distance(moveto) > 10 and not entity:HasEntityFlags(EntityFlag.FLAG_CONFUSION) then
+			if entity:HasEntityFlags(EntityFlag.FLAG_FEAR) or entity:HasEntityFlags(EntityFlag.FLAG_SHRINK) then
+				data.vector = (moveto - entity.Position):Normalized() * -speed
+
+			else
+				data.vector = (moveto - entity.Position):Normalized() * speed
+			end
+		end
+
+		-- Turn around when colliding with a grid entity
+		if entity:CollidesWithGrid() then
+			StriferTurnAround(entity)
+		end
+
+	else
+		data.delay = data.delay - 1
+		if data.delay <= 0 then
+			data.delay = nil
+		end
+	end
+
+	entity.Velocity = (entity.Velocity + (data.vector - entity.Velocity) * 0.25)
 end
-
-
 
 function this:StriferCollision(entity, target, cum)
 	local data = entity:GetData()
@@ -291,11 +261,9 @@ end
 
 
 function this:Init()
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.StriferInit, 839)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.StriferUpdate, 839)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, this.StriferCollision, 839)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.StriferInit, EntityType.ENTITY_STRIFER)
+    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.StriferUpdate, EntityType.ENTITY_STRIFER)
+    AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, this.StriferCollision, EntityType.ENTITY_STRIFER)
 end
-
-
 
 return this

@@ -1,8 +1,6 @@
 local this = {}
 local game = Game()
 
-
-
 local States = {
 	NoSpit = 0,
 	JumpSpit = 1,
@@ -12,7 +10,7 @@ local States = {
 
 
 function this:fractureUpdate(entity)
-	if entity.Variant == 801 then
+	if entity.Variant == EntityVariant.FRACTURE then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
 		local myRNG = RNG()
@@ -38,7 +36,7 @@ function this:fractureUpdate(entity)
 				data.state = States.StandSpit
 				
 				-- Blood effect
-				local effect = Isaac.Spawn(1000, EffectVariant.BLOOD_EXPLOSION, 3, entity.Position, Vector.Zero, entity):GetSprite()
+				local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BLOOD_EXPLOSION, 3, entity.Position, Vector.Zero, entity):GetSprite()
 				effect.Offset = Vector(0, -10)
 
 				if level:GetStage() == LevelStage.STAGE1_1 or level:GetStage() == LevelStage.STAGE1_2 then
@@ -59,6 +57,7 @@ function this:fractureUpdate(entity)
 		if data.state ~= nil then
 			local params = ProjectileParams()
 			params.FallingSpeedModifier = 2
+			
 			-- Different projectile colors for Downpour and Dross
 			if level:GetStage() == LevelStage.STAGE1_1 or level:GetStage() == LevelStage.STAGE1_2 then
 				if level:GetStageType() == StageType.STAGETYPE_REPENTANCE then
@@ -88,9 +87,7 @@ end
 
 
 function this:Init()
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.fractureUpdate, 29)
+    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.fractureUpdate, EntityType.ENTITY_HOPPER)
 end
-
-
 
 return this

@@ -1,8 +1,6 @@
 local this = {}
 local game = Game()
 
-
-
 local Settings = {
 	AttackTime = {60, 120}, -- The amount of frames between each bat charge
 	AttackRange = 280, -- Range players must be in to trigger the bat charging
@@ -27,11 +25,9 @@ end
 
 
 function this:echoBatInit(entity)
-	if entity.Variant == 2407 then
-		local sprite = entity:GetSprite()
+	if entity.Variant == AMLVariants.ECHO_BAT then
 		local data = entity:GetData()
 
-		
 		data.cooldown = math.random(Settings.AttackTime[1], Settings.AttackTime[2])
 		data.chargeDirection = Vector.Zero
 		data.angleCountdown = math.random(Settings.DirectionChangeTimes[1], Settings.DirectionChangeTimes[2])
@@ -40,10 +36,8 @@ function this:echoBatInit(entity)
 	end
 end
 
-
-
 function this:echoBatUpdate(entity)
-	if entity.Variant == 2407 then
+	if entity.Variant == AMLVariants.ECHO_BAT then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
 		local target = entity:GetPlayerTarget()
@@ -72,18 +66,17 @@ function this:echoBatUpdate(entity)
 			data.angleOffset = getAngleOffset(data.angleDirection)
 			data.angleCountdown = math.random(Settings.DirectionChangeTimes[1], Settings.DirectionChangeTimes[2])
 		end
-		
-		
-		if not sprite:IsPlaying("Attack") and not sprite:IsPlaying("Idle") then
-			sprite:Play("Idle", true)
-		end
-
 
 		if data.cooldown > 0 then
 			data.cooldown = data.cooldown - 1
 		end
 		if data.angleCountdown > 0 then
 			data.angleCountdown = data.angleCountdown - 1
+		end
+		
+		
+		if not sprite:IsPlaying("Attack") and not sprite:IsPlaying("Idle") then
+			sprite:Play("Idle", true)
 		end
 
 
@@ -98,7 +91,7 @@ function this:echoBatUpdate(entity)
 		
 		elseif sprite:IsEventTriggered("Shoot") then
 			local params = ProjectileParams()
-			params.Variant = 104
+			params.Variant = ProjectileVariant.PROJECTILE_ECHO
 			params.FallingAccelModifier = -0.15
 
 			entity:FireProjectiles(entity.Position, (target.Position - entity.Position):Normalized() * Settings.ShotSpeed, 0, params)
@@ -121,14 +114,13 @@ function this:echoRingInit(projectile)
 end
 
 function this:echoRingHit(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
-	if damageSource.Type == EntityType.ENTITY_PROJECTILE and damageSource.Variant == 104 then
+	if damageSource.Type == EntityType.ENTITY_PROJECTILE and damageSource.Variant == ProjectileVariant.PROJECTILE_ECHO then
 		if target.Type == EntityType.ENTITY_PLAYER then
 			if not target:HasEntityFlags(EntityFlag.FLAG_SLOW) then
 				target:AddSlowing(EntityRef(damageSource.Entity), 60, 0.8, Color(1,1,1, 1))
 				target:SetColor(Color(1,1,1, 1, 0.15,0.15,0.15), 60, 1, false, false)
 			end
 		else
-			--target:AddConfusion(EntityRef(damageSource.Entity), 45, false)
 			target:AddSlowing(EntityRef(damageSource.Entity), 60, 0.8, Color(1,1,1, 1, 0.15,0.15,0.15))
 		end
 
@@ -139,13 +131,11 @@ end
 
 
 function this:Init()
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.echoBatInit, 200)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.echoBatUpdate, 200)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.echoBatInit, EntityType.ENTITY_AML)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.echoBatUpdate, EntityType.ENTITY_AML)
 
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, this.echoRingInit, 104)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, this.echoRingInit, ProjectileVariant.PROJECTILE_ECHO)
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.echoRingHit)
 end
-
-
 
 return this

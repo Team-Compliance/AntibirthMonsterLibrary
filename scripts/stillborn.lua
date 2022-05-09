@@ -1,13 +1,11 @@
 local this = {}
 local game = Game()
 
-
-
 local Settings = {
 	MoveSpeed = 1.25,
 	ShotSpeed = 10,
 	Cooldown = 18,
-	Range = 234
+	Range = 240
 }
 
 local States = {
@@ -19,7 +17,7 @@ local States = {
 
 
 function this:stillbornInit(entity)
-	if entity.Variant == 2409 then
+	if entity.Variant == AMLVariants.STILLBORN then
 		local data = entity:GetData()
 		local level = game:GetLevel()
 		local stage = level:GetStage()
@@ -30,18 +28,18 @@ function this:stillbornInit(entity)
 		entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYEROBJECTS
 		entity:AddEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS | EntityFlag.FLAG_HIDE_HP_BAR | EntityFlag.FLAG_NO_TARGET)
 
-
 		-- Set Variables
 		entity.MaxHitPoints = 0
-		entity.ProjectileCooldown = Settings.Cooldown * 2 -- They started with a longer cooldown on spawn
+		entity.ProjectileCooldown = Settings.Cooldown * 2 -- Longer cooldown on spawn
 		data.state = States.Appear
 		
 		data.altSkin = ""
 		if (stage == LevelStage.STAGE4_1 or stage == LevelStage.STAGE4_2) and level:GetStageType() == StageType.STAGETYPE_REPENTANCE then
-			if room:GetBackdropType() == BackdropType.CORPSE2 or room:GetBackdropType() == BackdropType.CORPSE2 then
-				data.altSkin = "_corpse2"
-			else
+			if room:GetBackdropType() == BackdropType.CORPSE then
 				data.altSkin = "_corpse"
+				entity.SplatColor = Color(0.6,0.8,0.6, 1, 0,0.1,0)
+			else
+				data.altSkin = "_corpse2"
 			end
 		end
 		
@@ -59,7 +57,7 @@ end
 
 
 function this:stillbornUpdate(entity)
-	if entity.Variant == 2409 then
+	if entity.Variant == AMLVariants.STILLBORN then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
 		local target = entity:GetPlayerTarget()
@@ -76,7 +74,6 @@ function this:stillbornUpdate(entity)
 			end
 
 			entity.Velocity = (target.Position - entity.Position):Normalized() * Settings.MoveSpeed
-			
 			
 			-- Shooting
 			if entity.ProjectileCooldown > 0 then
@@ -97,16 +94,8 @@ function this:stillbornUpdate(entity)
 					entity:FireProjectiles(entity.Position, (target.Position - entity.Position):Normalized() * Settings.ShotSpeed, 0, ProjectileParams())
 					entity:PlaySound(SoundEffect.SOUND_STONESHOOT, 1, 0, false, 1)
 					entity.ProjectileCooldown = Settings.Cooldown
-					
-					local effect = Isaac.Spawn(1000, EffectVariant.BLOOD_EXPLOSION, 5, entity.Position, Vector.Zero, entity):ToEffect()
-					effect:FollowParent(entity)
-					effect:GetSprite().Offset = Vector(0, -15)
-					effect:GetSprite().PlaybackSpeed = 1.5
-					effect:GetSprite().Color = Color(1,1,1, 0.75)
-					effect.DepthOffset = entity.DepthOffset + 1
 				end
 			end
-			
 
 			-- Die on room clear
 			if room:IsClear() then
@@ -136,7 +125,7 @@ function this:stillbornUpdate(entity)
 					entity:Kill()
 					
 				else
-					entity:PlaySound(SoundEffect.SOUND_MEATY_DEATHS, 1, 0, false, 1)
+					SFXManager():Play(SoundEffect.SOUND_MEATY_DEATHS)
 				end
 				
 			elseif sprite:IsEventTriggered("Explode") then
@@ -150,10 +139,8 @@ end
 
 
 function this:Init()
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.stillbornInit, 200)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.stillbornUpdate, 200)
+    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.stillbornInit, EntityType.ENTITY_AML)
+    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.stillbornUpdate, EntityType.ENTITY_AML)
 end
-
-
 
 return this

@@ -3,13 +3,369 @@ local mod = AntiMonsterLib
 local game = Game()
 
 
+
+--[[/////////////////////////////////////////--
+	HOW TO USE BLACKLIST FUNCTIONS:
+
+Adding / Removing entry:
+AMLblacklistEntry(blacklist, Type, Variant, SubType, operation)
+	there are 3 possible blacklists: "Coil", "Necromancer" and "Corpse Eater"
+	the possible operations are "add" and "remove"
+	if the function fails (eg. if you're trying to remove an entry that doesn't exist), it will give an error in the console and return false, otherwise it will return true
+	setting the Type or Variant to -1 will include all variants or subtypes
+
+Checking for blacklist entries:
+inAMLblacklist(blacklist, checkType, checkVariant, checkSubType)
+	there are 3 possible blacklists: "Coil", "Necromancer" and "Corpse Eater"
+	returns true if the specified entity is in the blacklist, returns false otherwise
+	setting the Type or Variant to -1 will include all variants or subtypes
+
+
+
+	HOW TO USE CORPSE EATER EFFECT FUNCTIONS:
+	
+Adding / Removing entry:
+EatenEffectEntry(Type, Variant, SubType, operation, effect)
+	there are 5 possible effects: "small" (reduced effects, no projectiles), "bone", "poop", "stone", "dank" (unique projectiles)
+	if an entity doesn't have an effect entry it will default to regular blood projectiles with occasional bone ones
+	the possible operations are "add" and "remove"
+	if the function fails (eg. if you're trying to remove an entry that doesn't exist), it will give an error in the console and return false, otherwise it will return true
+	setting the Type or Variant to -1 will include all variants or subtypes
+	
+Checking for effect entries:
+GetEatenEffect(checkType, checkVariant, checkSubType)
+	returns the entities effect group as a string if it has an entry, returns false otherwise
+	setting the Type or Variant to -1 will include all variants or subtypes
+--/////////////////////////////////////////]]--
+
+
+
 --[[--------------------------------------------------------
-
-    External monster files to require
-
+    Enums
 --]]--------------------------------------------------------
 
-local monsters = {
+-- Monsters
+EntityType.ENTITY_AML = 200
+EntityType.ENTITY_DUMPLING = 800
+EntityType.ENTITY_BLIND_BAT = 803
+EntityType.ENTITY_STRIFER = 839
+EntityType.ENTITY_NIGHTWATCH = 842
+EntityType.ENTITY_VESSEL = 858
+
+
+-- Variants of the AML entity
+AMLVariants = {
+    DUMPLING = 2401, -- for backwards compatibility
+    SKINLING = 2402, -- for backwards compatibility
+    SCAB = 2403, -- for backwards compatibility
+    COIL = 2406,
+	ECHO_BAT = 2407,
+	SCREAMER = 2408,
+	STILLBORN = 2409,
+	NECROMANCER = 2410,
+	RED_TNT = 3400
+}
+
+
+-- Variants of already existing entities
+EntityVariant = {
+	FRACTURE = 801, -- for EntityType.ENTITY_HOPPER
+	SWAPPER = 835, -- for EntityType.ENTITY_BABY
+	BARFY = 850, -- for EntityType.ENTITY_FATTY
+	CORPSE_EATER = 100, -- for EntityType.ENTITY_GRUB
+	CARRION_RIDER = 101 -- for EntityType.ENTITY_GRUB
+}
+
+
+-- Projectile variants
+ProjectileVariant.PROJECTILE_ECHO = 104
+ProjectileVariant.PROJECTILE_LANTERN = 106
+
+-- Effect variant
+EffectVariant.NIGHTWATCH_SPOTLIGHT = 842
+EffectVariant.SCREAMER_AURA = 867
+
+
+
+--[[--------------------------------------------------------
+    Blacklists for enemies
+--]]--------------------------------------------------------
+
+coil_blacklist = {
+	{EntityType.ENTITY_LUMP, -1, -1},
+	{EntityType.ENTITY_AML, AMLVariants.COIL, -1},
+	{EntityType.ENTITY_AML, AMLVariants.RED_TNT, -1},
+	{EntityType.ENTITY_GRUB, 100, 1}, -- Corpse eater body
+	{EntityType.ENTITY_EVIS, 10, -1}, -- Evis cord
+	{EntityType.ENTITY_NEEDLE, -1, -1},
+}
+
+necromancer_blacklist = {
+	{EntityType.ENTITY_GRUB, 0, -1},
+	{EntityType.ENTITY_GRUB, 100, 1}, -- Corpse eater body
+	{EntityType.ENTITY_LITTLE_HORN, 1, -1}, -- Dark ball
+	{EntityType.ENTITY_RAG_MEGA, 1, -1}, -- Purple ball
+	{EntityType.ENTITY_BIG_BONY, 10, -1}, -- Bouncing bone
+}
+
+corpse_eater_blacklist = {
+	{EntityType.ENTITY_FLY, -1, -1},
+	{EntityType.ENTITY_ATTACKFLY, -1, -1},
+	{EntityType.ENTITY_VIS, 22, -1}, -- Chubber projectile
+	{EntityType.ENTITY_SUCKER, 4, -1}, -- Bulb
+	{EntityType.ENTITY_SUCKER, 5, -1}, -- Bloodfly
+	{EntityType.ENTITY_SPIDER, -1, -1},
+	{EntityType.ENTITY_AML, AMLVariants.NECROMANCER, -1},
+	{EntityType.ENTITY_DIP, -1, -1},
+	{EntityType.ENTITY_RING_OF_FLIES, -1, -1},
+	{EntityType.ENTITY_BONY, -1, -1},
+	{EntityType.ENTITY_GRUB, 100, -1},
+	{EntityType.ENTITY_GRUB, 101, -1},
+	{EntityType.ENTITY_DART_FLY, -1, -1},
+	{EntityType.ENTITY_BLACK_BONY, -1, -1},
+	{EntityType.ENTITY_SWARM, -1, -1},
+	{EntityType.ENTITY_CORN_MINE, -1, -1},
+	{EntityType.ENTITY_HUSH_FLY, -1, -1},
+	{EntityType.ENTITY_LITTLE_HORN, 1, -1}, -- Dark ball
+	{EntityType.ENTITY_PORTAL, -1, -1},
+	{EntityType.ENTITY_WILLO, -1, -1},
+	{EntityType.ENTITY_BIG_BONY, -1, -1},
+	{EntityType.ENTITY_WILLO_L2, -1, -1},
+	{EntityType.ENTITY_REVENANT, -1, -1},
+	{EntityType.ENTITY_ARMYFLY, -1, -1},
+	{EntityType.ENTITY_SWARM_SPIDER, -1, -1},
+	{EntityType.ENTITY_CULTIST, -1, -1},
+}
+
+-- Add / remove blacklist entry
+function AMLblacklistEntry(blacklist, Type, Variant, SubType, operation)
+	-- Error checking
+	if blacklist ~= "Coil" and blacklist ~= "Necromancer" and blacklist ~= "Corpse Eater" then
+		print("[AML] Error adding / removing blacklist entry:\n   Incorrect blacklist: " .. blacklist)
+	end
+	if operation ~= "add" and operation ~= "remove" then
+		print("[AML] Error adding / removing blacklist entry:\n   Unknown operation: " .. operation)
+		return false
+	end
+
+	-- Get blacklist
+	local checkList = ""
+	if blacklist == "Coil" then
+		checkList = coil_blacklist
+	elseif blacklist == "Necromancer" then
+		checkList = necromancer_blacklist
+	elseif blacklist == "Corpse Eater" then
+		checkList = corpse_eater_blacklist
+	end
+	
+	-- Add / remove
+	for i,entry in pairs(checkList) do
+		if operation == "add" then
+			if entry[1] == Type and entry[2] == Variant and entry[3] == SubType then
+				print("[AML] Error adding blacklist entry:\n   Entry already exists")
+				return false
+			end
+		
+		elseif operation == "remove" then
+			if entry[1] == Type and entry[2] == Variant and entry[3] == SubType then
+				table.remove(checkList, i)
+				return true
+			end
+		end
+	end
+	
+	if operation == "add" then
+		table.insert(checkList, {Type, Variant, SubType})
+		return true
+		
+	elseif operation == "remove" then
+		print("[AML] Error removing blacklist entry:\n   Entry doesn't exist")
+		return false
+	end
+end
+
+-- Check if the entity is in the blacklist or not
+function inAMLblacklist(blacklist, checkType, checkVariant, checkSubType)
+	if blacklist ~= "Coil" and blacklist ~= "Necromancer" and blacklist ~= "Corpse Eater" then
+		print("[AML] Error checking blacklist:\n   Incorrect blacklist: " .. blacklist)
+		return
+	end
+	
+	local checkList = ""
+	if blacklist == "Coil" then
+		checkList = coil_blacklist
+	elseif blacklist == "Necromancer" then
+		checkList = necromancer_blacklist
+	elseif blacklist == "Corpse Eater" then
+		checkList = corpse_eater_blacklist
+	end
+	
+	for i,entry in pairs(checkList) do
+		if checkType == entry[1] and (entry[2] == -1 or checkVariant == entry[2]) and (entry[3] == -1 or checkSubType == entry[3]) then
+			return true
+		end
+	end
+	return false
+end
+
+
+
+--[[--------------------------------------------------------
+    Corpse eater death effects for enemies
+--]]--------------------------------------------------------
+
+corpse_eater_effects = {
+	small = {
+	{EntityType.ENTITY_FLY, -1, -1},
+	{EntityType.ENTITY_POOTER, -1, -1},
+	{EntityType.ENTITY_ATTACKFLY, -1, -1},
+	{EntityType.ENTITY_MOTER, -1, -1},
+	{EntityType.ENTITY_SPIDER, -1, -1},
+	{EntityType.ENTITY_BIGSPIDER, -1, -1},
+	{EntityType.ENTITY_RING_OF_FLIES, -1, -1},
+	{EntityType.ENTITY_DART_FLY, -1, -1},
+	{EntityType.ENTITY_SWARM, -1, -1},
+	{EntityType.ENTITY_HUSH_FLY, -1, -1},
+	{EntityType.ENTITY_SMALL_LEECH, -1, -1},
+	{EntityType.ENTITY_STRIDER, -1, -1},
+	{EntityType.ENTITY_FLY_BOMB, -1, -1},
+	{EntityType.ENTITY_SMALL_MAGGOT, -1, -1},
+	{EntityType.ENTITY_ARMYFLY, -1, -1},
+	{EntityType.ENTITY_SWARM_SPIDER, -1, -1},
+	{EntityType.ENTITY_POOFER, -1, -1},
+	},
+
+	bone = {
+	{EntityType.ENTITY_BOOMFLY, 4, -1}, -- Bone fly
+	{EntityType.ENTITY_DEATHS_HEAD, 4, -1}, -- Red skull
+	{EntityType.ENTITY_BONY, -1, -1},
+	{EntityType.ENTITY_POLYCEPHALUS, 1, -1}, -- The Pile
+	{EntityType.ENTITY_BLACK_BONY, -1, -1},
+	{EntityType.ENTITY_MOMS_DEAD_HAND, -1, -1},
+	{EntityType.ENTITY_FORSAKEN, -1, -1},
+	{EntityType.ENTITY_BIG_BONY, -1, -1},
+	{EntityType.ENTITY_REVENANT, -1, -1},
+	{EntityType.ENTITY_NEEDLE, 1, -1}, -- Pasty
+	{EntityType.ENTITY_CLICKETY_CLACK, -1, -1},
+	{EntityType.ENTITY_MAZE_ROAMER, -1, -1},
+	},
+	
+	stone = {
+	{EntityType.ENTITY_HOST, 3, -1}, -- Hard host
+	{EntityType.ENTITY_ULTRA_GREED, 1, -1}, -- Ultra Greedier
+	{EntityType.ENTITY_BISHOP, -1, -1},
+	{EntityType.ENTITY_ROCK_SPIDER, -1, -1},
+	{EntityType.ENTITY_DANNY, 1, -1}, -- Coal boy
+	{EntityType.ENTITY_BLASTER, -1, -1},
+	{EntityType.ENTITY_QUAKEY, -1, -1},
+	{EntityType.ENTITY_HARDY, -1, -1},
+	{EntityType.ENTITY_VISAGE, -1, -1},
+	},
+	
+	poop = {
+	{EntityType.ENTITY_DIP, -1, -1},
+	{EntityType.ENTITY_SQUIRT, 0, -1},
+	{EntityType.ENTITY_DINGA, -1, -1},
+	{EntityType.ENTITY_GURGLING, 2, -1}, -- Turdling
+	{EntityType.ENTITY_DINGLE, -1, -1},
+	{EntityType.ENTITY_CORN_MINE, -1, -1},
+	{EntityType.ENTITY_BROWNIE, -1, -1},
+	{EntityType.ENTITY_HENRY, -1, -1},
+	{EntityType.ENTITY_DRIP, -1, -1},
+	{EntityType.ENTITY_SPLURT, -1, -1},
+	{EntityType.ENTITY_CLOGGY, -1, -1},
+	{EntityType.ENTITY_DUMP, -1, -1},
+	{EntityType.ENTITY_CLOG, -1, -1},
+	{EntityType.ENTITY_COLOSTOMIA, -1, -1},
+	{EntityType.ENTITY_TURDLET, -1, -1},
+	},
+	
+	dank = {
+	{EntityType.ENTITY_CLOTTY, 1, -1}, -- Clot
+	{EntityType.ENTITY_CHARGER, 2, -1},
+	{EntityType.ENTITY_GLOBIN, 2, -1},
+	{EntityType.ENTITY_LEAPER, 1, -1},
+	{EntityType.ENTITY_GUTS, 2, -1}, -- Slog
+	{EntityType.ENTITY_MONSTRO2, 1, -1}, -- Gish
+	{EntityType.ENTITY_SUCKER, 2, -1}, -- Ink
+	{EntityType.ENTITY_DEATHS_HEAD, 1, -1},
+	{EntityType.ENTITY_SQUIRT, 1, -1},
+	{EntityType.ENTITY_TARBOY, -1, -1},
+	{EntityType.ENTITY_GUSH, -1, -1},
+	{EntityType.ENTITY_BUTT_SLICKER, -1, -1},
+	},
+}
+
+-- Add / remove Corpse Eater effects
+function EatenEffectEntry(Type, Variant, SubType, operation, effect)
+	-- Error checking
+	if effect ~= "small" and effect ~= "bone" and effect ~= "stone" and effect ~= "poop" and effect ~= "dank" then
+		print("[AML] Error adding / removing Corpse eater effect entry:\n   Unknown effect: " .. effect)
+	end
+	if operation ~= "add" and operation ~= "remove" then
+		print("[AML] Error adding / removing Corpse eater effect entry:\n   Unknown operation: " .. operation)
+		return false
+	end
+
+	-- Get list
+	local checkList = ""
+	if effect == "small" then
+		checkList = corpse_eater_effects.small
+	elseif effect == "bone" then
+		checkList = corpse_eater_effects.bone
+	elseif effect == "stone" then
+		checkList = corpse_eater_effects.stone
+	elseif effect == "poop" then
+		checkList = corpse_eater_effects.poop
+	elseif effect == "dank" then
+		checkList = corpse_eater_effects.dank
+	end
+	
+	-- Add / remove
+	for i,entry in pairs(checkList) do
+		if operation == "add" then
+			if entry[1] == Type and entry[2] == Variant and entry[3] == SubType then
+				print("[AML] Error adding effect entry:\n   Entry already exists")
+				return false
+			end
+		
+		elseif operation == "remove" then
+			if entry[1] == Type and entry[2] == Variant and entry[3] == SubType then
+				table.remove(checkList, i)
+				return true
+			end
+		end
+	end
+	
+	if operation == "add" then
+		table.insert(checkList, {effect, Type, Variant, SubType})
+		return true
+		
+	elseif operation == "remove" then
+		print("[AML] Error removing effect entry:\n   Entry doesn't exist")
+		return false
+	end
+end
+
+-- Get Corpse eater effect
+function GetEatenEffect(checkType, checkVariant, checkSubType)
+	for effect,effectlist in pairs(corpse_eater_effects) do
+		for i,entry in pairs(effectlist) do
+			if checkType == entry[1] and (entry[2] == -1 or checkVariant == entry[2]) and (entry[3] == -1 or checkSubType == entry[3]) then
+				return tostring(effect)
+			end
+		end
+	end
+	return false
+end
+
+
+
+--[[--------------------------------------------------------
+    External monster files to require
+--]]--------------------------------------------------------
+
+local monsterScripts = {
 	corpseEaters = include("scripts.corpseEaters"),
 	dumplings = include("scripts.dumplings"),
 	fracture = include("scripts.fracture"),
@@ -22,293 +378,33 @@ local monsters = {
 	strifers = include("scripts.strifers"),
 	nightwatch = include("scripts.nightwatch"),
     vessel = include("scripts.vessel"),
-	screamer = include("scripts.screamer")
+	coils = include("scripts.coils"),
+	screamer = include("scripts.screamer"),
+	redTNT = include("scripts.redTNT")
 }
 
-
---[[
-    Enum for all monster variants
---]]
-local MonsterVariants = {
-    DUMPLING=2401, -- for backwards compatibility
-    SKINLING=2402, -- for backwards compatibility
-    SCAB=2403, -- for backwards compatibility
-    COIL=2406,
-	ECHOBAT=2407,
-	SCREAMER=2408,
-	STILLBORN=2409,
-	NECROMANCER=2410,
-	REDTNT=3400
-}
-
-
---[[
-    Floor record of rooms containing coils, collects
-    room ids and locations, resets on new stage.
---]]
-local CoilRoomRecord = {}
-local RedTNTRoomRecord = {}
-
-
---[[
-    Blacklist of enemies coils should NOT link to
---]]
-local coil_blacklist = {
-    "865.10", -- Evis guts
-    "200.2406", -- Coils themselves
-	"200.3400", -- Red TNT
-    "33.0", "33.1", "33.2", "33.3", "33.10", "33.12", "33.13" -- Fireplaces and moveable fires
-    }
-
-
 --[[--------------------------------------------------------
-
-Functions below supplement the callback functions,
-and should be docstring'd with what they're used for.
-
---]]--------------------------------------------------------
-
-
---[[
-    Checks if variant matches a dumpling for backwards compatibility
---]]
-local function isDumpling(variant)
-    return variant == MonsterVariants.DUMPLING or variant == MonsterVariants.SKINLING or variant == MonsterVariants.SCAB
-end
-
-
---[[
-    Checks if a given npc is coil blacklisted
---]]
-local function isBlacklisted(npc)
-    for _,v in pairs(coil_blacklist) do
-        if v == (npc.Type.."."..npc.Variant) or (npc:GetEntityFlags() & EntityFlag.FLAG_FRIENDLY == EntityFlag.FLAG_FRIENDLY) then
-            npc:GetData()["CoilBlacklist"] = true
-            return true
-        end
-    end
-    return false
-end
-
-
---[[
-    Helper function to connect a coil and enemy pair with a laser
---]]
-local function addLaser(npc_target, coil_source)
-    if not isBlacklisted(npc_target) then  
-        local laser_source_pos = Vector(coil_source.Position.X, coil_source.Position.Y-10)
-        local laser_ent_pair = {laser=EntityLaser.ShootAngle(2, laser_source_pos, ((npc_target.Position - laser_source_pos):GetAngleDegrees()), 0, Vector(0, -30), coil_source), npc=npc_target}
-        local _, endPos = Game():GetRoom():CheckLine(laser_source_pos, laser_ent_pair.npc.Position, 3)
-        laser_ent_pair.laser:SetMaxDistance(laser_source_pos:Distance(endPos))
-        laser_ent_pair.laser.CollisionDamage = 0
-        laser_ent_pair.laser:SetColor(Color(0,0,0,1,0.89,0.92,0.81), 0, 1, false, false)
-        laser_ent_pair.laser.Mass = 0
-        laser_ent_pair.laser.DepthOffset = 200.0
-        table.insert(coil_source:GetData()["Lasers"], laser_ent_pair)
-        npc_target:GetData()[("CoilTagged"..tostring(coil_source:GetData()["CoilID"]))] = true
-    end
-end
-
-
---[[
-    Helper function to adjust lasers to connect properly after an enemy moves
---]]
-local function adjust_laser(laser_pair, coil_source)
-    local laser_source_pos = Vector(coil_source.Position.X, coil_source.Position.Y-10)
-    laser_pair.laser.Angle = (laser_pair.npc.Position - laser_source_pos):GetAngleDegrees()
-    local _, endPos = Game():GetRoom():CheckLine(laser_source_pos, laser_pair.npc.Position, 3)
-    laser_pair.laser:SetMaxDistance(laser_source_pos:Distance(endPos))
-end
-
-
---[[--------------------------------------------------------
-
-Callback functions below with dividers to separate
-each monster by group or individual.
-
---]]--------------------------------------------------------
-
-
---[[
-    NPC Update Function
---]]
-function mod:NPCUpdate(npc)
-    --[[ COIL ]]----------------------------------------------------------------------------------------------------
-    if npc.Variant == MonsterVariants.COIL then -- Check if entity is coil
-        npc.Position = npc:GetData()["StartPos"] -- anchor to position
-        npc:GetSprite():Play("Idle")
-        if npc:GetData()["AliveFrames"] > 8 then -- delay laser spawning
-            local room_entities = Isaac.GetRoomEntities()
-            for _,v in pairs(room_entities) do
-                if v:IsEnemy() and not v:GetData()[("CoilTagged"..tostring(npc:GetData()["CoilID"]))] and v:GetData()["CoilBlacklist"] == nil then
-                    addLaser(v, npc)
-                end
-            end
-            for _,v in pairs(npc:GetData()["Lasers"]) do -- remove lasers from dead, or adjust them to follow entities
-                if v.npc:IsDead() then
-                    v.laser:Remove()
-                else
-                    adjust_laser(v, npc)
-                end
-            end
-        else
-            npc:GetData()["AliveFrames"] = npc:GetData()["AliveFrames"] + 1
-        end
-    end
-end
-mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.NPCUpdate, 200)
-
-
---[[
-    NPC Init Function
---]]
-function mod:NPCInit(npc)
-
-    --[[ COIL ]]----------------------------------------------------------------------------------------------------
-    if npc.Variant == MonsterVariants.COIL then
-        npc:GetData()["StartPos"] = npc.Position -- Get anchor position
-        npc:GetData()["CoilID"] = math.random(100)
-        npc:GetData()["Lasers"] = {}
-        npc:GetData()["AliveFrames"] = 0
-		npc:AddEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS | EntityFlag.FLAG_NO_PHYSICS_KNOCKBACK | EntityFlag.FLAG_HIDE_HP_BAR | EntityFlag.FLAG_NO_TARGET) -- Same as grimaces
-		
-		if CoilsMod then
-			npc:GetSprite():Load("gfx/coil.anm2", true)
-		end
-    end
-    
-end
-mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.NPCInit, 200)
-
-
---[[
-    NPC Damage Function
---]]
-function mod:NPCDamage(entity, amount, dmg_flags)
-    -- Information to use for multiple enemies
-    local npc = entity:ToNPC()
-    
-    --[[ COIL ]]----------------------------------------------------------------------------------------------------
-    if npc.Variant == MonsterVariants.COIL then -- coils should not take damage of any kind
-        return false
-    end
-	
-	--[[ RED TNT ]]----------------------------------------------------------------------------------------------------
-    if npc.Variant == MonsterVariants.REDTNT then -- red tnt should not take damage since it explodes on collision
-        return false
-    end
-
-end
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.NPCDamage, 200)
-
-
---[[
-    NPC Collision Function
---]]
-function mod:NPCCollision(entity, collider, low)
-    -- Information to use for multiple enemies
-    local npc = entity:ToNPC()
-	local room_index = Game():GetLevel():GetCurrentRoomIndex()
-	
-	--[[ RED TNT ]]-------------------------------------------------------------------------------------------------
-	if npc.Variant == MonsterVariants.REDTNT then
-		Isaac.Explode(npc.Position, npc, 100)
-		npc.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
-		npc:GetSprite():Play("Blown")
-		
-		if RedTNTRoomRecord[room_index] ~= nil then
-			for i,v in pairs(RedTNTRoomRecord[room_index]) do 
-				if v == npc.Position then
-					table.remove(RedTNTRoomRecord[room_index], i)
-				end
-			end
-		end
-    end
-	
-end
-mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.NPCCollision, 200)
-
-
---[[
-    Called when player enters a new room
---]]
-function mod:EnterNewRoom()
-    local room_index = Game():GetLevel():GetCurrentRoomIndex()
-    if Game():GetRoom():IsFirstVisit() then
-	    local room_entities = Isaac.GetRoomEntities()
-        local coil_table = {}
-		local redtnt_table = {}
-        for _,v in pairs(room_entities) do
-            if v:IsEnemy() and v.Type.."."..v.Variant == "200.2406" then -- check if is coil
-				table.insert(coil_table, v.Position)
-            elseif v:IsEnemy() and v.Type.."."..v.Variant == "200.3400" then -- check if is red tnt
-				table.insert(redtnt_table, v.Position)
-			end
-        end
-        CoilRoomRecord[room_index] = coil_table
-		RedTNTRoomRecord[room_index] = redtnt_table
-    else
-        if CoilRoomRecord[room_index] ~= nil then
-            for _,v in pairs(CoilRoomRecord[room_index]) do
-                Isaac.Spawn(200, 2406, 0, v, Vector.Zero, nil) -- respawn coils
-            end
-        end
-		
-		if RedTNTRoomRecord[room_index] ~= nil then
-			for _,v in pairs(RedTNTRoomRecord[room_index]) do
-				Isaac.Spawn(200, 3400, 0, v, Vector.Zero, nil) -- respawn red tnts
-			end
-		end
-    end
-end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.EnterNewRoom)
-
-
---[[
-   Called when player enters a new stage
---]]
-function mod:EnterNewLevel()
-    CoilRoomRecord = {} -- reset coil record upon new stage entry
-	RedTNTRoomRecord = {}
-end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.EnterNewLevel)
-
-
---[[
-    Some util functions
-]]-- 
-function AntiMonsterLib:GetPlayers()
-
-    local players = {}
-
-    for i = 1, Game():GetNumPlayers() do
-        table.insert(players, Isaac.GetPlayer(i - 1))
-    end
-
-    return players
-
-end
-
-
---[[
     Load the external files.
-]]--
-for _, v in pairs(monsters) do
+--]]--------------------------------------------------------
+
+for _, v in pairs(monsterScripts) do
     v.Init()
 end
 
 
---[[
+
+--[[--------------------------------------------------------
     Replace entities that use an old ID or a different one in Basement Renovator
-]]-- 
+--]]--------------------------------------------------------
+
 function mod:replaceID(Type, Variant, SubType, GridIndex, Seed)
-	--[[ DUMPLINGS ]]-----------------------------------------------------------------------------------------------
-	if Type == 200 and isDumpling(Variant) then
+	--[[ DUMPLINGS ]]--
+	if Type == 200 and (Variant == AMLVariants.DUMPLING or Variant == AMLVariants.SKINLING or Variant == AMLVariants.SCAB) then
 		if not DumplingsMod then
 			return {800, Variant - 2401, SubType}
 		end
 
-	--[[ FRACTURE ]]------------------------------------------------------------------------------------------------
+	--[[ FRACTURE ]]--
 	elseif Type == 801 then
 		return {29, 801, SubType}
 	end

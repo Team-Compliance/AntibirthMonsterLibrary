@@ -1,10 +1,8 @@
 local this = {}
 local game = Game()
 
-
-
 local Settings = {
-	MoveSpeed = 2,
+	MoveSpeed = 2.2,
 	RotateTimer = 85,
 	FrontRange = 200,
 	SideRange = 30,
@@ -26,12 +24,6 @@ local nightwatchRemoveEventSavedPositions = {}
 
 
 
-function nwLerp(first,second,percent)
-	return (first + (second - first) * percent)
-end
-
-
-
 -- Get path positions
 function getPaths(room_index)
 	local level = Game():GetLevel()
@@ -49,7 +41,7 @@ function getPaths(room_index)
 				if roomConfigSpawn:PickEntry(j) ~= nil then
 					local roomConfigEntry = roomConfigSpawn:PickEntry(j)
 					
-					if roomConfigEntry.Type == 970 and roomConfigEntry.Variant > 689 and roomConfigEntry.Variant < 696 then
+					if roomConfigEntry.Type == EntityType.ENTITY_ENVIRONMENT and roomConfigEntry.Variant > 689 and roomConfigEntry.Variant < 696 then
 						local pathData = {roomConfigEntry.Variant - 690, Vector(roomConfigSpawn.X, roomConfigSpawn.Y), math.floor(roomConfigEntry.Subtype / 16)}
 						local alreadyHas = false
 						local group = roomConfigEntry.Subtype - (math.floor(roomConfigEntry.Subtype / 16) * 16)
@@ -90,7 +82,7 @@ function this:nightwatchGetPositions(Type, Variant, SubType, GridIndex, Seed)
 		end
 	end
 
-	if nightwatchEventPositions[room_index] ~= nil and Type == 969 and Variant == 8 then
+	if nightwatchEventPositions[room_index] ~= nil and Type == EntityType.ENTITY_TRIGGER_OUTPUT and Variant == 8 then
 		table.insert(nightwatchEventPositions[room_index], GridIndex)
 	end
 end
@@ -104,7 +96,7 @@ function this:nightwatchNewRoom()
 
         for _,v in pairs(Isaac.GetRoomEntities()) do
 			-- Get Nightwatches
-            if v.Type == 842 then
+            if v.Type == EntityType.ENTITY_NIGHTWATCH then
 				local nw_data = {v.SubType, v.Position}
 				table.insert(nightwatch_table, nw_data)
 			end
@@ -115,7 +107,7 @@ function this:nightwatchNewRoom()
 		-- Respawn Nightwatches
         if nightwatches[room_index] ~= nil then
 			for _,v in pairs(nightwatches[room_index]) do
-				Isaac.Spawn(842, 0, v[1], v[2], Vector.Zero, nil)
+				Isaac.Spawn(EntityType.ENTITY_NIGHTWATCH, 0, v[1], v[2], Vector.Zero, nil)
 			end
         end
 		
@@ -133,7 +125,7 @@ function this:nightwatchNewRoom()
     end
 end
 
--- Clean the lists when entering a new floor
+-- Reset the lists when entering a new floor
 function this:nightwatchClearLists()
 	nightwatchEventPositions = {}
 	nightwatches = {}
@@ -186,21 +178,21 @@ function nightwatchAlert()
 
 	for _,v in pairs(Isaac.GetRoomEntities()) do
 		-- Alert all other Nightwatches
-		if v.Type == 842 and v:GetData().state ~= States.Alert and v:GetData().state ~= States.AlertNoEffect then
+		if v.Type == EntityType.ENTITY_NIGHTWATCH and v:GetData().state ~= States.Alert and v:GetData().state ~= States.AlertNoEffect then
 			v:GetData().state = States.AlertNoEffect
 		
 		-- Spawn event entities
-		elseif v.Type == 1000 and v.Variant == 120 and v:ToEffect().State == 8 then
+		elseif v.Type == EntityType.ENTITY_EFFECT and v.Variant == EffectVariant.SPAWNER and v:ToEffect().State == 8 then
 			v:Die()
 		end
 		
 		if v:GetData().nwRemove == true then
-			if v.Type == 5 and v.Variant == 100 then
-				v:ToPickup():Morph(1000, EffectVariant.POOF01, 0, false, true, true)
+			if v.Type == EntityType.ENTITY_PICKUP and v.Variant == PickupVariant.PICKUP_COLLECTIBLE then
+				v:ToPickup():Morph(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, false, true, true)
 			end
 			
 			v:Remove()
-			Isaac.Spawn(1000, EffectVariant.POOF01, 0, v.Position, Vector.Zero, v)
+			Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, v.Position, Vector.Zero, v)
 		end
 	end
 end
@@ -219,7 +211,7 @@ function this:spotlightUpdate(spotlight)
 			spotlight:FollowParent(spotlight.Parent)
 
 			if sprite.Rotation ~= data.targetRotation then
-				sprite.Rotation = nwLerp(sprite.Rotation, data.targetRotation, 0.25)
+				sprite.Rotation = (sprite.Rotation + (data.targetRotation - sprite.Rotation) * 0.25)
 			end
 		end
 		
@@ -324,7 +316,8 @@ function this:nightwatchUpdate(entity)
 	if nightwatchRemoveEvent[room_index] ~= nil then
 		for _,e in pairs(Isaac:GetRoomEntities()) do
 			for i,v in pairs(nightwatchRemoveEvent[room_index]) do
-				if e.Position.X == v.X and e.Position.Y == v.Y and (e.Type > 9 or e.Type == 5) and e.Type < 1000 and e.Type ~= 969 and e.Type ~= 970 then
+				if e.Position.X == v.X and e.Position.Y == v.Y and (e.Type > 9 or e.Type == EntityType.ENTITY_PICKUP)
+				and e.Type < EntityType.ENTITY_EFFECT and e.Type ~= EntityType.ENTITY_TRIGGER_OUTPUT and e.Type ~= EntityType.ENTITY_ENVIRONMENT then
 					e:GetData().nwRemove = true
 					table.remove(nightwatchRemoveEvent[room_index], i)
 				end
@@ -344,7 +337,7 @@ function this:nightwatchUpdate(entity)
 		
 		-- Spotlight
 		if entity.Child == nil then
-			entity.Child = Isaac.Spawn(1000, 842, 0, entity.Position, Vector.Zero, entity)
+			entity.Child = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.NIGHTWATCH_SPOTLIGHT, 0, entity.Position, Vector.Zero, entity)
 			entity.Child.Parent = entity
 
 			entity.Child:GetSprite():Play("FadeIn", true)
@@ -430,8 +423,8 @@ function this:nightwatchUpdate(entity)
 					end
 				end
 			end
-			
-			entity.Velocity = nwLerp(entity.Velocity, data.vector, 0.25)
+
+			entity.Velocity = (entity.Velocity + (data.vector - entity.Velocity) * 0.25)
 			
 			
 		elseif data.movetype == "Rotate Clockwise" or data.movetype == "Rotate CounterClockwise" or data.movetype == "Flip" then
@@ -518,7 +511,7 @@ function this:nightwatchUpdate(entity)
 		
 		-- Projectile
 		local params = ProjectileParams()
-		params.Variant = 106
+		params.Variant = ProjectileVariant.PROJECTILE_LANTERN
 		params.FallingSpeedModifier = -4.5
 		params.FallingAccelModifier = 0.5
 		entity:FireProjectiles(entity.Position, (target.Position - entity.Position):Normalized() * 11, 0, params)
@@ -528,8 +521,8 @@ function this:nightwatchUpdate(entity)
 		if entity.Child ~= nil then
 			entity.Child:GetSprite():Play("FadeOut", true)
 		end
-	elseif sprite:GetFrame() == 40 then -- IsFinished doesn't seem to work?
-		Isaac.Spawn(1000, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, entity)
+	elseif sprite:GetFrame() == 40 then
+		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, entity)
 		entity:Remove()
 	end
 end
@@ -557,15 +550,15 @@ end
 
 function this:lanternUpdate(lantern)
 	if lantern:IsDead() then
-		SFXManager():Play(SoundEffect.SOUND_GLASS_BREAK, 1, 0, false, 1, 0)
+		SFXManager():Play(SoundEffect.SOUND_GLASS_BREAK)
 		Isaac.Spawn(EntityType.ENTITY_FIREPLACE, 10, 0, lantern.Position, Vector.Zero, nil)
 	end
 end
 
 -- On projectile hitting target
 function this:lanternCollide(lantern, cunt, cum)
-	SFXManager():Play(SoundEffect.SOUND_GLASS_BREAK, 1, 0, false, 1, 0)
-	SFXManager():Play(SoundEffect.SOUND_FIREDEATH_HISS, 1, 0, false, 1, 0)
+	SFXManager():Play(SoundEffect.SOUND_GLASS_BREAK)
+	SFXManager():Play(SoundEffect.SOUND_FIREDEATH_HISS)
 	Isaac.Spawn(EntityType.ENTITY_FIREPLACE, 10, 0, lantern.Position, Vector.Zero, nil)
 	lantern:Kill()
 end
@@ -584,7 +577,7 @@ function this:removeEventSpawns(entity)
 
 		entity:Die()
 		if entity.SubType == EntityType.ENTITY_SHOPKEEPER or entity.SubType == EntityType.ENTITY_FIREPLACE then
-			Isaac.Spawn(1000, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, entity)
+			Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, entity)
 		end
 		SFXManager():Stop(SoundEffect.SOUND_SUMMONSOUND)
 	end
@@ -632,21 +625,19 @@ function this:Init()
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, this.nightwatchClearLists)
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, this.nightwatchNewRoom)
 	
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, this.spotlightUpdate, 842)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, this.spotlightUpdate, EffectVariant.NIGHTWATCH_SPOTLIGHT)
 	
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.nightwatchInit, 842)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.nightwatchUpdate, 842)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, this.nightwatchCollide, 842)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.nightwatchHit, 842)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.nightwatchInit, EntityType.ENTITY_NIGHTWATCH)
+    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.nightwatchUpdate, EntityType.ENTITY_NIGHTWATCH)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, this.nightwatchCollide, EntityType.ENTITY_NIGHTWATCH)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.nightwatchHit, EntityType.ENTITY_NIGHTWATCH)
 
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, this.lanternInit, 106)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_UPDATE, this.lanternUpdate, 106)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, this.lanternCollide, 106)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, this.lanternInit, ProjectileVariant.PROJECTILE_LANTERN)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_UPDATE, this.lanternUpdate, ProjectileVariant.PROJECTILE_LANTERN)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, this.lanternCollide, ProjectileVariant.PROJECTILE_LANTERN)
 	
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, this.removeEventSpawns, 120)
+	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, this.removeEventSpawns, EffectVariant.SPAWNER)
 	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, this.removeEventSavePos)
 end
-
-
 
 return this
