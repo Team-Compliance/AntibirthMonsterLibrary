@@ -236,7 +236,7 @@ function this:CorpseEaterCollision(entity, target, cum)
 
 
 		-- Enemies
-		elseif entity.SubType == 0 and CorpseEaterIsFriendly(entity, target) and target:IsVulnerableEnemy() and data.ChompCooldown <= 0
+		elseif entity.SubType == 0 and CorpseEaterIsFriendly(entity, target) == true and target:IsVulnerableEnemy() and data.ChompCooldown <= 0
 		and not (target.Type == EntityType.ENTITY_VIS and target.Variant == 22) and not (entity:HasEntityFlags(EntityFlag.FLAG_FREEZE) or entity:HasEntityFlags(EntityFlag.FLAG_MIDAS_FREEZE)) then
 			target:TakeDamage(Settings.ChompDMG, DamageFlag.DAMAGE_CRUSH | DamageFlag.DAMAGE_IGNORE_ARMOR, EntityRef(entity), 0)
 			data.ChompCooldown = Settings.ChompCooldown

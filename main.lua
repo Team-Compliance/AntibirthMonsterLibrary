@@ -101,6 +101,7 @@ coil_blacklist = {
 }
 
 necromancer_blacklist = {
+	{EntityType.ENTITY_BONY, -1, AMLVariants.NECROMANCER}, -- Bonys spawned by Necromancers
 	{EntityType.ENTITY_GRUB, 0, -1},
 	{EntityType.ENTITY_GRUB, 100, 1}, -- Corpse eater body
 	{EntityType.ENTITY_LITTLE_HORN, 1, -1}, -- Dark ball

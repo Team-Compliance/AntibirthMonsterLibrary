@@ -146,7 +146,7 @@ function this:necromancerUpdate(entity)
 				-- Spawn a Bony and set it as the Necromancer's child
 				elseif data.state == States.Spawn then
 					SFXManager():Play(SoundEffect.SOUND_SUMMONSOUND, 1, 0, false, 1, 0)
-					entity.Child = Isaac.Spawn(EntityType.ENTITY_BONY, 0, 0, Vector(entity.Position.X, entity.Position.Y + 10), Vector.Zero, entity)
+					entity.Child = Isaac.Spawn(EntityType.ENTITY_BONY, 0, AMLVariants.NECROMANCER, Vector(entity.Position.X, entity.Position.Y + 10), Vector.Zero, entity)
 				end
 			end
 			
@@ -162,8 +162,7 @@ end
 
 -- Add dead enemies that aren't blacklisted to the revive table
 function this:necromancerInRoom(entity)
-	if entity.Type < 1000 and entity.Type > 9 and inAMLblacklist("Necromancer", entity.Type, entity.Variant, entity.SubType) == false
-	and not (entity.Type == EntityType.ENTITY_BONY and entity.SpawnerType == EntityType.ENTITY_AML and entity.SpawnerVariant == AMLVariants.NECROMANCER) then
+	if entity.Type < 1000 and entity.Type > 9 and inAMLblacklist("Necromancer", entity.Type, entity.Variant, entity.SubType) == false then
 		local room = game:GetRoom()
 		local getType = entity.Type
 		local getVariant = entity.Variant
