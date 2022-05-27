@@ -339,7 +339,7 @@ function EatenEffectEntry(Type, Variant, SubType, operation, effect)
 	end
 	
 	if operation == "add" then
-		table.insert(checkList, {effect, Type, Variant, SubType})
+		table.insert(checkList, {Type, Variant, SubType})
 		return true
 		
 	elseif operation == "remove" then
