@@ -54,8 +54,8 @@ function this:CoilUpdate(npc)
         if npc:GetData()["AliveFrames"] > 8 then -- delay laser spawning
             local room_entities = Isaac.GetRoomEntities()
             for _,v in pairs(room_entities) do
-                if v:IsActiveEnemy(false) and not v:GetData()[("CoilTagged"..tostring(npc:GetData()["CoilID"]))]
-				and inAMLblacklist("Coil", v.Type, v.Variant, v.SubType) == false and v.EntityCollisionClass > 0 then
+                if v:IsActiveEnemy(false) and not v:GetData()[("CoilTagged"..tostring(npc:GetData()["CoilID"]))] and v.EntityCollisionClass > 0
+				and inAMLblacklist("Coil", v.Type, v.Variant, v.SubType) == false and not v:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then
                     addLaser(v, npc)
                 end
             end
