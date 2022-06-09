@@ -42,12 +42,12 @@
     </entity>
 
 
-	<entity anm2path="835.000_swapper.anm2" baseHP="25" boss="0" champion="1" collisionDamage="1" collisionMass="10" collisionRadius="13" friction="1" gridCollision="walls" id="38" name="Swapper" numGridCollisionPoints="8" portrait="7" reroll="true" shadowSize="16" stageHP="0" variant="835">
+	<entity anm2path="835.000_swapper.anm2" baseHP="25" boss="0" champion="1" collisionDamage="0" collisionMass="10" collisionRadius="13" friction="1" gridCollision="walls" id="38" name="Swapper" numGridCollisionPoints="8" portrait="7" reroll="true" shadowSize="16" stageHP="0" variant="835">
         <bestiary anim="Move" transform="0,3,1"/>
         <gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0" sound_baby="1"/>
 		<preload-snd id="44"/>
     </entity>
-	<entity anm2path="835.000_swapper_gehenna.anm2" baseHP="25" boss="0" champion="1" collisionDamage="1" collisionMass="10" collisionRadius="13" friction="1" gridCollision="walls" id="38" name="Swapper (Gehenna)" numGridCollisionPoints="8" portrait="7" reroll="true" shadowSize="16" stageHP="0" variant="835" subtype="1">
+	<entity anm2path="835.000_swapper_gehenna.anm2" baseHP="25" boss="0" champion="1" collisionDamage="0" collisionMass="10" collisionRadius="13" friction="1" gridCollision="walls" id="38" name="Swapper (Gehenna)" numGridCollisionPoints="8" portrait="7" reroll="true" shadowSize="16" stageHP="0" variant="835" subtype="1">
         <gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0" sound_baby="1"/>
 		<preload-snd id="44"/>
     </entity>
