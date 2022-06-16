@@ -396,7 +396,7 @@ function mod:replaceID(Type, Variant, SubType, GridIndex, Seed)
 		end
 
 	--[[ FRACTURE ]]--
-	elseif Type == 801 then
+	elseif Type == 801 and Variant == 0 and SubType == 0 then
 		return {EntityType.ENTITY_HOPPER, EntityVariant.FRACTURE, SubType}
 	end
 end
