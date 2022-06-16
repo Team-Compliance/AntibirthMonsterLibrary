@@ -1,4 +1,4 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local CoilRoomRecord = {}
@@ -31,7 +31,40 @@ end
 
 
 
-function this:CoilInit(npc)
+function mod:GetCoils()
+    local room_index = Game():GetLevel():GetCurrentRoomIndex()
+	
+	-- Get Coil spawns
+    if game:GetRoom():IsFirstVisit() then
+        local coil_table = {}
+
+        for _,v in pairs(Isaac.GetRoomEntities()) do
+            if v:IsEnemy() and v.Type == EntityType.ENTITY_AML and v.Variant == AMLVariants.COIL then
+				table.insert(coil_table, v.Position)
+			end
+        end
+        CoilRoomRecord[room_index] = coil_table
+	
+	-- Respawn Coils
+    else
+        if CoilRoomRecord[room_index] ~= nil then
+            for _,v in pairs(CoilRoomRecord[room_index]) do
+                Isaac.Spawn(EntityType.ENTITY_AML, AMLVariants.COIL, 0, v, Vector.Zero, nil)
+            end
+        end
+    end
+end
+mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.GetCoils)
+
+-- Reset coil record upon new stage entry
+function mod:CoilClearRecord()
+    CoilRoomRecord = {}
+end
+mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.CoilClearRecord)
+
+
+
+function mod:CoilInit(npc)
     if npc.Variant == AMLVariants.COIL then
         npc:GetData()["StartPos"] = npc.Position -- Get anchor position
         npc:GetData()["CoilID"] = math.random(100)
@@ -45,8 +78,9 @@ function this:CoilInit(npc)
 		end
     end
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.CoilInit, EntityType.ENTITY_AML)
 
-function this:CoilUpdate(npc)
+function mod:CoilUpdate(npc)
     if npc.Variant == AMLVariants.COIL then
         npc.Position = npc:GetData()["StartPos"] -- anchor to position
         npc:GetSprite():Play("Idle")
@@ -76,54 +110,11 @@ function this:CoilUpdate(npc)
         end
     end
 end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.CoilUpdate, EntityType.ENTITY_AML)
 
-function this:CoilDamage(entity, amount, dmg_flags)
+function mod:CoilDamage(entity, amount, dmg_flags)
     if entity.Variant == AMLVariants.COIL then
         return false
     end
 end
-
-
-
-function this:GetCoils()
-    local room_index = Game():GetLevel():GetCurrentRoomIndex()
-	
-	-- Get Coil spawns
-    if game:GetRoom():IsFirstVisit() then
-        local coil_table = {}
-
-        for _,v in pairs(Isaac.GetRoomEntities()) do
-            if v:IsEnemy() and v.Type == EntityType.ENTITY_AML and v.Variant == AMLVariants.COIL then
-				table.insert(coil_table, v.Position)
-			end
-        end
-		
-        CoilRoomRecord[room_index] = coil_table
-	
-	-- Respawn Coils
-    else
-        if CoilRoomRecord[room_index] ~= nil then
-            for _,v in pairs(CoilRoomRecord[room_index]) do
-                Isaac.Spawn(EntityType.ENTITY_AML, AMLVariants.COIL, 0, v, Vector.Zero, nil)
-            end
-        end
-    end
-end
-
--- Reset coil record upon new stage entry
-function this:CoilClearRecord()
-    CoilRoomRecord = {}
-end
-
-
-
-function this:Init()
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.CoilInit, EntityType.ENTITY_AML)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.CoilUpdate, EntityType.ENTITY_AML)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.CoilDamage, EntityType.ENTITY_AML)
-	
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, this.GetCoils)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, this.CoilClearRecord)
-end
-
-return this
+mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.CoilDamage, EntityType.ENTITY_AML)

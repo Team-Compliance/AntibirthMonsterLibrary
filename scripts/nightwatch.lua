@@ -1,4 +1,4 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local Settings = {
@@ -71,7 +71,7 @@ function getPaths(room_index)
 end
 
 -- Get the event positions
-function this:nightwatchGetPositions(Type, Variant, SubType, GridIndex, Seed)
+function mod:nightwatchGetPositions(Type, Variant, SubType, GridIndex, Seed)
 	local room_index = game:GetLevel():GetCurrentRoomIndex()
 	
 	-- Create the table if it doesn't already exist
@@ -86,9 +86,10 @@ function this:nightwatchGetPositions(Type, Variant, SubType, GridIndex, Seed)
 		table.insert(nightwatchEventPositions[room_index], GridIndex)
 	end
 end
+mod:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, mod.nightwatchGetPositions)
 
 -- Get Nightwatch positions when first entering and respawn them if re-entering
-function this:nightwatchNewRoom()
+function mod:nightwatchNewRoom()
 	local room_index = game:GetLevel():GetCurrentRoomIndex()
 	
     if game:GetRoom():IsFirstVisit() then
@@ -124,15 +125,72 @@ function this:nightwatchNewRoom()
 		end
     end
 end
+mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.nightwatchNewRoom)
+
+-- Spawn entities that are tagged with the remove on alert event and save their positions
+function mod:removeEventSpawns(entity)
+	if entity:ToEffect().State == 7 then
+		local room_index = game:GetLevel():GetCurrentRoomIndex()
+		
+		if nightwatchRemoveEvent[room_index] == nil then
+			nightwatchRemoveEvent[room_index] = {}
+		end
+		table.insert(nightwatchRemoveEvent[room_index], Vector(entity.Position.X, entity.Position.Y))
+
+		entity:Die()
+		if entity.SubType == EntityType.ENTITY_SHOPKEEPER or entity.SubType == EntityType.ENTITY_FIREPLACE then
+			Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, entity)
+		end
+		SFXManager():Stop(SoundEffect.SOUND_SUMMONSOUND)
+	end
+end
+mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.removeEventSpawns, EffectVariant.SPAWNER)
+
+-- Save the position of pickups that should get removed on Nightwatch alert so the tag can be re-applied when re-entering the room
+function mod:removeEventSavePos(entity)
+	if entity:GetData().nwRemove == true then
+		local room_index = game:GetLevel():GetCurrentRoomIndex()
+		
+		if nightwatchRemoveEventSavedPositions[room_index] ~= nil then
+			if entity.Touched ~= true then
+				local data = {GetPtrHash(entity), entity.Position}
+				local alreadyHas = false
+				
+				for _,v in pairs(nightwatchRemoveEventSavedPositions[room_index]) do
+					if v[1] == GetPtrHash(entity) then
+						alreadyHas = true
+						v[2] = entity.Position
+					end
+				end
+				
+				if alreadyHas == false then
+					table.insert(nightwatchRemoveEventSavedPositions[room_index], data)
+				end
+				
+			else
+				for i,v in pairs(nightwatchRemoveEventSavedPositions[room_index]) do
+					if v[1] == GetPtrHash(entity) then
+						table.remove(nightwatchRemoveEventSavedPositions[room_index], i)
+					end
+				end
+			end
+			
+		else
+			nightwatchRemoveEventSavedPositions[room_index] = {}
+		end
+	end
+end
+mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, mod.removeEventSavePos)
 
 -- Reset the lists when entering a new floor
-function this:nightwatchClearLists()
+function mod:nightwatchClearLists()
 	nightwatchEventPositions = {}
 	nightwatches = {}
 	nightwatchPaths = {}
 	nightwatchRemoveEvent = {}
 	nightwatchRemoveEventSavedPositions = {}
 end
+mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.nightwatchClearLists)
 
 
 
@@ -199,30 +257,7 @@ end
 
 
 
--- Spotlight
-function this:spotlightUpdate(spotlight)
-	if spotlight.Parent ~= nil then
-		local data = spotlight:GetData()
-		local sprite = spotlight:GetSprite()
-		
-		sprite.Offset = Vector(0, -24)
-		
-		if data.targetRotation ~= nil then
-			spotlight:FollowParent(spotlight.Parent)
-
-			if sprite.Rotation ~= data.targetRotation then
-				sprite.Rotation = (sprite.Rotation + (data.targetRotation - sprite.Rotation) * 0.25)
-			end
-		end
-		
-	else
-		spotlight:Remove()
-	end
-end
-
-
-
-function this:nightwatchInit(entity)
+function mod:nightwatchInit(entity)
 	local data = entity:GetData()
 
 	entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYEROBJECTS
@@ -232,8 +267,9 @@ function this:nightwatchInit(entity)
 	data.state = States.Appear
 	data.rotateTimer = Settings.RotateTimer - 20
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.nightwatchInit, EntityType.ENTITY_NIGHTWATCH)
 
-function this:nightwatchUpdate(entity)
+function mod:nightwatchUpdate(entity)
 	local sprite = entity:GetSprite()
 	local data = entity:GetData()
 	local target = game:GetNearestPlayer(entity.Position)
@@ -526,118 +562,69 @@ function this:nightwatchUpdate(entity)
 		entity:Remove()
 	end
 end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.nightwatchUpdate, EntityType.ENTITY_NIGHTWATCH)
 
 -- Alert the Nightwatch if the player touches it
-function this:nightwatchCollide(entity, target, cock) -- TODO: Boomerang shouldn't be able to move them but ignoring collision here doesn't seem to work
+function mod:nightwatchCollide(entity, target, cock) -- TODO: Boomerang shouldn't be able to move them but ignoring collision here doesn't seem to work
 	if entity:GetData().state == States.Moving and target.Type == EntityType.ENTITY_PLAYER then
 		entity:GetData().state = States.Alert
 	end
 end
+mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.nightwatchCollide, EntityType.ENTITY_NIGHTWATCH)
 
 -- Turn transparent when hit
-function this:nightwatchHit(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
+function mod:nightwatchHit(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
 	target:GetData().transTimer = Settings.TransparencyTimer
 	return false
 end
+mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.nightwatchHit, EntityType.ENTITY_NIGHTWATCH)
+
+
+
+-- Spotlight
+function mod:spotlightUpdate(spotlight)
+	if spotlight.Parent ~= nil then
+		local data = spotlight:GetData()
+		local sprite = spotlight:GetSprite()
+		
+		sprite.Offset = Vector(0, -24)
+		
+		if data.targetRotation ~= nil then
+			spotlight:FollowParent(spotlight.Parent)
+
+			if sprite.Rotation ~= data.targetRotation then
+				sprite.Rotation = (sprite.Rotation + (data.targetRotation - sprite.Rotation) * 0.25)
+			end
+		end
+		
+	else
+		spotlight:Remove()
+	end
+end
+mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.spotlightUpdate, EffectVariant.NIGHTWATCH_SPOTLIGHT)
 
 
 
 -- Projectile
-function this:lanternInit(lantern)
+function mod:lanternInit(lantern)
 	lantern:GetSprite():Play("Move")
 	lantern:AddProjectileFlags(ProjectileFlags.FIRE_SPAWN)
 end
+mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, mod.lanternInit, ProjectileVariant.PROJECTILE_LANTERN)
 
-function this:lanternUpdate(lantern)
+function mod:lanternUpdate(lantern)
 	if lantern:IsDead() then
 		SFXManager():Play(SoundEffect.SOUND_GLASS_BREAK)
 		Isaac.Spawn(EntityType.ENTITY_FIREPLACE, 10, 0, lantern.Position, Vector.Zero, nil)
 	end
 end
+mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_UPDATE, mod.lanternUpdate, ProjectileVariant.PROJECTILE_LANTERN)
 
 -- On projectile hitting target
-function this:lanternCollide(lantern, cunt, cum)
+function mod:lanternCollide(lantern, cunt, cum)
 	SFXManager():Play(SoundEffect.SOUND_GLASS_BREAK)
 	SFXManager():Play(SoundEffect.SOUND_FIREDEATH_HISS)
 	Isaac.Spawn(EntityType.ENTITY_FIREPLACE, 10, 0, lantern.Position, Vector.Zero, nil)
 	lantern:Kill()
 end
-
-
-
--- Spawn entities that are tagged with the remove on alert event and add their position to a table
-function this:removeEventSpawns(entity)
-	if entity:ToEffect().State == 7 then
-		local room_index = game:GetLevel():GetCurrentRoomIndex()
-		
-		if nightwatchRemoveEvent[room_index] == nil then
-			nightwatchRemoveEvent[room_index] = {}
-		end
-		table.insert(nightwatchRemoveEvent[room_index], Vector(entity.Position.X, entity.Position.Y))
-
-		entity:Die()
-		if entity.SubType == EntityType.ENTITY_SHOPKEEPER or entity.SubType == EntityType.ENTITY_FIREPLACE then
-			Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, entity)
-		end
-		SFXManager():Stop(SoundEffect.SOUND_SUMMONSOUND)
-	end
-end
-
--- Save the position of pickups that should get removed on Nightwatch alert so the tag can be re-applied when re-entering the room
-function this:removeEventSavePos(entity)
-	if entity:GetData().nwRemove == true then
-		local room_index = game:GetLevel():GetCurrentRoomIndex()
-		
-		if nightwatchRemoveEventSavedPositions[room_index] ~= nil then
-			if entity.Touched ~= true then
-				local data = {GetPtrHash(entity), entity.Position}
-				local alreadyHas = false
-				
-				for _,v in pairs(nightwatchRemoveEventSavedPositions[room_index]) do
-					if v[1] == GetPtrHash(entity) then
-						alreadyHas = true
-						v[2] = entity.Position
-					end
-				end
-				
-				if alreadyHas == false then
-					table.insert(nightwatchRemoveEventSavedPositions[room_index], data)
-				end
-				
-			else
-				for i,v in pairs(nightwatchRemoveEventSavedPositions[room_index]) do
-					if v[1] == GetPtrHash(entity) then
-						table.remove(nightwatchRemoveEventSavedPositions[room_index], i)
-					end
-				end
-			end
-			
-		else
-			nightwatchRemoveEventSavedPositions[room_index] = {}
-		end
-	end
-end
-
-
-
-function this:Init()
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, this.nightwatchGetPositions)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, this.nightwatchClearLists)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, this.nightwatchNewRoom)
-	
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, this.spotlightUpdate, EffectVariant.NIGHTWATCH_SPOTLIGHT)
-	
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.nightwatchInit, EntityType.ENTITY_NIGHTWATCH)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.nightwatchUpdate, EntityType.ENTITY_NIGHTWATCH)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, this.nightwatchCollide, EntityType.ENTITY_NIGHTWATCH)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.nightwatchHit, EntityType.ENTITY_NIGHTWATCH)
-
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, this.lanternInit, ProjectileVariant.PROJECTILE_LANTERN)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_UPDATE, this.lanternUpdate, ProjectileVariant.PROJECTILE_LANTERN)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, this.lanternCollide, ProjectileVariant.PROJECTILE_LANTERN)
-	
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, this.removeEventSpawns, EffectVariant.SPAWNER)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, this.removeEventSavePos)
-end
-
-return this
+mod:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, mod.lanternCollide, ProjectileVariant.PROJECTILE_LANTERN)

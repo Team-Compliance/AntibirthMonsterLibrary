@@ -1,4 +1,4 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local States = {
@@ -9,22 +9,19 @@ local States = {
 
 
 
-function this:fractureUpdate(entity)
+function mod:fractureUpdate(entity)
 	if entity.Variant == EntityVariant.FRACTURE then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
-		local myRNG = RNG()
 		local level = game:GetLevel()
 
 		-- 50% chance to do spit attack after jumping
 		if sprite:IsPlaying("Hop") and sprite:GetFrame() == 25 then
-			myRNG:SetSeed(Random(), 801)
-			
-			if myRNG:RandomInt(2) == 1 then
+			if math.random(0, 1) == 1 then
 				sprite:Play("Spit", true)
 			end
 			
-			entity.Velocity = Vector(0,0)
+			entity.Velocity = Vector.Zero
 			entity.TargetPosition = entity.Position
 		end
 
@@ -68,14 +65,13 @@ function this:fractureUpdate(entity)
 			end
 
 			if data.state == States.JumpSpit then
-				myRNG:SetSeed(Random(), 801)
-				if myRNG:RandomInt(4) == 1 then
+				if math.random(0, 2) == 1 then
 					entity:FireBossProjectiles(1, entity.TargetPosition, 1.5, params)
 				end
 
 			elseif data.state == States.StandSpit then
-				entity:FireBossProjectiles(1, Vector(0,0), 1.25, params)
-				entity:PlaySound(SoundEffect.SOUND_BOSS2_BUBBLES, 1, 0, false, 1)
+				entity:FireBossProjectiles(1, Vector.Zero, 1.25, params)
+				entity:PlaySound(SoundEffect.SOUND_BOSS2_BUBBLES, 0.9, 0, false, 1)
 			end
 		
 		else
@@ -83,11 +79,4 @@ function this:fractureUpdate(entity)
 		end
 	end
 end
-
-
-
-function this:Init()
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.fractureUpdate, EntityType.ENTITY_HOPPER)
-end
-
-return this
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.fractureUpdate, EntityType.ENTITY_HOPPER)

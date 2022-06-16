@@ -52,7 +52,6 @@ EntityType.ENTITY_STRIFER = 839
 EntityType.ENTITY_NIGHTWATCH = 842
 EntityType.ENTITY_VESSEL = 858
 
-
 -- Variants of the AML entity
 AMLVariants = {
 	DUMPLING = 2401, -- for backwards compatibility
@@ -66,16 +65,17 @@ AMLVariants = {
 	RED_TNT = 3400
 }
 
-
 -- Variants of already existing entities
 EntityVariant = {
+	DUMPLING = 0, -- for EntityType.ENTITY_DUMPLING
+    SKINLING = 1, -- for EntityType.ENTITY_DUMPLING
+    SCAB = 2, -- for EntityType.ENTITY_DUMPLING
 	FRACTURE = 801, -- for EntityType.ENTITY_HOPPER
 	SWAPPER = 835, -- for EntityType.ENTITY_BABY
 	BARFY = 850, -- for EntityType.ENTITY_FATTY
 	CORPSE_EATER = 100, -- for EntityType.ENTITY_GRUB
 	CARRION_RIDER = 101 -- for EntityType.ENTITY_GRUB
 }
-
 
 -- Projectile variants
 ProjectileVariant.PROJECTILE_ECHO = 104
@@ -84,6 +84,28 @@ ProjectileVariant.PROJECTILE_LANTERN = 106
 -- Effect variants
 EffectVariant.NIGHTWATCH_SPOTLIGHT = 842
 EffectVariant.SCREAMER_AURA = 867
+
+
+
+--[[--------------------------------------------------------
+    External monster scripts
+--]]--------------------------------------------------------
+
+include("scripts.corpseEaters")
+include("scripts.dumplings")
+include("scripts.fracture")
+include("scripts.stillborn")
+include("scripts.blindBats")
+include("scripts.echoBat")
+include("scripts.necromancer")
+include("scripts.swappers")
+include("scripts.barfy")
+include("scripts.strifers")
+include("scripts.nightwatch")
+include("scripts.vessel")
+include("scripts.coils")
+include("scripts.screamer")
+include("scripts.redTNT")
 
 
 
@@ -363,48 +385,19 @@ end
 
 
 --[[--------------------------------------------------------
-    External monster files to require
---]]--------------------------------------------------------
-
-local monsterScripts = {
-	corpseEaters = include("scripts.corpseEaters"),
-	dumplings = include("scripts.dumplings"),
-	fracture = include("scripts.fracture"),
-	stillborn = include("scripts.stillborn"),
-	blindBats = include("scripts.blindBats"),
-	echoBat = include("scripts.echoBat"),
-	necromancer = include("scripts.necromancer"),
-	swappers = include("scripts.swappers"),
-	barfy = include("scripts.barfy"),
-	strifers = include("scripts.strifers"),
-	nightwatch = include("scripts.nightwatch"),
-	vessel = include("scripts.vessel"),
-	coils = include("scripts.coils"),
-	screamer = include("scripts.screamer"),
-	redTNT = include("scripts.redTNT")
-}
-
---Load the external files.
-for _, v in pairs(monsterScripts) do
-    v.Init()
-end
-
-
-
---[[--------------------------------------------------------
     Replace entities that use an old ID or a different one in Basement Renovator
 --]]--------------------------------------------------------
 
 function mod:replaceID(Type, Variant, SubType, GridIndex, Seed)
 	--[[ DUMPLINGS ]]--
-	if Type == 200 and (Variant == AMLVariants.DUMPLING or Variant == AMLVariants.SKINLING or Variant == AMLVariants.SCAB) then
+	if Type == EntityType.ENTITY_AML and (Variant == AMLVariants.DUMPLING or Variant == AMLVariants.SKINLING or Variant == AMLVariants.SCAB) then
 		if not DumplingsMod then
-			return {800, Variant - 2401, SubType}
+			return {EntityType.ENTITY_DUMPLING, Variant - 2401, SubType}
 		end
 
 	--[[ FRACTURE ]]--
 	elseif Type == 801 then
-		return {29, 801, SubType}
+		return {EntityType.ENTITY_HOPPER, EntityVariant.FRACTURE, SubType}
 	end
 end
 mod:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, mod.replaceID)

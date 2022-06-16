@@ -1,19 +1,54 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local RedTNTRoomRecord = {}
 
 
 
+-- Get red TNT room record
+function mod:GetRedTNTs()
+    local room_index = Game():GetLevel():GetCurrentRoomIndex()
+	
+	-- Get red TNT spawns
+    if game:GetRoom():IsFirstVisit() then
+		local redtnt_table = {}
+		
+        for _,v in pairs(Isaac.GetRoomEntities()) do
+			if v.Type == EntityType.ENTITY_AML and v.Variant == AMLVariants.RED_TNT then
+				table.insert(redtnt_table, v.Position)
+			end
+        end
+		RedTNTRoomRecord[room_index] = redtnt_table
+		
+	-- Respawn red TNTs
+    else
+		if RedTNTRoomRecord[room_index] ~= nil then
+			for _,v in pairs(RedTNTRoomRecord[room_index]) do
+				Isaac.Spawn(EntityType.ENTITY_AML, AMLVariants.RED_TNT, 0, v, Vector.Zero, nil)
+			end
+		end
+    end
+end
+mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.GetRedTNTs)
+
+-- Reset red TNT record upon new stage entry
+function mod:RedTNTClearRecord()
+	RedTNTRoomRecord = {}
+end
+mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.RedTNTClearRecord)
+
+
+
 -- Don't take damage
-function this:RedTNTDamage(entity, amount, dmg_flags)
+function mod:RedTNTDamage(entity, amount, dmg_flags)
 	if entity.Variant == AMLVariants.RED_TNT then
 		return false
 	end
 end
+mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.RedTNTDamage, EntityType.ENTITY_AML)
 
 -- Explode on collision
-function this:RedTNTCollision(entity, collider, low)
+function mod:RedTNTCollision(entity, collider, low)
 	if entity.Variant == AMLVariants.RED_TNT then
 		local room_index = game:GetLevel():GetCurrentRoomIndex()
 		
@@ -30,48 +65,4 @@ function this:RedTNTCollision(entity, collider, low)
 		end
     end
 end
-
-
-
--- Get red TNT room record
-function this:GetRedTNTs()
-    local room_index = Game():GetLevel():GetCurrentRoomIndex()
-	
-	-- Get red TNT spawns
-    if game:GetRoom():IsFirstVisit() then
-		local redtnt_table = {}
-		
-        for _,v in pairs(Isaac.GetRoomEntities()) do
-			if v.Type == EntityType.ENTITY_AML and v.Variant == AMLVariants.RED_TNT then
-				table.insert(redtnt_table, v.Position)
-			end
-        end
-		
-		RedTNTRoomRecord[room_index] = redtnt_table
-		
-	-- Respawn red TNTs
-    else
-		if RedTNTRoomRecord[room_index] ~= nil then
-			for _,v in pairs(RedTNTRoomRecord[room_index]) do
-				Isaac.Spawn(EntityType.ENTITY_AML, AMLVariants.RED_TNT, 0, v, Vector.Zero, nil)
-			end
-		end
-    end
-end
-
--- Reset red TNT record upon new stage entry
-function this:RedTNTClearRecord()
-	RedTNTRoomRecord = {}
-end
-
-
-
-function this:Init()
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.RedTNTDamage, EntityType.ENTITY_AML)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, this.RedTNTCollision, EntityType.ENTITY_AML)
-	
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, this.GetRedTNTs)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, this.RedTNTClearRecord)
-end
-
-return this
+mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.RedTNTCollision, EntityType.ENTITY_AML)

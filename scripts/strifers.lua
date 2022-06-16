@@ -1,4 +1,4 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local Settings = {
@@ -26,28 +26,24 @@ end
 
 
 
-function this:StriferInit(entity)
+function mod:StriferInit(entity)
 	local data = entity:GetData()
-	local level = game:GetLevel()
-	local stage = level:GetStage()
+	local stage = game:GetLevel():GetStage()
 	
 	entity:ToNPC()
 	entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_ALL
 	entity.Mass = 50
 	data.shot = 0
-
-	-- Set random starting cooldown for attack (minimum is 20)
-	local cdRNG = RNG()
-	cdRNG:SetSeed(Random(), 839)
-	entity.ProjectileCooldown = cdRNG:RandomInt(Settings.Cooldown - 20) + 20
+	entity.ProjectileCooldown = math.random(0, Settings.Cooldown - 20) + 20
 
 	data.altSkin = ""
-	if (stage == LevelStage.STAGE3_1 or stage == LevelStage.STAGE3_2) and level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
+	if (stage == LevelStage.STAGE3_1 or stage == LevelStage.STAGE3_2) and game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
 		data.altSkin = "_gehenna"
 	end
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.StriferInit, EntityType.ENTITY_STRIFER)
 
-function this:StriferUpdate(entity)
+function mod:StriferUpdate(entity)
 	local data = entity:GetData()
 	local sprite = entity:GetSprite()
 	local target = entity:GetPlayerTarget()
@@ -240,8 +236,9 @@ function this:StriferUpdate(entity)
 
 	entity.Velocity = (entity.Velocity + (data.vector - entity.Velocity) * 0.25)
 end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.StriferUpdate, EntityType.ENTITY_STRIFER)
 
-function this:StriferCollision(entity, target, cum)
+function mod:StriferCollision(entity, target, cum)
 	local data = entity:GetData()
 
 	-- Turn around when colliding with another enemy
@@ -257,13 +254,4 @@ function this:StriferCollision(entity, target, cum)
 		end
 	end
 end
-
-
-
-function this:Init()
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.StriferInit, EntityType.ENTITY_STRIFER)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.StriferUpdate, EntityType.ENTITY_STRIFER)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, this.StriferCollision, EntityType.ENTITY_STRIFER)
-end
-
-return this
+mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.StriferCollision, EntityType.ENTITY_STRIFER)

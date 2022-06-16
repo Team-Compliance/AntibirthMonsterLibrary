@@ -1,4 +1,4 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local Settings = {
@@ -21,7 +21,7 @@ local States = {
 
 
 
-function this:vesselInit(vessel)
+function mod:vesselInit(vessel)
 	vessel.SplatColor = Color(0.4,0.8,0.4, 1, 0,0.1,0)
 	
     vessel:GetData().VesselData = {
@@ -34,8 +34,9 @@ function this:vesselInit(vessel)
         GrowlCountdown = Settings.GrowlCountdown
     }
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.vesselInit, EntityType.ENTITY_VESSEL)
 
-function this:vesselUpdate(vessel)
+function mod:vesselUpdate(vessel)
     local vesselData = vessel:GetData().VesselData
     local vesselSprite = vessel:GetSprite()
     local pathfinder = vessel.Pathfinder
@@ -156,15 +157,15 @@ function this:vesselUpdate(vessel)
         end
     end
 end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.vesselUpdate, EntityType.ENTITY_VESSEL)
 
 -- Spawn maggots when taking damage
-function this:vesselDamage(vessel, damageAmount, damageFlags, damageSource, damageCountdownFrames)
+function mod:vesselDamage(vessel, damageAmount, damageFlags, damageSource, damageCountdownFrames)
 	local vesselData = vessel:GetData().VesselData
 	local targetPos = damageSource.Entity
-	
-	
-	if vesselData.Maggots >= Settings.MaxMaggots or math.random() < Settings.MaggotCounterChance then return end
 
+
+	if vesselData.Maggots >= Settings.MaxMaggots or math.random() < Settings.MaggotCounterChance then return end
 
     if damageSource.Entity.Spawner == nil then
         targetPos = damageSource.Entity.Position
@@ -179,9 +180,10 @@ function this:vesselDamage(vessel, damageAmount, damageFlags, damageSource, dama
     maggot.State = NpcState.STATE_SPECIAL
 	vesselData.Maggots = vesselData.Maggots + 1
 end
+mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.vesselDamage, EntityType.ENTITY_VESSEL)
 
 -- Spawn maggots on death
-function this:vesselDeath(vessel)
+function mod:vesselDeath(vessel)
     for i = 1, Settings.MaggotsOnDeath do
         local maggot = Isaac.Spawn(EntityType.ENTITY_SMALL_MAGGOT, 0, 0, vessel.Position, Vector.FromAngle(math.random(0, 360)):Normalized() * math.random(1, 2), vessel):ToNPC()
         maggot.V1 = Vector(-12, 10)
@@ -190,30 +192,15 @@ function this:vesselDeath(vessel)
         maggot.State = NpcState.STATE_SPECIAL
     end
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.vesselDeath, EntityType.ENTITY_VESSEL)
 
 
 
-function this:maggotDeath(maggot)
+function mod:maggotDeath(maggot)
     local spawner = maggot.SpawnerEntity
 
-    if spawner and spawner.Type == EntityType.ENTITY_VESSEL then
+    if spawner and spawner.Type == EntityType.ENTITY_VESSEL and spawner:GetData().VesselData.Maggots then
         spawner:GetData().VesselData.Maggots = spawner:GetData().VesselData.Maggots - 1
     end
 end
-
-
-
-function this:Init()
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.vesselInit, EntityType.ENTITY_VESSEL)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.vesselUpdate, EntityType.ENTITY_VESSEL)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.vesselDamage, EntityType.ENTITY_VESSEL)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, this.vesselDeath, EntityType.ENTITY_VESSEL)
-	
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, this.maggotDeath, EntityType.ENTITY_SMALL_MAGGOT)
-end
-
-return this
-
-
--- To whoever wrote this code: fuck you.
---					 Sincerely, Pixel
+mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.maggotDeath, EntityType.ENTITY_SMALL_MAGGOT)

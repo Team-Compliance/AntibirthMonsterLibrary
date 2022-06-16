@@ -1,25 +1,24 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
-local States = {
-	NoSpit = 0,
-	Spitting = 1
-}
 
 
-
-function this:barfyInit(entity)
+function mod:barfyInit(entity)
 	if entity.Variant == EntityVariant.BARFY then
+		local data = entity:GetData()
+
 		entity.SplatColor = Color(0.4,0.8,0.4, 1, 0,0.1,0)
-		entity:GetData().isChamp = ""
-			
+		data.attacking = false
+
+		data.isChamp = ""
 		if entity:IsChampion() == true then
-			entity:GetData().isChamp = "_champion"
+			data.isChamp = "_champion"
 		end
 	end
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.barfyInit, EntityType.ENTITY_FATTY)
 
-function this:barfyUpdate(entity)
+function mod:barfyUpdate(entity)
 	if entity.Variant == EntityVariant.BARFY then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
@@ -35,18 +34,18 @@ function this:barfyUpdate(entity)
 				sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/850.000_barfy" .. data.isChamp .. ".png")
 				sprite:LoadGraphics()
 			end
-			
 			sprite.FlipX = false
+
 		else
 			sprite:ReplaceSpritesheet(2, "")
 			sprite:ReplaceSpritesheet(0, "gfx/monsters/repentance/850.000_barfy" .. data.isChamp .. ".png")
 			sprite:LoadGraphics()
 		end
-		
-		
-		-- Puke state
+
+
+		-- Attacking
 		if sprite:IsEventTriggered("ShootStart") then
-			data.state = States.Spitting
+			data.attacking = true
 			SFXManager():Play(SoundEffect.SOUND_BOSS_SPIT_BLOB_BARF, 1, 0, false, 1, 0)
 			
 			-- Puke effect
@@ -56,51 +55,37 @@ function this:barfyUpdate(entity)
 			effect.DepthOffset = entity.DepthOffset + 1
 			
 		elseif sprite:IsEventTriggered("ShootEnd") then
-			data.state = States.NoSpit
+			data.attacking = false
 		end
 
 
 		-- Projectiles
-		if data.state ~= nil then
-			if data.state == States.Spitting then
-				local params = ProjectileParams()
-				params.FallingSpeedModifier = 2
-				params.Variant = ProjectileVariant.PROJECTILE_PUKE
-				params.Color = Color(0.6,1,0.4, 1.1)
+		if data.attacking == true then
+			local params = ProjectileParams()
+			params.FallingSpeedModifier = 2
+			params.Variant = ProjectileVariant.PROJECTILE_PUKE
+			params.Color = Color(0.6,1,0.4, 1.1)
 
-				entity:FireBossProjectiles(1, entity:GetPlayerTarget().Position, 1.2, params)
-			end
-		
-		else
-			data.state = States.NoSpit
+			entity:FireBossProjectiles(1, entity:GetPlayerTarget().Position, 1.2, params)
 		end
 	end
 end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.barfyUpdate, EntityType.ENTITY_FATTY)
 
 
 
 -- Projectiles
-function this:vomitBulletInit(projectile)
+function mod:vomitBulletInit(projectile)
 	if projectile.SpawnerEntity ~= nil and projectile.SpawnerEntity.Type == EntityType.ENTITY_FATTY and projectile.SpawnerEntity.Variant == EntityVariant.BARFY then
 		projectile:GetData().barfy = true
 	end
 end
+mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, mod.vomitBulletInit, ProjectileVariant.PROJECTILE_PUKE)
 
-function this:vomitBulletUpdate(projectile)
+function mod:vomitBulletUpdate(projectile)
 	if projectile:GetData().barfy == true and projectile:IsDead() then
 		local puddle = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CREEP_GREEN, 0, projectile.Position, Vector.Zero, projectile):ToEffect()
 		puddle.Color = Color(1,1,1, 1, 0.4,0.1,0)
 	end
 end
-
-
-
-function this:Init()
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.barfyInit, EntityType.ENTITY_FATTY)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.barfyUpdate, EntityType.ENTITY_FATTY)
-
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, this.vomitBulletInit, ProjectileVariant.PROJECTILE_PUKE)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_UPDATE, this.vomitBulletUpdate, ProjectileVariant.PROJECTILE_PUKE)
-end
-
-return this
+mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_UPDATE, mod.vomitBulletUpdate, ProjectileVariant.PROJECTILE_PUKE)

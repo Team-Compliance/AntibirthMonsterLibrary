@@ -1,4 +1,4 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local Settings = {
@@ -21,28 +21,25 @@ local necromancerSpawns = {}
 
 
 
-function this:necromancerInit(entity)
+function mod:necromancerInit(entity)
 	if entity.Variant == AMLVariants.NECROMANCER then
 		local data = entity:GetData()
-		
+
 		entity:ToNPC()
 		entity:AddEntityFlags(EntityFlag.FLAG_APPEAR)
 		data.state = States.Appear
 		data.reviveCooldown = Settings.ReviveCooldown
 		data.place = Isaac:GetRandomPosition()
-		
-		-- Bony spawn cooldown (minimum is 15)
-		local myRNG = RNG()
-		myRNG:SetSeed(Random(), 831)
-		data.bonyCooldown = (myRNG:RandomInt(Settings.SpawnCooldown / 2) + 1) + 15
-		
+		data.bonyCooldown = math.random(0, (Settings.SpawnCooldown / 2)) + 15
+
 		-- Remove any existing callback and add a new one so they don't execute code in it multiple times (it's here as well so Necromancers that aren't spawned as part of the room layout will still work)
-		AntiMonsterLib:RemoveCallback(ModCallbacks.MC_POST_NPC_DEATH, this.necromancerInRoom)
-		AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, this.necromancerInRoom)
+		mod:RemoveCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.necromancerInRoom)
+		mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.necromancerInRoom)
 	end
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.necromancerInit, EntityType.ENTITY_AML)
 
-function this:necromancerUpdate(entity)
+function mod:necromancerUpdate(entity)
 	if entity.Variant == AMLVariants.NECROMANCER then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
@@ -157,11 +154,12 @@ function this:necromancerUpdate(entity)
 		end
 	end
 end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.necromancerUpdate, EntityType.ENTITY_AML)
 
 
 
 -- Add dead enemies that aren't blacklisted to the revive table
-function this:necromancerInRoom(entity)
+function mod:necromancerInRoom(entity)
 	if entity.Type < 1000 and entity.Type > 9 and inAMLblacklist("Necromancer", entity.Type, entity.Variant, entity.SubType) == false then
 		local room = game:GetRoom()
 		local getType = entity.Type
@@ -187,26 +185,16 @@ end
 
 
 -- Reset revive table and callback on new room, add callback if there are any Necromancers in the room
-function this:necromancerNewRoom()
+function mod:necromancerNewRoom()
 	necromancerSpawns = {}
-	AntiMonsterLib:RemoveCallback(ModCallbacks.MC_POST_NPC_DEATH, this.necromancerInRoom)
+	mod:RemoveCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.necromancerInRoom)
 	
 	-- Remove any existing callback and add a new one so they don't execute code in it multiple times
 	for _,v in pairs(Isaac.GetRoomEntities()) do
 		if v.Type == EntityType.ENTITY_AML and v.Variant == AMLVariants.NECROMANCER then
-			AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, this.necromancerInRoom)
+			mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.necromancerInRoom)
 			break
 		end
 	end
 end
-
-
-
-function this:Init()
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.necromancerInit, EntityType.ENTITY_AML)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.necromancerUpdate, EntityType.ENTITY_AML)
-
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, this.necromancerNewRoom)
-end
-
-return this
+mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.necromancerNewRoom)

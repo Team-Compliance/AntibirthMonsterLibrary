@@ -1,4 +1,4 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local Settings = {
@@ -12,9 +12,8 @@ local Settings = {
 
 
 
-function getAngleOffset(direction)
+local function getAngleOffset(direction)
 	local multiplier = 1
-
 	if (direction == "down") then
 		multiplier = -1
 	end
@@ -24,7 +23,7 @@ end
 
 
 
-function this:echoBatInit(entity)
+function mod:echoBatInit(entity)
 	if entity.Variant == AMLVariants.ECHO_BAT then
 		local data = entity:GetData()
 
@@ -35,8 +34,9 @@ function this:echoBatInit(entity)
 		data.angleDirection = "up"
 	end
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.echoBatInit, EntityType.ENTITY_AML)
 
-function this:echoBatUpdate(entity)
+function mod:echoBatUpdate(entity)
 	if entity.Variant == AMLVariants.ECHO_BAT then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
@@ -103,17 +103,19 @@ function this:echoBatUpdate(entity)
 		end
 	end
 end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.echoBatUpdate, EntityType.ENTITY_AML)
 
 
 
 -- Projectile
-function this:echoRingInit(projectile)
+function mod:echoRingInit(projectile)
 	projectile:GetSprite():Play("Move", true)
 	projectile:AddProjectileFlags(ProjectileFlags.GHOST)
 	projectile.Mass = 0
 end
+mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, mod.echoRingInit, ProjectileVariant.PROJECTILE_ECHO)
 
-function this:echoRingHit(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
+function mod:echoRingHit(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
 	if damageSource.Type == EntityType.ENTITY_PROJECTILE and damageSource.Variant == ProjectileVariant.PROJECTILE_ECHO then
 		if target.Type == EntityType.ENTITY_PLAYER then
 			if not target:HasEntityFlags(EntityFlag.FLAG_SLOW) then
@@ -127,15 +129,4 @@ function this:echoRingHit(target, damageAmount, damageFlags, damageSource, damag
 		return false
 	end
 end
-
-
-
-function this:Init()
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.echoBatInit, EntityType.ENTITY_AML)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.echoBatUpdate, EntityType.ENTITY_AML)
-
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, this.echoRingInit, ProjectileVariant.PROJECTILE_ECHO)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, this.echoRingHit)
-end
-
-return this
+mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.echoRingHit)

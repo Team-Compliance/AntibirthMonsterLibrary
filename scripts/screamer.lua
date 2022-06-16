@@ -1,4 +1,4 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local Settings = {
@@ -17,7 +17,7 @@ local States = {
 
 
 
-function this:screamerInit(entity)
+function mod:screamerInit(entity)
 	if entity.Variant == AMLVariants.SCREAMER then
 		local data = entity:GetData()
 		
@@ -30,8 +30,9 @@ function this:screamerInit(entity)
 		data.soundTimer = (math.random(Settings.SoundTimer[1], Settings.SoundTimer[2])) / 2
 	end
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.screamerInit, EntityType.ENTITY_AML)
 
-function this:screamerUpdate(entity)
+function mod:screamerUpdate(entity)
 	if entity.Variant == AMLVariants.SCREAMER then
 		local sprite = entity:GetSprite()
 		local data = entity:GetData()
@@ -181,16 +182,17 @@ function this:screamerUpdate(entity)
 			end
 		end
 		
-		if entity:HasMortalDamage() then -- using the actual entity state is unreliable but this works good enough (creates gibs before the death animation though)
+		if entity:HasMortalDamage() then
 			entity.State = NpcState.STATE_DEATH
 		end
 	end
 end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.screamerUpdate, EntityType.ENTITY_AML)
 
 
 
 -- Slowing aura
-function this:screamerAuraUpdate(effect)
+function mod:screamerAuraUpdate(effect)
 	if effect.Parent ~= nil then
 		local sprite = effect:GetSprite()
 
@@ -208,18 +210,9 @@ function this:screamerAuraUpdate(effect)
 				effect:Remove()
 			end
 		end
+
+	else
+		effect:Remove()
 	end
 end
-
-
-
-function this:Init()
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.screamerInit, EntityType.ENTITY_AML)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.screamerUpdate, EntityType.ENTITY_AML)
-	
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, this.screamerAuraUpdate, EffectVariant.SCREAMER_AURA)
-end
-
-
-
-return this
+mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.screamerAuraUpdate, EffectVariant.SCREAMER_AURA)

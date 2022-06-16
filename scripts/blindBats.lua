@@ -1,4 +1,4 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local Settings = {
@@ -57,9 +57,7 @@ function awakenBats()
 	end
 end
 
-
-
-function getAngleOffset(direction)
+local function getAngleOffset(direction)
 	local multiplier = 1
 	if (direction == "down") then
 		multiplier = -1
@@ -70,7 +68,7 @@ end
 
 
 
-function this:blindBatInit(bat)
+function mod:blindBatInit(bat)
 	local sprite = bat:GetSprite()
 	bat.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 	
@@ -84,7 +82,6 @@ function this:blindBatInit(bat)
 		MoveVector = Vector.Zero
 	}
 
-
 	if bat.SubType == 0 then
 		sprite:Play("Idle", true)
 		for i = 1, Settings.NumFollowerBats do
@@ -94,10 +91,10 @@ function this:blindBatInit(bat)
 	elseif bat.SubType == 1 then
 		bat:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 	end
-
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.blindBatInit, EntityType.ENTITY_BLIND_BAT)
 
-function this:blindBatUpdate(bat)
+function mod:blindBatUpdate(bat)
 	local sprite = bat:GetSprite()
 	local batData = bat:GetData().BlindBatData
 	local batPos = bat.Position
@@ -179,19 +176,9 @@ function this:blindBatUpdate(bat)
 		end
 	end
 end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.blindBatUpdate, EntityType.ENTITY_BLIND_BAT)
 
-function this:batRemoval(bat)
-	for i = 1, #batQueue do
-		if GetPtrHash(batQueue[i]) == GetPtrHash(bat) then
-			table.remove(batQueue, i)
-			break
-		end
-	end
-end
-
-
-
-function this:onUpdate()
+function mod:onBatUpdate()
 	nextAlertTime = nextAlertTime - 1
 	
 	if nextAlertTime <= 0 then
@@ -221,14 +208,14 @@ function this:onUpdate()
 		awakenBats()
 	end
 end
+mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.onBatUpdate)
 
-
-
-function this:Init()
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.blindBatInit, EntityType.ENTITY_BLIND_BAT)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.blindBatUpdate, EntityType.ENTITY_BLIND_BAT)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, this.batRemoval, EntityType.ENTITY_BLIND_BAT)
-	AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_UPDATE, this.onUpdate)
+function mod:batRemoval(bat)
+	for i = 1, #batQueue do
+		if GetPtrHash(batQueue[i]) == GetPtrHash(bat) then
+			table.remove(batQueue, i)
+			break
+		end
+	end
 end
-
-return this
+mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, mod.batRemoval, EntityType.ENTITY_BLIND_BAT)

@@ -1,4 +1,4 @@
-local this = {}
+local mod = AntiMonsterLib
 local game = Game()
 
 local Settings = {
@@ -16,7 +16,31 @@ local Settings = {
 
 
 
-function this:CorpseEaterInit(entity)
+-- For charmed and friendly Corpse Eaters
+function CorpseEaterIsFriendly(entity, target)
+	if target.Type == EntityType.ENTITY_GRUB and (target.Variant == EntityVariant.CORPSE_EATER or target.Variant == EntityVariant.CARRION_RIDER) then
+		-- Non-friendly Corpse Eaters hurting charmed/baited ones
+		if not (entity:HasEntityFlags(EntityFlag.FLAG_CHARM) or entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) and target:GetData().headIndex ~= entity.Index
+		and (target:HasEntityFlags(EntityFlag.FLAG_CHARM) or target:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) or target:HasEntityFlags(EntityFlag.FLAG_BAITED)) then
+			return true
+
+		-- Charmed Corpse Eaters hurting non-friendly ones
+		elseif (entity:HasEntityFlags(EntityFlag.FLAG_CHARM) or entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) and not target:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
+		and target:GetData().headIndex ~= entity.Index then
+			return true
+			
+		else
+			return false
+		end
+
+	elseif not (entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) and target:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) then
+		return true
+	end
+end
+
+
+
+function mod:CorpseEaterInit(entity)
 	if entity.Variant == EntityVariant.CORPSE_EATER or entity.Variant == EntityVariant.CARRION_RIDER then
 		local data = entity:GetData()
 		local level = game:GetLevel()
@@ -53,8 +77,9 @@ function this:CorpseEaterInit(entity)
 		end
 	end
 end
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.CorpseEaterInit, EntityType.ENTITY_GRUB)
 
-function this:CorpseEaterUpdate(entity)
+function mod:CorpseEaterUpdate(entity)
 	if entity.Variant == EntityVariant.CORPSE_EATER or entity.Variant == EntityVariant.CARRION_RIDER then
 		local data = entity:GetData()
 		local target = entity.Target
@@ -225,8 +250,9 @@ function this:CorpseEaterUpdate(entity)
 		end
 	end
 end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.CorpseEaterUpdate, EntityType.ENTITY_GRUB)
 
-function this:CorpseEaterCollision(entity, target, cum)
+function mod:CorpseEaterCollision(entity, target, cum)
 	if entity.Variant == EntityVariant.CORPSE_EATER or entity.Variant == EntityVariant.CARRION_RIDER then
 		local data = entity:GetData()
 
@@ -319,8 +345,9 @@ function this:CorpseEaterCollision(entity, target, cum)
 		end
 	end
 end
+mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.CorpseEaterCollision, EntityType.ENTITY_GRUB)
 
-function this:CorpseEaterDeath(entity)
+function mod:CorpseEaterDeath(entity)
 	if entity.Variant == EntityVariant.CORPSE_EATER or entity.Variant == EntityVariant.CARRION_RIDER then
 		-- Bony from Carrion Rider
 		if entity.Variant == EntityVariant.CARRION_RIDER and entity.Parent == nil then
@@ -342,38 +369,4 @@ function this:CorpseEaterDeath(entity)
 		end
 	end
 end
-
-
-
---For charmed and friendly Corpse Eaters
-function CorpseEaterIsFriendly(entity, target)
-	if target.Type == EntityType.ENTITY_GRUB and (target.Variant == EntityVariant.CORPSE_EATER or target.Variant == EntityVariant.CARRION_RIDER) then
-		-- Non-friendly Corpse Eaters hurting charmed/baited ones
-		if not (entity:HasEntityFlags(EntityFlag.FLAG_CHARM) or entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) and target:GetData().headIndex ~= entity.Index
-		and (target:HasEntityFlags(EntityFlag.FLAG_CHARM) or target:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) or target:HasEntityFlags(EntityFlag.FLAG_BAITED)) then
-			return true
-
-		-- Charmed Corpse Eaters hurting non-friendly ones
-		elseif (entity:HasEntityFlags(EntityFlag.FLAG_CHARM) or entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) and not target:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
-		and target:GetData().headIndex ~= entity.Index then
-			return true
-			
-		else
-			return false
-		end
-
-	elseif not (entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) and target:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) then
-		return true
-	end
-end
-
-
-
-function this:Init()
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_INIT, this.CorpseEaterInit, EntityType.ENTITY_GRUB)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_NPC_UPDATE, this.CorpseEaterUpdate, EntityType.ENTITY_GRUB)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, this.CorpseEaterCollision, EntityType.ENTITY_GRUB)
-    AntiMonsterLib:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, this.CorpseEaterDeath, EntityType.ENTITY_GRUB)
-end
-
-return this
+mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.CorpseEaterDeath, EntityType.ENTITY_GRUB)
