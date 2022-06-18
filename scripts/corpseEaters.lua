@@ -176,12 +176,7 @@ function mod:CorpseEaterUpdate(entity)
 			
 			-- Creep
 			if entity:IsFrame(4, 0) then
-				local creepType = EffectVariant.CREEP_RED
-				if entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then -- Charmed ones take damage from their own creep even with the spawner entity set correctly...
-					creepType = EffectVariant.PLAYER_CREEP_RED
-				end
-				
-				local creep = Isaac.Spawn(EntityType.ENTITY_EFFECT, creepType, 0, entity.Position, Vector.Zero, entity):ToEffect()
+				local creep = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CREEP_RED, 0, entity.Position, Vector.Zero, entity):ToEffect()
 				creep.Scale = 1.1
 				creep:SetTimeout(45)
 			end

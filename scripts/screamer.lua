@@ -54,6 +54,13 @@ function mod:screamerUpdate(entity)
 				suffix = "Angry"
 				
 				-- Slowing aura
+				if not data.aura or (data.aura and not data.aura:Exists()) then
+					data.aura = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.SCREAMER_AURA, 0, entity.Position, Vector.Zero, entity):ToEffect()
+					data.aura.Parent = entity
+					data.aura:GetSprite():Play("FadeIn", true)
+					data.aura.DepthOffset = -1000
+				end
+
 				if entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then
 					for _,v in pairs(Isaac.GetRoomEntities()) do
 						if v.Type > 9 and v.Type < 1000 and entity.Position:Distance(v.Position) <= Settings.Range then
@@ -173,12 +180,6 @@ function mod:screamerUpdate(entity)
 			
 			if sprite:GetFrame() == 47 then
 				data.state = States.Angry
-
-				-- Slowing aura
-				local aura = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.SCREAMER_AURA, 0, entity.Position, Vector.Zero, entity):ToEffect()
-				aura.Parent = entity
-				aura:GetSprite():Play("FadeIn", true)
-				aura.DepthOffset = -1000
 			end
 		end
 		

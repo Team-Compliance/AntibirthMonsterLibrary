@@ -1,16 +1,13 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="2022-04-28 10:08:01" Version="9" Fps="30"/>
+	<Info CreatedBy="Unknown" CreatedOn="2022-06-18 20:49:38" Version="10" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="censer halo.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
-			<Layer Name="body" Id="0" SpritesheetId="0"/>
+			<Layer Name="main" Id="0" SpritesheetId="0"/>
 		</Layers>
-		<Nulls>
-			<Null Name="OverlayEffect" Id="0" ShowRect="false"/>
-			<Null Name="BloodGuide" Id="1" ShowRect="false"/>
-		</Nulls>
+		<Nulls/>
 		<Events/>
 	</Content>
 	<Animations DefaultAnimation="Idle">
@@ -25,10 +22,7 @@
 					<Frame XPosition="0" YPosition="0" XPivot="112" YPivot="112" XCrop="0" YCrop="0" Width="225" Height="225" XScale="70" YScale="70" Delay="1" Visible="true" RedTint="0" GreenTint="0" BlueTint="0" AlphaTint="64" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="true"/>
 				</LayerAnimation>
 			</LayerAnimations>
-			<NullAnimations>
-				<NullAnimation NullId="0" Visible="true"/>
-				<NullAnimation NullId="1" Visible="true"/>
-			</NullAnimations>
+			<NullAnimations/>
 			<Triggers/>
 		</Animation>
 		<Animation Name="FadeIn" FrameNum="12" Loop="false">
@@ -41,10 +35,7 @@
 					<Frame XPosition="0" YPosition="0" XPivot="112" YPivot="112" XCrop="0" YCrop="0" Width="225" Height="225" XScale="72" YScale="72" Delay="2" Visible="true" RedTint="0" GreenTint="0" BlueTint="0" AlphaTint="64" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="true"/>
 				</LayerAnimation>
 			</LayerAnimations>
-			<NullAnimations>
-				<NullAnimation NullId="0" Visible="true"/>
-				<NullAnimation NullId="1" Visible="true"/>
-			</NullAnimations>
+			<NullAnimations/>
 			<Triggers/>
 		</Animation>
 		<Animation Name="FadeOut" FrameNum="10" Loop="false">
@@ -57,10 +48,7 @@
 					<Frame XPosition="0" YPosition="0" XPivot="112" YPivot="112" XCrop="0" YCrop="0" Width="225" Height="225" XScale="85" YScale="85" Delay="2" Visible="false" RedTint="0" GreenTint="0" BlueTint="0" AlphaTint="0" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="true"/>
 				</LayerAnimation>
 			</LayerAnimations>
-			<NullAnimations>
-				<NullAnimation NullId="0" Visible="true"/>
-				<NullAnimation NullId="1" Visible="true"/>
-			</NullAnimations>
+			<NullAnimations/>
 			<Triggers/>
 		</Animation>
 	</Animations>
