@@ -1,4 +1,4 @@
-<?xml version="2.9" encoding="UTF-8"?>
+<?xml version="3.0" encoding="UTF-8"?>
 <metadata>
     <name>Antibirth Monster Library</name>
     <directory>antibirth monster library</directory>
@@ -52,7 +52,7 @@
 [img]https://i.imgur.com/jBFg02x.png[/img] [url=https://twitter.com/ComplianceMods]Compliance Twitter Account[/url] [img]https://i.imgur.com/jBFg02x.png[/img]
 
 [img]https://i.imgur.com/DVq7svp.png[/img]</description>
-    <version>2.9</version>
+    <version>3.0</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Floors"/>
