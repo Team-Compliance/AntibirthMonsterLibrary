@@ -13,15 +13,36 @@ local function fart(npc)
 
 	-- Skinling
 	elseif npc.Variant == EntityVariant.SKINLING then
-		game:Fart(npc.Position, 0, npc) -- green fart
+		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.FART, 0, npc.Position, Vector.Zero, npc) -- green fart
 
-		if game:GetNearestPlayer(npc.Position).Position:Distance(npc.Position) < 80 then
-			game:GetNearestPlayer(npc.Position):TakeDamage(1, DamageFlag.DAMAGE_POISON_BURN, EntityRef(npc), 0)
+		local partition = EntityPartition.PLAYER
+		if npc:HasEntityFlags(EntityFlag.FLAG_CHARM) then
+			partition = 40
+		elseif npc:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then
+			partition = EntityPartition.ENEMY
+		end
+
+		for i, e in pairs(Isaac.FindInRadius(npc.Position, 70, partition)) do
+			if e.Index ~= npc.Index and not e:IsInvincible() then
+				local dmg = 5
+				local multiplier = 1
+
+				if npc:IsChampion() then
+					multiplier = 2
+				end
+				if e.Type == EntityType.ENTITY_PLAYER then
+					dmg = 1
+				else
+					e:AddPoison(EntityRef(npc), 64, 2)
+				end
+
+				e:TakeDamage(dmg * multiplier, DamageFlag.DAMAGE_POISON_BURN, EntityRef(npc), 0)
+			end
 		end
 
 	-- Scab
 	elseif npc.Variant == EntityVariant.SCAB then
-		game:Fart(npc.Position, 0, npc, 1, 1) -- red fart
+		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.FART, 1, npc.Position, Vector.Zero, npc) -- red fart
 
 		params = ProjectileParams()
 		params.CircleAngle = 0
@@ -45,8 +66,8 @@ function mod:dumplingUpdate(npc)
     local player_position = game:GetNearestPlayer(npc.Position).Position
     local player_angle = (player_position - npc.Position):GetAngleDegrees()
 
-	npc.Visible = true -- fixes some of them becoming invisible
 
+	npc.Visible = true -- fixes some of them becoming invisible
 
 	if npc.State == NpcState.STATE_IDLE then -- if idling
 		sprite:Play("Idle")

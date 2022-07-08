@@ -327,8 +327,9 @@ function mod:CorpseEaterCollision(entity, target, cum)
 							params.Variant = ProjectileVariant.PROJECTILE_PUKE
 							
 						elseif effect == "dank" then
-							params.Color = Color(0.15,0.25,0.25, 1)
-							params.BulletFlags = ProjectileFlags.GOO
+							local tarBulletColor = Color(0.5,0.5,0.5, 1, 0,0,0)
+							tarBulletColor:SetColorize(1, 1, 1, 1)
+							params.Color = tarBulletColor
 							Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 3, target.Position, Vector.Zero, nil):GetSprite().Color = target.SplatColor
 						end
 						
