@@ -18,7 +18,7 @@
         <gibs amount="6" blood="1" bone="0" eye="0" gut="1" large="0" />
     </entity>
 
-	<entity anm2path="801.000_fracture.anm2" hasFloorAlts="true" baseHP="15" boss="0" champion="1" collisionDamage="1" collisionMass="10" collisionRadius="13" friction="1" id="29" name="Fracture" numGridCollisionPoints="0" shadowSize="28" stageHP="0" tags="spider" variant="801" portrait="3">
+	<entity anm2path="801.000_fracture.anm2" hasFloorAlts="true" baseHP="15" boss="0" champion="1" collisionDamage="1" collisionMass="10" collisionRadius="13" friction="1" id="29" name="Fracture" numGridCollisionPoints="0" shadowSize="28" stageHP="0" tags="spider" variant="1" subtype="801" portrait="3">
     	<bestiary transform="0,0,1" anim="Hop" />
         <gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0" />
     </entity>

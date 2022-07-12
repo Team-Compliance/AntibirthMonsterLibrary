@@ -70,7 +70,7 @@ EntityVariant = {
 	DUMPLING = 0, -- for EntityType.ENTITY_DUMPLING
     SKINLING = 1, -- for EntityType.ENTITY_DUMPLING
     SCAB = 2, -- for EntityType.ENTITY_DUMPLING
-	FRACTURE = 801, -- for EntityType.ENTITY_HOPPER
+	FRACTURE = 801, -- for EntityType.ENTITY_HOPPER (subType)
 	SWAPPER = 835, -- for EntityType.ENTITY_BABY
 	BARFY = 850, -- for EntityType.ENTITY_FATTY
 	CORPSE_EATER = 100, -- for EntityType.ENTITY_GRUB
@@ -397,7 +397,7 @@ function mod:replaceID(Type, Variant, SubType, GridIndex, Seed)
 
 	--[[ FRACTURE ]]--
 	elseif Type == 801 and Variant == 0 and SubType == 0 then
-		return {EntityType.ENTITY_HOPPER, EntityVariant.FRACTURE, SubType}
+		return {EntityType.ENTITY_HOPPER, 1, EntityVariant.FRACTURE}
 	end
 end
 mod:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, mod.replaceID)
