@@ -1,12 +1,7 @@
 local mod = AntiMonsterLib
 local game = Game()
 
-function mod:RedTNTCollision()
-
-end
-mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.RedTNTCollision)
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.RedTNTCollision)
-
+-- All functionality basically
 function mod:RedTNTUpdate()
 	local room = game:GetRoom()
 	for ind = 1, room:GetGridSize() do
@@ -15,11 +10,11 @@ function mod:RedTNTUpdate()
 			local tnt = gridEnt:ToTNT()
 			if tnt then
 				if tnt:GetVariant() == AMLVariants.RED_TNT then
-					local sprite = tnt:GetSprite()
-					sprite:ReplaceSpritesheet(0, "gfx/grid/grid_redtnt.png")
-					sprite:LoadGraphics()
-					
-					if tnt.State >= 1 then
+					if tnt.State == 0 then
+						for i, entities in ipairs(Isaac.FindInRadius(tnt.Position, 30, EntityPartition.ENEMY | EntityPartition.PLAYER)) do
+							tnt.State = 4
+						end
+					else
 						tnt.State = 4
 					end
 				end
@@ -28,6 +23,27 @@ function mod:RedTNTUpdate()
 	end
 end
 mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.RedTNTUpdate)
+
+-- For the sprite
+function mod:RedTNTRender()
+	local room = game:GetRoom()
+	for ind = 1, room:GetGridSize() do
+		local gridEnt = room:GetGridEntity(ind)
+		if gridEnt then
+			local tnt = gridEnt:ToTNT()
+			if tnt then
+				if tnt:GetVariant() == AMLVariants.RED_TNT then
+					local sprite = tnt:GetSprite()
+					if sprite:GetFilename() ~= "gfx/grid/grid_redtnt.anm2" then
+						sprite:Load("gfx/grid/grid_redtnt.anm2", true)
+					end
+				end
+			end
+		end
+	end
+end
+mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.RedTNTRender)
+
 
 -- Replaces the old entity based red tnt with the new grid
 function mod:ReplaceOldRedTNT(entity)
