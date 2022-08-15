@@ -398,6 +398,10 @@ function mod:replaceID(Type, Variant, SubType, GridIndex, Seed)
 	--[[ FRACTURE ]]--
 	elseif Type == 801 and Variant == 0 and SubType == 0 then
 		return {EntityType.ENTITY_HOPPER, 1, EntityVariant.FRACTURE}
+	
+	--[[ RED TNT ]]--
+	elseif Type == EntityType.ENTITY_AML and Variant == AMLVariants.RED_TNT then
+		return {EntityType.ENTITY_MOVABLE_TNT, AMLVariants.RED_TNT}
 	end
 end
 mod:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, mod.replaceID)
