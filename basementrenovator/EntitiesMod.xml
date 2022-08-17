@@ -1,10 +1,6 @@
 <data>
 	<group Name="TNT">
-		<entity ID="292" Image="resources/Entities/Antibirth/10001.0.0 - Red TNT.png" Name="Red TNT" Subtype="0" Variant="3400" IsGrid="1">
-			<tag>Grid</tag>
-			<tag>InEmptyRooms</tag>
-			<tag>InNonCombatRooms</tag>
-		</entity>
+		<entity BaseHP="5" Boss="0" Champion="0" ID="292" Image="resources/Entities/Antibirth/10001.0.0 - Red TNT.png" Name="Red TNT" Subtype="0" Variant="3400"/>
 	</group>
 
 	<group Name="Chapter 1 (Main Path) Enemies">
