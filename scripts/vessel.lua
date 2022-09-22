@@ -199,9 +199,10 @@ mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.vesselDeath, EntityType.ENTI
 function mod:maggotDeath(maggot)
 	if maggot.SpawnerEntity then
 		local spawner = maggot.SpawnerEntity
+		local vesselData = spawner:GetData().VesselData
 
-		if spawner.Type == EntityType.ENTITY_VESSEL and spawner:GetData().VesselData.Maggots then
-			spawner:GetData().VesselData.Maggots = spawner:GetData().VesselData.Maggots - 1
+		if spawner.Type == EntityType.ENTITY_VESSEL and vesselData.Maggots then
+			vesselData.Maggots = vesselData.Maggots - 1
 		end
 	end
 end
