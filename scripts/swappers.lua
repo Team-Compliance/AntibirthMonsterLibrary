@@ -39,6 +39,7 @@ function mod:swapperUpdate(entity)
 			laser_ent_pair.laser.DepthOffset = 200
 			laser_ent_pair.laser.DisableFollowParent = true
 			laser_ent_pair.laser.OneHit = true
+			laser_ent_pair.laser.CollisionDamage = 0
 
 			-- Laser color
 			if entity.SubType == 1 then
@@ -59,31 +60,33 @@ mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.swapperUpdate, EntityType.ENTITY
 
 -- Swap Isaac and Swapper positions on successful hit
 function mod:swapperHit(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
-	if damageSource.Type == EntityType.ENTITY_BABY and damageSource.Variant == EntityVariant.SWAPPER and damageSource.Entity:GetData().canTP == true then
-		-- Get positions for teleporting
-		local swapToPos = damageSource.Entity.Position
-		local swapFromPos = target.Position
+	if damageSource.Type == EntityType.ENTITY_BABY and damageSource.Variant == EntityVariant.SWAPPER and damageFlags & DamageFlag.DAMAGE_LASER > 0 then
+		if damageSource.Entity:GetData().canTP == true then
+			-- Get positions for teleporting
+			local swapToPos = damageSource.Entity.Position
+			local swapFromPos = target.Position
 
-		-- Make sure they don't teleport the player on top of rocks or pits when they can't fly
-		local room = game:GetRoom()
-		if target:ToPlayer().CanFly == false and (room:GetGridCollisionAtPos(swapToPos) == GridCollisionClass.COLLISION_PIT or room:GetGridCollisionAtPos(swapToPos) == GridCollisionClass.COLLISION_SOLID) then
-			swapToPos = room:FindFreeTilePosition(swapToPos, 52)
+			-- Make sure they don't teleport the player on top of rocks or pits when they can't fly
+			local room = game:GetRoom()
+			if target:ToPlayer().CanFly == false and (room:GetGridCollisionAtPos(swapToPos) == GridCollisionClass.COLLISION_PIT or room:GetGridCollisionAtPos(swapToPos) == GridCollisionClass.COLLISION_SOLID) then
+				swapToPos = room:FindFreeTilePosition(swapToPos, 52)
+			end
+
+
+			-- Visuals + sound
+			if not (damageSource.Entity:HasEntityFlags(EntityFlag.FLAG_CHARM) or damageSource.Entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) then
+				target:ToPlayer():AnimateTeleport(false)
+				target:GetSprite():SetFrame(12)
+			
+				damageSource.Entity:GetSprite():Play("TeleportDown", true)
+				SFXManager():Play(SoundEffect.SOUND_HELL_PORTAL2, 1, 0, false, 1, 0)
+
+
+				target.Position = swapToPos
+				damageSource.Entity.Position = swapFromPos
+			end
+			damageSource.Entity:GetData().canTP = false
 		end
-
-
-		-- Visuals + sound
-		if not (damageSource.Entity:HasEntityFlags(EntityFlag.FLAG_CHARM) or damageSource.Entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)) then
-			target:ToPlayer():AnimateTeleport(false)
-			target:GetSprite():SetFrame(12)
-		
-			damageSource.Entity:GetSprite():Play("TeleportDown", true)
-			SFXManager():Play(SoundEffect.SOUND_HELL_PORTAL2, 1, 0, false, 1, 0)
-
-
-			target.Position = swapToPos
-			damageSource.Entity.Position = swapFromPos
-		end
-		damageSource.Entity:GetData().canTP = false
 
 		return false
 	end
