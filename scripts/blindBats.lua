@@ -27,7 +27,7 @@ local batQueue = {}
 
 
 
-function alarmBats()
+local function alarmBats()
 	for _, bat in pairs(Isaac.FindByType(EntityType.ENTITY_BLIND_BAT, 0, -1, false, false)) do
 		local data = bat:GetData().BlindBatData
 		if (data ~= nil and data.State == States.Hiding) then
@@ -44,7 +44,7 @@ function alarmBats()
 	nextAlertTime = Settings.InitialAlertTime
 end
 
-function awakenBats()
+local function awakenBats()
 	for _, bat in pairs(Isaac.FindByType(EntityType.ENTITY_BLIND_BAT, 0 , 0, false, false)) do
 		local batNpc = bat:ToNPC()
 		local batSprite = bat:GetSprite()
@@ -111,7 +111,7 @@ function mod:blindBatUpdate(bat)
 		elseif bat.SubType == 1 then
 			sprite:Play("IdleInvisible", true)
 		
-			if #Isaac.FindByType(EntityType.ENTITY_BLIND_BAT, 0 , 0, undefined, false) <= 0 then
+			if #Isaac.FindByType(EntityType.ENTITY_BLIND_BAT, 0 , 0, false, false) <= 0 then
 				bat:PlaySound(SoundEffect.SOUND_SHAKEY_KID_ROAR, 1, 0, false, 1.2)
 				sprite:Play("FlyDown", true)
 				batData.State = States.Spotted

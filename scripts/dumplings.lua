@@ -44,12 +44,12 @@ local function fart(npc)
 	elseif npc.Variant == EntityVariant.SCAB then
 		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.FART, 1, npc.Position, Vector.Zero, npc) -- red fart
 
-		params = ProjectileParams()
+		local params = ProjectileParams()
 		params.CircleAngle = 0
 		npc:FireProjectiles(npc.Position, Vector(10, 6), 9, params)
 	end
 
-	game:ButterBeanFart(npc.Position, 85, npc, visible)
+	game:ButterBeanFart(npc.Position, 85, npc, visible, false)
 end
 
 -- Helper function to apply velocity to and flip a Dumpling's sprite
@@ -62,9 +62,9 @@ end
 
 function mod:dumplingUpdate(npc)
     local sprite = npc:GetSprite()
-    local npc_flags = npc:GetEntityFlags()
     local player_position = game:GetNearestPlayer(npc.Position).Position
     local player_angle = (player_position - npc.Position):GetAngleDegrees()
+    local feared = npc:HasEntityFlags(EntityFlag.FLAG_FEAR)
 
 
 	npc.Visible = true -- fixes some of them becoming invisible
@@ -75,7 +75,7 @@ function mod:dumplingUpdate(npc)
 			npc.State = NpcState.STATE_ATTACK
 			sprite:Play("Fart")
 
-		elseif (npc_flags & EntityFlag.FLAG_FEAR == EntityFlag.FLAG_FEAR) and math.random(16) == 1 then -- move feared 
+		elseif feared and math.random(16) == 1 then -- move feared 
 			npc.State = NpcState.STATE_MOVE
 			add_velocity_and_flip(npc, Vector.FromAngle(player_angle + 180) * Vector(math.random(3)+3, math.random(3)+3))
 			sprite:Play("Move")
@@ -85,7 +85,7 @@ function mod:dumplingUpdate(npc)
 			add_velocity_and_flip(npc, Vector.FromAngle(player_angle + (math.random(180)-90)) * Vector(math.random(3)+4, math.random(3)+4))
 			sprite:Play("Move")
 
-		elseif npc.Variant == EntityVariant.SCAB and math.random(12) == 1 and not (npc_flags & EntityFlag.FLAG_FEAR == EntityFlag.FLAG_FEAR) then -- move towards player
+		elseif npc.Variant == EntityVariant.SCAB and math.random(12) == 1 and not feared then -- move towards player
 			npc.State = NpcState.STATE_MOVE
 			add_velocity_and_flip(npc, Vector.FromAngle(player_angle) * Vector(math.random(3)+3, math.random(3)+3))
 			sprite:Play("Move")

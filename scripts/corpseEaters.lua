@@ -87,7 +87,7 @@ function mod:CorpseEaterUpdate(entity)
 
 
 		-- Get new target
-		function getTarget()
+		local function getTarget()
 			for i, enemy in pairs(Isaac.FindInRadius(entity.Position, Settings.DetectionRange, EntityPartition.ENEMY)) do
 				if enemy:IsVulnerableEnemy() and entity.Pathfinder:HasPathToPos(enemy.Position, true) and inAMLblacklist("Corpse Eater", enemy.Type, enemy.Variant, enemy.SubType) == false then
 					entity.Target = enemy

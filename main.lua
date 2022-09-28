@@ -113,7 +113,7 @@ include("scripts.redTNT")
     Blacklists
 --]]--------------------------------------------------------
 
-coil_blacklist = {
+local coil_blacklist = {
 	{EntityType.ENTITY_LUMP, -1, -1},
 	{EntityType.ENTITY_AML, AMLVariants.COIL, -1},
 	{EntityType.ENTITY_AML, AMLVariants.RED_TNT, -1},
@@ -122,7 +122,7 @@ coil_blacklist = {
 	{EntityType.ENTITY_NEEDLE, -1, -1},
 }
 
-necromancer_blacklist = {
+local necromancer_blacklist = {
 	{EntityType.ENTITY_BONY, -1, AMLVariants.NECROMANCER}, -- Bonys spawned by Necromancers
 	{EntityType.ENTITY_GRUB, 0, -1},
 	{EntityType.ENTITY_GRUB, 100, 1}, -- Corpse eater body
@@ -131,7 +131,7 @@ necromancer_blacklist = {
 	{EntityType.ENTITY_BIG_BONY, 10, -1}, -- Bouncing bone
 }
 
-corpse_eater_blacklist = {
+local corpse_eater_blacklist = {
 	{EntityType.ENTITY_FLY, -1, -1},
 	{EntityType.ENTITY_ATTACKFLY, -1, -1},
 	{EntityType.ENTITY_VIS, 22, -1}, -- Chubber projectile
@@ -172,7 +172,7 @@ function AMLblacklistEntry(blacklist, Type, Variant, SubType, operation)
 	end
 
 	-- Get blacklist
-	local checkList = ""
+	local checkList = {}
 	if blacklist == "Coil" then
 		checkList = coil_blacklist
 	elseif blacklist == "Necromancer" then
@@ -214,7 +214,7 @@ function inAMLblacklist(blacklist, checkType, checkVariant, checkSubType)
 		return
 	end
 	
-	local checkList = ""
+	local checkList = {}
 	if blacklist == "Coil" then
 		checkList = coil_blacklist
 	elseif blacklist == "Necromancer" then
@@ -237,7 +237,7 @@ end
     Corpse eater death effects for enemies
 --]]--------------------------------------------------------
 
-corpse_eater_effects = {
+local corpse_eater_effects = {
 	small = {
 	{EntityType.ENTITY_FLY, -1, -1},
 	{EntityType.ENTITY_POOTER, -1, -1},
@@ -331,7 +331,7 @@ function EatenEffectEntry(Type, Variant, SubType, operation, effect)
 	end
 
 	-- Get list
-	local checkList = ""
+	local checkList = {}
 	if effect == "small" then
 		checkList = corpse_eater_effects.small
 	elseif effect == "bone" then

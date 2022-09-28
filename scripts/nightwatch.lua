@@ -25,7 +25,7 @@ local nightwatchRemoveEventSavedPositions = {}
 
 
 -- Get path positions
-function getPaths(room_index)
+local function getPaths(room_index)
 	local level = Game():GetLevel()
 	local roomDescriptor = level:GetCurrentRoomDesc()
 	local roomConfigRoom = roomDescriptor.Data
@@ -196,14 +196,14 @@ mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.nightwatchClearLists)
 
 -- Alerting
 -- Grid events
-function nightwatchGridEvent(Index)
+local function nightwatchGridEvent(Index)
 	local gentity = game:GetRoom():GetGridEntity(Index)
 	if gentity ~= nil then
 		if gentity:GetType() == GridEntityType.GRID_ROCK and gentity.VarData == 1 then
 			gentity:Destroy(true)
 			
 		elseif gentity:GetType() == GridEntityType.GRID_PIT and gentity.VarData == 1 then
-			gentity:ToPit():MakeBridge(nil)
+			gentity:ToPit():MakeBridge()
 			
 		elseif gentity:GetType() == GridEntityType.GRID_PRESSURE_PLATE and gentity.State ~= 3 then
 			gentity:ToPressurePlate():Reward()
@@ -220,7 +220,7 @@ function nightwatchGridEvent(Index)
 	end
 end
 
-function nightwatchAlert()
+local function nightwatchAlert()
 	local room = game:GetRoom()
 	local room_index = game:GetLevel():GetCurrentRoomIndex()
 
@@ -308,7 +308,7 @@ function mod:nightwatchUpdate(entity)
 
 
 	-- Spotlight detection range
-	function inSpotlight()
+	local function inSpotlight()
 		local checkmode = 3
 		if game:GetRoom():GetType() == RoomType.ROOM_DUNGEON then -- Fix for crawlspaces
 			checkmode = 2
