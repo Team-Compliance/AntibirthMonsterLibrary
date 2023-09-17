@@ -28,7 +28,7 @@ local batQueue = {}
 
 
 local function alarmBats()
-	for _, bat in pairs(Isaac.FindByType(EntityType.ENTITY_BLIND_BAT, 0, -1, false, false)) do
+	for _, bat in pairs(Isaac.FindByType(803, 0, -1, false, false)) do
 		local data = bat:GetData().BlindBatData
 		if (data ~= nil and data.State == States.Hiding) then
 			if bat.SubType == 0 then
@@ -45,7 +45,7 @@ local function alarmBats()
 end
 
 local function awakenBats()
-	for _, bat in pairs(Isaac.FindByType(EntityType.ENTITY_BLIND_BAT, 0 , 0, false, false)) do
+	for _, bat in pairs(Isaac.FindByType(803, 0 , 0, false, false)) do
 		local batNpc = bat:ToNPC()
 		local batSprite = bat:GetSprite()
 		local batData = bat:GetData().BlindBatData
@@ -71,7 +71,7 @@ end
 function mod:blindBatInit(bat)
 	local sprite = bat:GetSprite()
 	bat.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
-	
+	bat.CanShutDoors = false
 	bat:GetData().BlindBatData = {
 		AttackCountdown = math.random(Settings.AttackTime[1], Settings.AttackTime[2]),
 		State = States.Hiding,
@@ -83,7 +83,7 @@ function mod:blindBatInit(bat)
 	}
 
 	if bat.SubType == 0 then
-		sprite:Play("Idle", true)
+		sprite:Play("Idle", false)
 		for i = 1, Settings.NumFollowerBats do
 			Isaac.Spawn(EntityType.ENTITY_BLIND_BAT, 0, 1, bat.Position + RandomVector():Resized(math.random(1, 50)), bat.Velocity, bat)
 		end
@@ -92,7 +92,7 @@ function mod:blindBatInit(bat)
 		bat:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.blindBatInit, EntityType.ENTITY_BLIND_BAT)
+mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.blindBatInit, 803)
 
 function mod:blindBatUpdate(bat)
 	local sprite = bat:GetSprite()
@@ -104,6 +104,7 @@ function mod:blindBatUpdate(bat)
 	if batData.State == States.Hiding and bat.FrameCount > 1 then
 		if bat.SubType == 0	 then
 			if game:GetNearestPlayer(bat.Position).Position:Distance(batPos) <= Settings.ActivationRange then
+				bat.CanShutDoors = true
 				batData.State = States.Spotted
 				sprite:Play("Wake", true)
 			end
@@ -176,7 +177,7 @@ function mod:blindBatUpdate(bat)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.blindBatUpdate, EntityType.ENTITY_BLIND_BAT)
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.blindBatUpdate, 803)
 
 function mod:onBatUpdate()
 	nextAlertTime = nextAlertTime - 1
@@ -218,4 +219,4 @@ function mod:batRemoval(bat)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, mod.batRemoval, EntityType.ENTITY_BLIND_BAT)
+mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, mod.batRemoval, 803)
